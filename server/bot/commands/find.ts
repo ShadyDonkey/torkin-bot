@@ -1,6 +1,6 @@
+import { DEV_GUILD_ID, IS_IN_DEV } from '@shared/config'
+import { search } from '@shared/lib/tvdb'
 import { type CommandConfig, type CommandInteraction, CommandOption } from 'dressed'
-import { DEV_GUILD_ID, IS_IN_DEV } from '@/shared/config'
-import { search } from '@/shared/lib/tvdb'
 
 export const config: CommandConfig = {
   description: 'Find a show or movie by name',

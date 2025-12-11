@@ -2,12 +2,10 @@
   "name": "torkin-bot",
   "private": true,
   "workspaces": {
-    "packages": ["bot", "server", "shared"],
+    "packages": ["server", "shared"],
     "catalog": {
       "await-to-js": "^3.0.0",
       "better-auth": "^1.4.6",
-      "discord-api-types": "^0.38.36",
-      "dressed": "^1.10.1",
       "elysia": "^1.4.18",
       "ky": "^1.14.1"
     }

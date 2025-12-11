@@ -9,7 +9,7 @@ const primary = new Keyv({
   }),
 })
 
-const secondary = new KeyvRedis(Bun.env.DRAGONFLY_URL || 'redis://localhost:6379')
+const secondary = new KeyvRedis(process.env.DRAGONFLY_URL || 'redis://localhost:6379')
 
 export const cache = new Cacheable({
   primary,

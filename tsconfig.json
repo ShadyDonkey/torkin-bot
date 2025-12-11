@@ -2,7 +2,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@server/*": ["server/*"],
+      "@shared/*": ["shared/*"]
     },
 
     // Environment setup & latest features

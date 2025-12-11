@@ -4,7 +4,7 @@ import { cache } from '@/shared/cache'
 import { toMs } from '@/shared/utilities'
 import type { paths } from './schema'
 
-const TVDB_API_KEY = Bun.env.TVDB_API_KEY
+const TVDB_API_KEY = process.env.TVDB_API_KEY
 const TVDB_API_URL = 'https://api4.thetvdb.com/v4/'
 
 let bearerToken: string | null = null

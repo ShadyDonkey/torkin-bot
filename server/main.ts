@@ -1,6 +1,6 @@
+import { commands, components, config, events } from '@server/.dressed'
 import { handleRequest, installCommands } from 'dressed/server'
 import { Elysia } from 'elysia'
-import { commands, components, config, events } from '@/bot/.dressed'
 
 const app = new Elysia()
   .onError((err) => {
@@ -13,7 +13,9 @@ const app = new Elysia()
 
     return 'Commands installed'
   })
-  .post('/discord/handle-interaction', ({ request }) => handleRequest(request, commands, components, events, config))
+  .post('/discord/handle-interaction', ({ request }) => handleRequest(request, commands, components, events, config), {
+    parse: 'none',
+  })
   .listen(3000)
 
 console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`)
