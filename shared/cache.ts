@@ -1,4 +1,5 @@
 import KeyvRedis from '@keyv/redis'
+import slugify from '@sindresorhus/slugify'
 import { Cacheable } from 'cacheable'
 import { Keyv } from 'keyv'
 import { LRUCache } from 'lru-cache'
@@ -33,6 +34,18 @@ export const cacheConfig = {
         },
         movie: {
           key: () => 'lib:tmdb:watch_providers:movie',
+          ttl: '1d',
+        },
+      },
+      tv: {
+        details: {
+          key: (id: string) => `lib:tmdb:tv:${id}:details`,
+          ttl: '1d',
+        },
+      },
+      movie: {
+        details: {
+          key: (id: string) => `lib:tmdb:movie:${id}:details`,
           ttl: '1d',
         },
       },

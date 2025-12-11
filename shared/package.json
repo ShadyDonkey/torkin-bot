@@ -9,6 +9,7 @@
   "dependencies": {
     "@keyv/redis": "catalog:",
     "@lukeed/ms": "^2.0.2",
+    "@sindresorhus/slugify": "catalog:",
     "await-to-js": "catalog:",
     "cacheable": "^2.3.0",
     "keyv": "catalog:",

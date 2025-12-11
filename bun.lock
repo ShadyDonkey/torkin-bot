@@ -21,10 +21,12 @@
       "version": "0.0.0",
       "dependencies": {
         "@keyv/redis": "catalog:",
-        "@sindresorhus/slugify": "^3.0.0",
+        "@sindresorhus/slugify": "catalog:",
         "await-to-js": "catalog:",
         "better-auth": "catalog:",
+        "date-fns": "^4.1.0",
         "discord-api-types": "^0.38.36",
+        "discord-fmt": "^1.0.1",
         "dressed": "^1.10.1",
         "elysia": "catalog:",
         "keyv": "catalog:",
@@ -37,6 +39,7 @@
       "dependencies": {
         "@keyv/redis": "catalog:",
         "@lukeed/ms": "^2.0.2",
+        "@sindresorhus/slugify": "catalog:",
         "await-to-js": "catalog:",
         "cacheable": "^2.3.0",
         "keyv": "catalog:",
@@ -48,6 +51,7 @@
   },
   "catalog": {
     "@keyv/redis": "^5.1.5",
+    "@sindresorhus/slugify": "^3.0.0",
     "await-to-js": "^3.0.0",
     "better-auth": "^1.4.6",
     "elysia": "^1.4.18",
@@ -271,11 +275,15 @@
 
     "cookie": ["cookie@1.1.1", "", {}, "sha512-ei8Aos7ja0weRpFzJnEA9UHJ/7XQmqglbRwnf2ATjcB9Wq874VKH9kfjjirM6UhU2/E5fFYadylyhFldcqSidQ=="],
 
+    "date-fns": ["date-fns@4.1.0", "", {}, "sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg=="],
+
     "debug": ["debug@4.4.3", "", { "dependencies": { "ms": "^2.1.3" } }, "sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA=="],
 
     "defu": ["defu@6.1.4", "", {}, "sha512-mEQCMmwJu317oSz8CwdIOdwf3xMif1ttiM8LTufzc3g6kR+9Pe236twL8j3IYT1F7GfRgGcW6MWxzZjLIkuHIg=="],
 
     "discord-api-types": ["discord-api-types@0.38.36", "", {}, "sha512-qrbUbjjwtyeBg5HsAlm1C859epfOyiLjPqAOzkdWlCNsZCWJrertnETF/NwM8H+waMFU58xGSc5eXUfXah+WTQ=="],
+
+    "discord-fmt": ["discord-fmt@1.0.1", "", {}, "sha512-LsRCmMDH7a1wmd87Cyd6DXaGT/wbqEPnaAMAgyhOun1YDoAgKlnRZZ9ul5GMXZnvDIU9/w2c+ymo6Kuqo4kWDw=="],
 
     "dotenv": ["dotenv@17.2.3", "", {}, "sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w=="],
 

@@ -5,6 +5,7 @@
     "packages": ["server", "shared"],
     "catalog": {
       "@keyv/redis": "^5.1.5",
+      "@sindresorhus/slugify": "^3.0.0",
       "await-to-js": "^3.0.0",
       "better-auth": "^1.4.6",
       "elysia": "^1.4.18",

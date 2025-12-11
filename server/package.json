@@ -7,13 +7,15 @@
   },
   "dependencies": {
     "@keyv/redis": "catalog:",
-    "@sindresorhus/slugify": "^3.0.0",
+    "@sindresorhus/slugify": "catalog:",
     "await-to-js": "catalog:",
     "better-auth": "catalog:",
+    "date-fns": "^4.1.0",
     "discord-api-types": "^0.38.36",
+    "discord-fmt": "^1.0.1",
     "dressed": "^1.10.1",
-    "keyv": "catalog:",
     "elysia": "catalog:",
+    "keyv": "catalog:",
     "ky": "catalog:"
   }
 }
