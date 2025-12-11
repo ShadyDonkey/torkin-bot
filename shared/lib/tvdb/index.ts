@@ -1,7 +1,6 @@
-import { to } from 'await-to-js'
 import ky, { type KyInstance } from 'ky'
 import { cache } from '@/shared/cache'
-import { toMs } from '@/shared/utilities'
+import { toMs, unwrap } from '@/shared/utilities'
 import type { paths } from './schema'
 
 const TVDB_API_KEY = process.env.TVDB_API_KEY
@@ -17,25 +16,29 @@ export async function getTvDBClient() {
 
   if (!bearerToken) {
     // TODO: also check if the token is still valid since it's a 1 month expiry
-    const cached = await cache.getOrSet('lib:tvdb:token', async () => {
-      const [err, token] = await to(login())
+    const cached = await cache.getOrSet(
+      'lib:tvdb:token',
+      async () => {
+        const [err, token] = await unwrap(login())
 
-      if (err) {
-        // TODO: switch to proper logger
-        console.error('TVDB login failed', err)
-      }
+        if (err) {
+          // TODO: switch to proper logger
+          console.error('TVDB login failed', err)
+        }
 
-      if (!token) {
-        throw new Error('TVDB login failed')
-      }
+        if (!token) {
+          throw new Error('TVDB login failed')
+        }
 
-      if (token.data?.token) {
-        console.debug('Retrieved TVDB token from cache')
-        return token.data?.token
-      }
+        if (token.data?.token) {
+          console.debug('Retrieved TVDB token from cache')
+          return token.data?.token
+        }
 
-      return null
-    })
+        return null
+      },
+      { ttl: '14d' },
+    )
 
     if (!cached) {
       throw new Error('TVDB login failed')
@@ -73,6 +76,7 @@ export async function search(
   query: string,
   type: 'movie' | 'series',
   page: number = 1,
+  limit: number = 5,
 ): Promise<paths['/search']['get']['responses']['200']['content']['application/json']> {
   console.log('searching for', query, type, page)
   const client = await getTvDBClient()
@@ -80,6 +84,7 @@ export async function search(
     searchParams: {
       query,
       type,
+      limit,
       // TODO: Add page in limit + offset format
     },
   })

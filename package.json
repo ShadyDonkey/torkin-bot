@@ -4,9 +4,11 @@
   "workspaces": {
     "packages": ["server", "shared"],
     "catalog": {
+      "@keyv/redis": "^5.1.5",
       "await-to-js": "^3.0.0",
       "better-auth": "^1.4.6",
       "elysia": "^1.4.18",
+      "keyv": "^5.5.5",
       "ky": "^1.14.1"
     }
   },

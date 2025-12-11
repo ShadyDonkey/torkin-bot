@@ -1,6 +1,6 @@
-import { commands, components, config, events } from '@server/.dressed'
 import { handleRequest, installCommands } from 'dressed/server'
 import { Elysia } from 'elysia'
+import { commands, components, config, events } from '@/server/.dressed'
 
 const app = new Elysia()
   .onError((err) => {

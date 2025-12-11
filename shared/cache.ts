@@ -18,3 +18,24 @@ export const cache = new Cacheable({
   stats: true,
   ttl: '1h',
 })
+
+export const cacheConfig = {
+  lib: {
+    tmdb: {
+      watchProviders: {
+        availableRegions: {
+          key: () => 'lib:tmdb:watch_providers:available_regions',
+          ttl: '1d',
+        },
+        tv: {
+          key: () => 'lib:tmdb:watch_providers:tv',
+          ttl: '1d',
+        },
+        movie: {
+          key: () => 'lib:tmdb:watch_providers:movie',
+          ttl: '1d',
+        },
+      },
+    },
+  },
+}

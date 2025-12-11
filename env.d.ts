@@ -9,5 +9,6 @@ declare namespace NodeJS {
     DEV_GUILD_ID: string
     DISCORD_APP_ID: string
     DISCORD_PUBLIC_KEY: string
+    TMDB_API_KEY: string
   }
 }

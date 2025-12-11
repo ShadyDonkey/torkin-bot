@@ -6,10 +6,13 @@
     "bot:build": "dressed build -R ./bot"
   },
   "dependencies": {
+    "@keyv/redis": "catalog:",
+    "@sindresorhus/slugify": "^3.0.0",
     "await-to-js": "catalog:",
     "better-auth": "catalog:",
     "discord-api-types": "^0.38.36",
     "dressed": "^1.10.1",
+    "keyv": "catalog:",
     "elysia": "catalog:",
     "ky": "catalog:"
   }

@@ -1,6 +1,10 @@
-import { DEV_GUILD_ID, IS_IN_DEV } from '@shared/config'
-import { search } from '@shared/lib/tvdb'
-import { type CommandConfig, type CommandInteraction, CommandOption } from 'dressed'
+import slugify from '@sindresorhus/slugify'
+import { MessageFlags } from 'discord-api-types/v10'
+import { type CommandConfig, type CommandInteraction, CommandOption, Container, TextDisplay } from 'dressed'
+import { keyv } from '@/server/lib/keyv'
+import { DEV_GUILD_ID, IS_IN_DEV } from '@/shared/config'
+import { search } from '@/shared/lib/tvdb'
+import { toMs, unwrap } from '@/shared/utilities'
 
 export const config: CommandConfig = {
   description: 'Find a show or movie by name',
@@ -14,9 +18,10 @@ export const config: CommandConfig = {
       type: 'Subcommand',
       options: [
         CommandOption({
-          name: 'title',
+          name: 'query',
           description: 'The title of the movie',
           type: 'String',
+          required: true,
         }),
       ],
     }),
@@ -26,9 +31,10 @@ export const config: CommandConfig = {
       type: 'Subcommand',
       options: [
         CommandOption({
-          name: 'title',
+          name: 'query',
           description: 'The title of the show',
           type: 'String',
+          required: true,
         }),
       ],
     }),
@@ -37,29 +43,57 @@ export const config: CommandConfig = {
 
 export default async function (interaction: CommandInteraction) {
   const subcommand = interaction.getOption('movie')?.subcommand() || interaction.getOption('show')?.subcommand()
+  const query = subcommand?.getOption('query')?.string()
+  let searchType: 'movie' | 'series' | null = null
 
-  // switch (subcommand?.name) {
-  //   case 'movie': {
-  //     const movieTitle = subcommand?.getOption('title')?.string()
-  //     break
-  //   }
-  //   case 'show': {
-  //     const showTitle = subcommand?.getOption('title')?.string()
-  //     break
-  //   }
-  // }
+  switch (subcommand?.name) {
+    case 'movie': {
+      searchType = 'movie'
+      break
+    }
+    case 'show': {
+      searchType = 'series'
+      break
+    }
+    default: {
+      return interaction.reply('Unknown subcommand')
+    }
+  }
 
-  const title = subcommand?.getOption('title')?.string()
-
-  if (!title) {
+  if (!query) {
     return interaction.reply('You must provide a title')
   }
 
-  const res = await search(title, 'series')
+  if (!searchType) {
+    return interaction.reply('Unknown search type')
+  }
 
-  console.log(res.data?.[0])
+  // This may not work because each button click may be a new interaction ID
+  const cacheKey = `cmd:find-${searchType}:${slugify(interaction.id)}-${slugify(query)}`
+  const cacheBody = {
+    query,
+    searchType,
+  }
 
-  return interaction.reply(
-    `You searched for ${subcommand?.name} with title ${subcommand?.getOption('title')?.string()}`,
-  )
+  const [cacheErr, cached] = await unwrap(keyv.set(cacheKey, cacheBody, toMs('1h')))
+
+  if (cacheErr) {
+    console.error('Failed to cache search results', cacheErr)
+    return interaction.reply('Failed to cache search results')
+  }
+
+  console.log(cached)
+
+  if (!cached) {
+    return interaction.reply('Did not successfully cache search results')
+  }
+
+  const [searchErr, results] = await unwrap(search(query, searchType))
+
+  return interaction.reply({
+    components: [
+      Container(TextDisplay("They said I couldn't become famous, so I went to a haunted IKEA and became a cat.")),
+    ],
+    flags: MessageFlags.IsComponentsV2,
+  })
 }
