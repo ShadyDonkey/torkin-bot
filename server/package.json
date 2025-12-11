@@ -1,0 +1,14 @@
+{
+  "name": "server",
+  "version": "0.0.0",
+  "private": true,
+
+  "dependencies": {
+    "await-to-js": "catalog:",
+    "better-auth": "catalog:",
+    "discord-api-types": "catalog:",
+    "dressed": "catalog:",
+    "elysia": "catalog:",
+    "ky": "catalog:"
+  }
+}

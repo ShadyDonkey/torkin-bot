@@ -1,0 +1,9 @@
+{
+  "name": "bot",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "discord-api-types": "catalog:",
+    "dressed": "catalog:"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "torkin-bot",
+  "private": true,
+  "workspaces": {
+    "packages": ["bot", "server", "shared"],
+    "catalog": {
+      "await-to-js": "^3.0.0",
+      "better-auth": "^1.4.6",
+      "discord-api-types": "^0.38.36",
+      "dressed": "^1.10.1",
+      "elysia": "^1.4.18",
+      "ky": "^1.14.1"
+    }
+  },
+  "scripts": {
+    "knip": "knip",
+    "sherif": "sherif -r root-package-manager-field",
+    "sherif:fix": "sherif -r root-package-manager-field --fix"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.3.8",
+    "@types/bun": "latest",
+    "@types/node": "^24.10.2",
+    "knip": "^5.72.0",
+    "lefthook": "^2.0.9",
+    "sherif": "^1.9.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.9.3"
+  }
+}
