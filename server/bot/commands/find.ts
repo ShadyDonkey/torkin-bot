@@ -1,21 +1,34 @@
-/** biome-ignore-all lint/style/noNonNullAssertion: Prototype */
-import slugify from '@sindresorhus/slugify'
 import { format, getUnixTime } from 'date-fns'
-import { MessageFlags } from 'discord-api-types/v10'
-import { bold, h2, h3, list, subtext, TimestampStyle, timestamp } from 'discord-fmt'
 import {
+  type APIActionRowComponent,
+  type APIButtonComponent,
+  type APIContainerComponent,
+  MessageFlags,
+} from 'discord-api-types/v10'
+import { h2, h3, subtext, TimestampStyle, timestamp } from 'discord-fmt'
+import {
+  ActionRow,
+  Button,
   type CommandConfig,
   type CommandInteraction,
   CommandOption,
   Container,
   Section,
-  TextDisplay,
   Thumbnail,
 } from 'dressed'
 import { keyv } from '@/server/lib/keyv'
+import { cacheConfig } from '@/shared/cache'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/shared/config'
-import { getImageUrl, getMovieDetails, getTvDetails, searchMovie, searchTv } from '@/shared/lib/tmdb'
-import { toMs, unwrap } from '@/shared/utilities'
+import {
+  getImageUrl,
+  getMovieDetails,
+  getMovieWatchProviders,
+  getTvDetails,
+  getTvWatchProviders,
+  searchMovie,
+  searchTv,
+} from '@/shared/lib/tmdb'
+import { unwrap } from '@/shared/utilities'
 
 export const config: CommandConfig = {
   description: 'Find a show or movie by name',
@@ -53,54 +66,80 @@ export const config: CommandConfig = {
 }
 
 export default async function (interaction: CommandInteraction) {
+  console.log('Slash command interaction ID:', interaction.id)
   interaction.deferReply()
   const subcommand = interaction.getOption('movie')?.subcommand() || interaction.getOption('tv')?.subcommand()
   const query = subcommand?.getOption('query')?.string()
   let searchType: 'movie' | 'tv' | null = null
+  let components = []
 
   if (!query) {
     return interaction.editReply('You must provide a title')
   }
 
-  switch (subcommand?.name) {
-    case 'movie': {
-      searchType = 'movie'
-      return await handleMovie(query, interaction)
+  try {
+    switch (subcommand?.name) {
+      case 'movie': {
+        searchType = 'movie'
+        components = await handleMovie(query)
+        break
+      }
+      case 'tv': {
+        searchType = 'tv'
+        components = await handleTv(query)
+        break
+      }
+      default: {
+        return interaction.editReply('Unknown subcommand')
+      }
     }
-    case 'tv': {
-      searchType = 'tv'
-      return await handleTv(query, interaction)
-    }
-    default: {
-      return interaction.editReply('Unknown subcommand')
-    }
+  } catch (err) {
+    console.error(err)
+    return interaction.editReply('Something went wrong when finding that...')
   }
+
+  keyv.set(
+    cacheConfig.cmd.find.key(interaction.id),
+    {
+      searchType,
+      query,
+      userId: interaction.user.id,
+    },
+    cacheConfig.cmd.find.ttl,
+  )
+
+  return interaction.editReply({
+    components,
+    flags: MessageFlags.IsComponentsV2,
+  })
 }
 
-async function handleMovie(query: string, interaction: CommandInteraction) {
+async function handleMovie(
+  query: string,
+): Promise<(APIContainerComponent | APIActionRowComponent<APIButtonComponent>)[]> {
   const [searchErr, results] = await unwrap(searchMovie(query))
   if (searchErr) {
-    return interaction.editReply('Failed to search for movie')
+    throw new Error('Failed to search for movie')
   }
 
   if (!results?.results || results.results.length === 0) {
-    return interaction.editReply('No results found')
+    throw new Error('No results found')
   }
 
   const first = results.results.at(0)
 
   if (!first) {
-    return interaction.editReply('No results found')
+    throw new Error('No results found')
   }
 
   if (first.adult) {
-    return interaction.editReply('This movie is for adults only')
+    throw new Error('This movie is for adults only')
   }
 
   const [detailsErr, details] = await unwrap(getMovieDetails(first.id))
 
   if (detailsErr) {
-    return interaction.editReply('Failed to get movie details')
+    throw new Error('Failed to get movie details')
   }
 
   const requiredAttributes = ['title', 'overview']
@@ -113,7 +152,7 @@ async function handleMovie(query: string, interaction: CommandInteraction) {
   }
 
   if (missingAttributes.length > 0) {
-    return interaction.editReply(`Missing required attributes: ${missingAttributes.join(', ')}`)
+    throw new Error(`Missing required attributes: ${missingAttributes.join(', ')}`)
   }
 
   let body = ''
@@ -144,7 +183,11 @@ async function handleMovie(query: string, interaction: CommandInteraction) {
   }
 
   if (details.budget && details.revenue) {
-    detailsList.push(`Budget: ${details.budget.toLocaleString()} / Revenue: ${details.revenue.toLocaleString()}`)
+    const percentChange = ((details.revenue - details.budget) / details.budget) * 100
+    const sign = percentChange >= 0 ? '+' : ''
+    detailsList.push(
+      `Budget: $${details.budget.toLocaleString()} / Revenue: $${details.revenue.toLocaleString()} (${sign}${percentChange.toFixed(1)}%)`,
+    )
   }
 
   if (details.production_companies) {
@@ -156,39 +199,54 @@ async function handleMovie(query: string, interaction: CommandInteraction) {
     body += `${h3('More Info')}\n${detailsList.join('\n')}\n`
   }
 
-  const components = [Container(Section([body], Thumbnail(getImageUrl(first.poster_path ?? ''))))]
+  const [watchProvidersErr, watchProviders] = await unwrap(getMovieWatchProviders(first.id))
 
-  return interaction.editReply({
-    components,
-    flags: MessageFlags.IsComponentsV2,
-  })
+  if (watchProvidersErr) {
+    throw new Error('Failed to get watch providers')
+  }
+  if (watchProviders?.results) {
+    body += `\nWatch Now (US): ${watchProviders.results.US?.flatrate?.map((p) => p.provider_name).join(', ')}`
+  }
+
+  const components = [
+    Container(Section([body], Thumbnail(getImageUrl(first.poster_path ?? '')))),
+    ActionRow(
+      Button({
+        custom_id: 'find-all-results',
+        label: 'See All Results',
+        style: 'Primary',
+      }),
+    ),
+  ]
+
+  return components
 }
 
-async function handleTv(query: string, interaction: CommandInteraction) {
+async function handleTv(query: string) {
   const [searchErr, results] = await unwrap(searchTv(query))
 
   if (searchErr) {
-    return interaction.editReply('Failed to search for TV show')
+    throw new Error('Failed to search for TV show')
   }
 
   if (!results?.results || results.results.length === 0) {
-    return interaction.editReply('No results found')
+    throw new Error('No results found')
   }
 
   const first = results.results.at(0)
 
   if (!first) {
-    return interaction.editReply('No results found')
+    throw new Error('No results found')
   }
 
   if (first.adult) {
-    return interaction.editReply('This movie is for adults only')
+    throw new Error('This movie is for adults only')
   }
 
   const [detailsErr, details] = await unwrap(getTvDetails(first.id))
 
   if (detailsErr) {
-    return interaction.editReply('Failed to get TV details')
+    throw new Error('Failed to get TV details')
   }
 
   const requiredAttributes = ['name', 'overview', 'status']
@@ -254,12 +312,28 @@ async function handleTv(query: string, interaction: CommandInteraction) {
     body += `${h3('More Info')}\n${detailsList.join('\n')}\n`
   }
 
-  body += `\n${bold('Available On')}\n${list(...['Mock Service 1', 'Mock Service 2'])}\n`
+  if (details.number_of_seasons > 0) {
+    const [watchProvidersErr, watchProviders] = await unwrap(getTvWatchProviders(first.id, 1))
 
-  const components = [Container(Section([body], Thumbnail(getImageUrl(first.poster_path ?? ''))))]
+    if (watchProvidersErr) {
+      throw new Error('Failed to get watch providers')
+    }
 
-  return interaction.editReply({
-    components,
-    flags: MessageFlags.IsComponentsV2,
-  })
+    if (watchProviders?.results) {
+      body += `\nWatch Now (US): ${watchProviders.results.US?.flatrate?.map((p) => p.provider_name).join(', ')}`
+    }
+  }
+
+  const components = [
+    Container(Section([body], Thumbnail(getImageUrl(first.poster_path ?? '')))),
+    ActionRow(
+      Button({
+        custom_id: 'find-all-results',
+        label: 'See All Results',
+        style: 'Primary',
+      }),
+    ),
+  ]
+
+  return components
 }
