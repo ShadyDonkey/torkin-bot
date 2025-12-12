@@ -14,7 +14,6 @@ import { type CmdFindCacheEntry, keyv, keyvConfig } from '@/server/lib/keyv'
 import { search } from '@/shared/lib/tvdb'
 import { unwrap } from '@/shared/utilities'
 
-// TODO: NEED TO SWITCH TO OTHER API FOR SEARCHING FOR BETTER RESULTS
 export async function paginateSearch(interaction: MessageComponentInteraction, page: number) {
   if (!interaction.message.interaction_metadata) {
     return interaction.update({
@@ -49,7 +48,7 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
 
   const totalResults = searchResponse.links?.total_items || 1
   const totalPages = Math.ceil(totalResults / 5)
-  const paginationComponents = buildPaginationButtons(1, totalPages)
+  const paginationComponents = buildPaginationButtons(page, totalPages)
 
   const entries = searchResponse.data
     .map((entry, index) => {
@@ -74,7 +73,7 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
         section,
         ActionRow(
           Button({
-            custom_id: `test-${index + 1}`,
+            custom_id: `test-${entry.id ?? Math.random().toString(36).substring(2, 15)}`,
             label: `⌃ View Details`,
             style: 'Secondary',
           }),
@@ -106,14 +105,14 @@ export function buildPaginationButtons(currentPage: number, totalPages: number) 
 
   return ActionRow(
     Button({
-      custom_id: 'find-goto-1',
+      custom_id: 'find-goto-1-first',
       label: '«',
       disabled: !JUMP_TO_FIRST,
       style: 'Primary',
     }),
 
     Button({
-      custom_id: `find-goto-${currentPage - 1}`,
+      custom_id: `find-goto-${currentPage - 1}-prev`,
       label: '‹',
       disabled: !PREVIOUS_PAGE,
       style: 'Primary',
@@ -121,20 +120,20 @@ export function buildPaginationButtons(currentPage: number, totalPages: number) 
 
     Button({
       custom_id: 'find-activepage',
-      label: `${currentPage.toString()} / ${totalPages.toString()}`,
+      label: `⌂`,
       disabled: true,
       style: 'Secondary',
     }),
 
     Button({
-      custom_id: `find-goto-${currentPage + 1}`,
+      custom_id: `find-goto-${currentPage + 1}-next`,
       label: '›',
       disabled: !NEXT_PAGE,
       style: 'Primary',
     }),
 
     Button({
-      custom_id: `find-goto-${totalPages}`,
+      custom_id: `find-goto-${totalPages}-last`,
       label: '»',
       disabled: !JUMP_TO_LAST,
       style: 'Primary',
