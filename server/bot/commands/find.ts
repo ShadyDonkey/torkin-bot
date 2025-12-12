@@ -16,7 +16,7 @@ import {
   Section,
   Thumbnail,
 } from 'dressed'
-import { type CmdFindCacheEntry, keyv, keyvConfig } from '@/server/lib/keyv'
+import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/shared/config'
 import {
   getImageUrl,
@@ -99,13 +99,13 @@ export default async function (interaction: CommandInteraction) {
 
   const [cacheErr, cached] = await unwrap(
     keyv.set<CmdFindCacheEntry>(
-      keyvConfig.cmd.find.key(interaction.id),
+      KEYV_CONFIG.cmd.find.key(interaction.id),
       {
         searchType,
         query,
         userId: interaction.user.id,
       },
-      keyvConfig.cmd.find.ttl,
+      KEYV_CONFIG.cmd.find.ttl,
     ),
   )
 

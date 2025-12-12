@@ -7,7 +7,7 @@ export const keyv = new Keyv({
   namespace: 'torkin',
 })
 
-export const keyvConfig = {
+export const KEYV_CONFIG = {
   cmd: {
     find: {
       key: (id: string) => `cmd:find:${id}`,

@@ -21,7 +21,7 @@ export const cache = new Cacheable({
   ttl: '1h',
 })
 
-export const cacheConfig = {
+export const CACHE_CONFIG = {
   lib: {
     tmdb: {
       availableWatchProviders: {

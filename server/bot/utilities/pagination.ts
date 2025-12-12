@@ -10,7 +10,7 @@ import {
   TextDisplay,
   Thumbnail,
 } from 'dressed'
-import { type CmdFindCacheEntry, keyv, keyvConfig } from '@/server/lib/keyv'
+import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { search } from '@/shared/lib/tvdb'
 import { unwrap } from '@/shared/utilities'
 
@@ -23,7 +23,7 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
   }
 
   const [cacheErr, cached] = await unwrap(
-    keyv.get<CmdFindCacheEntry>(keyvConfig.cmd.find.key(interaction.message.interaction_metadata.id)),
+    keyv.get<CmdFindCacheEntry>(KEYV_CONFIG.cmd.find.key(interaction.message.interaction_metadata.id)),
   )
 
   if (cacheErr || !cached) {
