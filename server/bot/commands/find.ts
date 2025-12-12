@@ -16,8 +16,7 @@ import {
   Section,
   Thumbnail,
 } from 'dressed'
-import { keyv } from '@/server/lib/keyv'
-import { cacheConfig } from '@/shared/cache'
+import { type CmdFindCacheEntry, keyv, keyvConfig } from '@/server/lib/keyv'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/shared/config'
 import {
   getImageUrl,
@@ -99,14 +98,14 @@ export default async function (interaction: CommandInteraction) {
   }
 
   const [cacheErr, cached] = await unwrap(
-    keyv.set(
-      cacheConfig.cmd.find.key(interaction.id),
+    keyv.set<CmdFindCacheEntry>(
+      keyvConfig.cmd.find.key(interaction.id),
       {
         searchType,
         query,
         userId: interaction.user.id,
       },
-      cacheConfig.cmd.find.ttl,
+      keyvConfig.cmd.find.ttl,
     ),
   )
 
@@ -211,7 +210,7 @@ async function handleMovie(
     throw new Error('Failed to get watch providers')
   }
   if (watchProviders?.results) {
-    body += `\nWatch Now (US): ${watchProviders.results.US?.flatrate?.map((p) => p.provider_name).join(', ')}`
+    body += `\nWatch Now (US): ${watchProviders.results.US?.flatrate?.length && watchProviders.results.US.flatrate.length > 0 ? watchProviders.results.US?.flatrate?.map((p) => p.provider_name).join(', ') : 'Not Available'}`
   }
 
   const components = [
@@ -326,7 +325,7 @@ async function handleTv(query: string) {
     }
 
     if (watchProviders?.results) {
-      body += `\nWatch Now (US): ${watchProviders.results.US?.flatrate?.map((p) => p.provider_name).join(', ')}`
+      body += `\nWatch Now (US): ${watchProviders.results.US?.flatrate?.length && watchProviders.results.US.flatrate.length > 0 ? watchProviders.results.US?.flatrate?.map((p) => p.provider_name).join(', ') : 'Not Available'}`
     }
   }
 

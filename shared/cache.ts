@@ -22,12 +22,6 @@ export const cache = new Cacheable({
 })
 
 export const cacheConfig = {
-  cmd: {
-    find: {
-      key: (id: string) => `cmd:find:${id}`,
-      ttl: toMs('1h'),
-    },
-  },
   lib: {
     tmdb: {
       availableWatchProviders: {
