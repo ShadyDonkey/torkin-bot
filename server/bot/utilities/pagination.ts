@@ -11,7 +11,7 @@ import {
   Thumbnail,
 } from 'dressed'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
-import { search } from '@/shared/lib/tvdb'
+import { REMOTE_IDS, search } from '@/shared/lib/tvdb'
 import { unwrap } from '@/shared/utilities'
 
 export async function paginateSearch(interaction: MessageComponentInteraction, page: number) {
@@ -69,13 +69,16 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
       }
 
       const section = Section([body], Thumbnail(entry.image_url))
+      const tmdbId = entry.remote_ids?.find((remoteId) => remoteId.type === REMOTE_IDS.tmdb)?.id
+
       const components: any[] = [
         section,
         ActionRow(
           Button({
-            custom_id: `test-${entry.id ?? Math.random().toString(36).substring(2, 15)}`,
+            custom_id: `find-view-details-${tmdbId || entry.id}`,
             label: `⌃ View Details`,
             style: 'Secondary',
+            disabled: !tmdbId,
           }),
         ),
       ]
