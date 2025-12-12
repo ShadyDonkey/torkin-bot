@@ -98,15 +98,21 @@ export default async function (interaction: CommandInteraction) {
     return interaction.editReply('Something went wrong when finding that...')
   }
 
-  keyv.set(
-    cacheConfig.cmd.find.key(interaction.id),
-    {
-      searchType,
-      query,
-      userId: interaction.user.id,
-    },
-    cacheConfig.cmd.find.ttl,
+  const [cacheErr, cached] = await unwrap(
+    keyv.set(
+      cacheConfig.cmd.find.key(interaction.id),
+      {
+        searchType,
+        query,
+        userId: interaction.user.id,
+      },
+      cacheConfig.cmd.find.ttl,
+    ),
   )
+
+  if (cacheErr || !cached) {
+    return interaction.editReply('')
+  }
 
   return interaction.editReply({
     components,
@@ -259,7 +265,7 @@ async function handleTv(query: string) {
   }
 
   if (missingAttributes.length > 0) {
-    return interaction.editReply(`Missing required attributes: ${missingAttributes.join(', ')}`)
+    throw new Error(`Missing required attributes: ${missingAttributes.join(', ')}`)
   }
 
   let body = ''
@@ -267,7 +273,7 @@ async function handleTv(query: string) {
   if (details.first_air_date) {
     body += h2(`${details.name} (${format(new Date(details.first_air_date), 'yyyy')})\n`)
   } else {
-    body += `${h2(details.name!)}\n`
+    body += `${h2(details.name ?? '')}\n`
   }
 
   if (details.vote_average) {
