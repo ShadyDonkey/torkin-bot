@@ -110,7 +110,8 @@ export default async function (interaction: CommandInteraction) {
   )
 
   if (cacheErr || !cached) {
-    return interaction.editReply('')
+    console.error({ cacheErr, cached })
+    return interaction.editReply('Could not cache search results, please try again later.')
   }
 
   return interaction.editReply({

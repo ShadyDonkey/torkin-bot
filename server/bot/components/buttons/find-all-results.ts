@@ -1,9 +1,8 @@
 import type { MessageComponentInteraction } from 'dressed'
+import { paginateSearch } from '@/server/bot/utilities/pagination'
 
 export const pattern = 'find-all-results'
 
 export default async function (interaction: MessageComponentInteraction) {
-  console.log('See all results interaction ID:', interaction.message.interaction_metadata!.id)
-
-  // console.log(interaction)
+  await paginateSearch(interaction, 1)
 }

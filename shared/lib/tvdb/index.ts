@@ -78,14 +78,14 @@ export async function search(
   page: number = 1,
   limit: number = 5,
 ): Promise<paths['/search']['get']['responses']['200']['content']['application/json']> {
-  console.log('searching for', query, type, page)
+  const offset = (page - 1) * limit
   const client = await getTvDBClient()
   const response = await client.get(`search`, {
     searchParams: {
       query,
       type,
+      offset,
       limit,
-      // TODO: Add page in limit + offset format
     },
   })
   return response.json()
