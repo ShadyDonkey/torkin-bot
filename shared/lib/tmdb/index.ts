@@ -24,7 +24,7 @@ export async function getTmdbClient() {
   return client
 }
 
-type WatchProviderRegionsResponse =
+export type WatchProviderRegionsResponse =
   paths['/3/watch/providers/regions']['get']['responses']['200']['content']['application/json']
 export async function getWatchProviderRegions(): Promise<WatchProviderRegionsResponse> {
   const [err, result] = await unwrap(
@@ -53,7 +53,8 @@ export async function getWatchProviderRegions(): Promise<WatchProviderRegionsRes
   return result
 }
 
-type WatchProvidersTvResponse = paths['/3/watch/providers/tv']['get']['responses']['200']['content']['application/json']
+export type WatchProvidersTvResponse =
+  paths['/3/watch/providers/tv']['get']['responses']['200']['content']['application/json']
 export async function getWatchProvidersTv(): Promise<WatchProvidersTvResponse> {
   const [err, result] = await unwrap(
     cache.getOrSet<WatchProvidersTvResponse>(
@@ -81,7 +82,7 @@ export async function getWatchProvidersTv(): Promise<WatchProvidersTvResponse> {
   return result
 }
 
-type WatchProvidersMovieResponse =
+export type WatchProvidersMovieResponse =
   paths['/3/watch/providers/movie']['get']['responses']['200']['content']['application/json']
 export async function getWatchProvidersMovie(): Promise<WatchProvidersMovieResponse> {
   const [err, result] = await unwrap(
@@ -110,7 +111,7 @@ export async function getWatchProvidersMovie(): Promise<WatchProvidersMovieRespo
   return result
 }
 
-type SearchMovieResponse = paths['/3/search/movie']['get']['responses']['200']['content']['application/json']
+export type SearchMovieResponse = paths['/3/search/movie']['get']['responses']['200']['content']['application/json']
 export async function searchMovie(query: string, page: number = 1): Promise<SearchMovieResponse> {
   const client = await getTmdbClient()
   const response = await client.get('search/movie', {
@@ -124,7 +125,7 @@ export async function searchMovie(query: string, page: number = 1): Promise<Sear
   return response.json()
 }
 
-type SearchTvResponse = paths['/3/search/tv']['get']['responses']['200']['content']['application/json']
+export type SearchTvResponse = paths['/3/search/tv']['get']['responses']['200']['content']['application/json']
 export async function searchTv(query: string, page: number = 1): Promise<SearchTvResponse> {
   const client = await getTmdbClient()
   const response = await client.get('search/tv', {
@@ -138,7 +139,8 @@ export async function searchTv(query: string, page: number = 1): Promise<SearchT
   return response.json()
 }
 
-type MovieDetailsResponse = paths['/3/movie/{movie_id}']['get']['responses']['200']['content']['application/json']
+export type MovieDetailsResponse =
+  paths['/3/movie/{movie_id}']['get']['responses']['200']['content']['application/json']
 export async function getMovieDetails(id: string | number): Promise<MovieDetailsResponse> {
   const [err, result] = await unwrap(
     cache.getOrSet<MovieDetailsResponse>(
@@ -165,7 +167,7 @@ export async function getMovieDetails(id: string | number): Promise<MovieDetails
   return result
 }
 
-type MovieWatchProvidersResponse =
+export type MovieWatchProvidersResponse =
   paths['/3/movie/{movie_id}/watch/providers']['get']['responses']['200']['content']['application/json']
 export async function getMovieWatchProviders(id: string | number): Promise<MovieWatchProvidersResponse> {
   const [err, result] = await unwrap(
@@ -193,7 +195,7 @@ export async function getMovieWatchProviders(id: string | number): Promise<Movie
   return result
 }
 
-type TvDetailsResponse = paths['/3/tv/{series_id}']['get']['responses']['200']['content']['application/json']
+export type TvDetailsResponse = paths['/3/tv/{series_id}']['get']['responses']['200']['content']['application/json']
 export async function getTvDetails(id: string | number): Promise<TvDetailsResponse> {
   const [err, result] = await unwrap(
     cache.getOrSet<TvDetailsResponse>(
@@ -220,7 +222,7 @@ export async function getTvDetails(id: string | number): Promise<TvDetailsRespon
   return result
 }
 
-type TvWatchProvidersResponse =
+export type TvWatchProvidersResponse =
   paths['/3/tv/{series_id}/season/{season_number}/watch/providers']['get']['responses']['200']['content']['application/json']
 export async function getTvWatchProviders(
   id: string | number,
