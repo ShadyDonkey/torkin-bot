@@ -11,7 +11,7 @@ import {
   Thumbnail,
 } from 'dressed'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
-import { REMOTE_IDS, search } from '@/shared/lib/tvdb'
+import { REMOTE_IDS_MOVIE, REMOTE_IDS_SERIES, search } from '@/shared/lib/tvdb'
 import { unwrap } from '@/shared/utilities'
 
 export async function paginateSearch(interaction: MessageComponentInteraction, page: number) {
@@ -46,19 +46,25 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
     })
   }
 
+  console.log(searchResponse.data[0])
+
   const totalResults = searchResponse.links?.total_items || 1
   const totalPages = Math.ceil(totalResults / 5)
   const paginationComponents = buildPaginationButtons(page, totalPages)
 
   const entries = searchResponse.data
     .map((entry, index) => {
-      if (!entry.extended_title || !entry.image_url) {
+      if (!entry.image_url) {
         return null
       }
 
       let body = ''
 
-      body += `${bold(entry.extended_title)}\n`
+      if (entry.extended_title) {
+        body += `${bold(entry.extended_title)}\n`
+      } else {
+        body += `${bold(entry.title ?? entry.name ?? 'Unknown')} ${entry.year ? `(${entry.year})` : ''}\n`
+      }
 
       if (entry.genres && entry.genres.length > 0) {
         body += `${subtext(entry.genres.join(', '))}\n`
@@ -69,7 +75,11 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
       }
 
       const section = Section([body], Thumbnail(entry.image_url))
-      const tmdbId = entry.remote_ids?.find((remoteId) => remoteId.type === REMOTE_IDS.tmdb)?.id
+      const tmdbId = entry.remote_ids?.find((remoteId) =>
+        cached.searchType === 'movie'
+          ? remoteId.type === REMOTE_IDS_MOVIE.tmdb
+          : remoteId.type === REMOTE_IDS_SERIES.tmdb,
+      )?.id
 
       const components: any[] = [
         section,

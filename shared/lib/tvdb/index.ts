@@ -91,7 +91,18 @@ export async function search(
   return response.json()
 }
 
-export const REMOTE_IDS = {
+export const REMOTE_IDS_MOVIE = {
   tmdb: 10,
   imdb: 2,
+} as const
+
+export const REMOTE_IDS_SERIES = {
+  imdb: 2,
+  tms: 3,
+  officialWebsite: 4,
+  facebook: 5,
+  twitter: 6,
+  instagram: 9,
+  tmdb: 12,
+  eidr: 13,
 } as const
