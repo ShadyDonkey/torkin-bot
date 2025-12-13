@@ -51,7 +51,6 @@ export default async function (interaction: CommandInteraction) {
   interaction.deferReply()
   const subcommand = interaction.getOption('movie')?.subcommand() || interaction.getOption('tv')?.subcommand()
   const query = subcommand?.getOption('query')?.string()
-  let searchType: 'movie' | 'tv' | null = null
   let components = []
 
   if (!query) {
@@ -61,12 +60,10 @@ export default async function (interaction: CommandInteraction) {
   try {
     switch (subcommand?.name) {
       case 'movie': {
-        searchType = 'movie'
         components = await handleMovie(query)
         break
       }
       case 'tv': {
-        searchType = 'tv'
         components = await handleTv(query)
         break
       }
@@ -83,7 +80,7 @@ export default async function (interaction: CommandInteraction) {
     keyv.set<CmdFindCacheEntry>(
       KEYV_CONFIG.cmd.find.key(interaction.id),
       {
-        searchType,
+        searchType: subcommand.name,
         query,
         userId: interaction.user.id,
       },
