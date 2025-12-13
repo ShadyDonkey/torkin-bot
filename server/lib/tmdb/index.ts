@@ -252,3 +252,33 @@ export async function getTvWatchProviders(
 
   return result
 }
+
+export type TrendingMovieResponse =
+  paths['/3/trending/movie/{time_window}']['get']['responses']['200']['content']['application/json']
+export type TrendingTvResponse =
+  paths['/3/trending/tv/{time_window}']['get']['responses']['200']['content']['application/json']
+export async function getTrending<T extends 'movie' | 'tv'>(
+  type: T,
+  timeWindow: 'day' | 'week',
+  page: number = 1,
+): Promise<T extends 'movie' ? TrendingMovieResponse : TrendingTvResponse> {
+  const client = await getTmdbClient()
+  const response = await client.get(`trending/${type}/${timeWindow}`, {
+    searchParams: { page },
+  })
+  return response.json()
+}
+
+export type MovieGenresResponse = paths['/3/genre/movie/list']['get']['responses']['200']['content']['application/json']
+export async function getMovieGenres(): Promise<MovieGenresResponse> {
+  const client = await getTmdbClient()
+  const response = await client.get('genre/movie/list')
+  return response.json()
+}
+
+export type TvGenresResponse = paths['/3/genre/tv/list']['get']['responses']['200']['content']['application/json']
+export async function getTvGenres(): Promise<TvGenresResponse> {
+  const client = await getTmdbClient()
+  const response = await client.get('genre/tv/list')
+  return response.json()
+}

@@ -58,6 +58,14 @@ export const CACHE_CONFIG = {
           ttl: '1d',
         },
       },
+      trending: {
+        key: (type: 'movie' | 'tv', timeWindow: 'day' | 'week') => `lib:tmdb:trending:${type}:${timeWindow}`,
+        ttl: toMs('14d'),
+      },
+      genres: {
+        key: () => `lib:tmdb:genres`,
+        ttl: toMs('14d'),
+      },
     },
   },
 } as const
