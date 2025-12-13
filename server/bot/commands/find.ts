@@ -6,10 +6,10 @@ import {
 } from 'discord-api-types/v10'
 import { type CommandConfig, type CommandInteraction, CommandOption } from 'dressed'
 import { buildDetailsComponent } from '@/server/bot/utilities/tmdb'
+import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
-import { DEV_GUILD_ID, IS_IN_DEV } from '@/shared/config'
-import { searchMovie, searchTv } from '@/shared/lib/tmdb'
-import { unwrap } from '@/shared/utilities'
+import { searchMovie, searchTv } from '@/server/lib/tmdb'
+import { unwrap } from '@/server/utilities'
 
 export const config: CommandConfig = {
   description: 'Find a show or movie by name',

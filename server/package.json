@@ -3,19 +3,25 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "bot:build": "dressed build -R ./bot"
+    "bot:build": "dressed build -R ./bot",
+    "lib:tmdb:generate-schema": "openapi-typescript https://developer.themoviedb.org/openapi/tmdb-api.json -o ./lib/tmdb/schema.d.ts",
+    "lib:tvdb:generate-schema": "openapi-typescript https://thetvdb.github.io/v4-api/swagger.yml -o ./lib/tvdb/schema.d.ts"
   },
   "dependencies": {
-    "@keyv/redis": "catalog:",
-    "@sindresorhus/slugify": "catalog:",
+    "@keyv/redis": "^5.1.5",
+    "@lukeed/ms": "^2.0.2",
+    "@sindresorhus/slugify": "^3.0.0",
     "await-to-js": "catalog:",
     "better-auth": "catalog:",
+    "cacheable": "^2.3.0",
     "date-fns": "^4.1.0",
     "discord-api-types": "^0.38.36",
     "discord-fmt": "^1.0.1",
     "dressed": "^1.10.1",
     "elysia": "catalog:",
-    "keyv": "catalog:",
-    "ky": "catalog:"
+    "keyv": "^5.5.5",
+    "ky": "^1.14.1",
+    "lru-cache": "^11.2.4",
+    "openapi-typescript": "^7.10.1"
   }
 }

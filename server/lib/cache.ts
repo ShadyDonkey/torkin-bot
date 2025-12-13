@@ -3,7 +3,7 @@ import slugify from '@sindresorhus/slugify'
 import { Cacheable } from 'cacheable'
 import { Keyv } from 'keyv'
 import { LRUCache } from 'lru-cache'
-import { toMs } from '@/shared/utilities'
+import { toMs } from '@/server/utilities'
 
 const primary = new Keyv({
   store: new LRUCache({

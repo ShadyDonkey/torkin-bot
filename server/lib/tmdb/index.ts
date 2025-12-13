@@ -1,6 +1,6 @@
 import ky, { type KyInstance } from 'ky'
-import { CACHE_CONFIG, cache } from '@/shared/cache'
-import { toMs, unwrap } from '@/shared/utilities'
+import { CACHE_CONFIG, cache } from '@/server/lib/cache'
+import { toMs, unwrap } from '@/server/utilities'
 import type { paths } from './schema'
 
 const TMDB_API_KEY = process.env.TMDB_API_KEY

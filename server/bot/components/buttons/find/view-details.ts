@@ -3,7 +3,7 @@ import { type MessageComponentInteraction, TextDisplay } from 'dressed'
 import { updateResponse } from '@/server/bot/utilities/response'
 import { buildDetailsComponent } from '@/server/bot/utilities/tmdb'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
-import { unwrap } from '@/shared/utilities'
+import { unwrap } from '@/server/utilities'
 
 export const pattern = 'find-view-details-:id'
 

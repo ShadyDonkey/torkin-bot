@@ -12,8 +12,8 @@ import {
 } from 'dressed'
 import { updateResponse } from '@/server/bot/utilities/response'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
-import { REMOTE_IDS_MOVIE, REMOTE_IDS_SERIES, search } from '@/shared/lib/tvdb'
-import { unwrap } from '@/shared/utilities'
+import { REMOTE_IDS_MOVIE, REMOTE_IDS_SERIES, search } from '@/server/lib/tvdb'
+import { unwrap } from '@/server/utilities'
 
 const ITEMS_PER_PAGE = 3
 

@@ -9,8 +9,8 @@ import {
   getTvWatchProviders,
   type MovieDetailsResponse,
   type TvDetailsResponse,
-} from '@/shared/lib/tmdb'
-import { unwrap } from '@/shared/utilities'
+} from '@/server/lib/tmdb'
+import { unwrap } from '@/server/utilities'
 
 const REQUIRED_ATTRIBUTES_MOVIE = ['title', 'overview']
 const REQUIRED_ATTRIBUTES_TV = ['name', 'overview', 'status']

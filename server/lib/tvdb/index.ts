@@ -1,6 +1,6 @@
 import ky, { type KyInstance } from 'ky'
-import { cache } from '@/shared/cache'
-import { toMs, unwrap } from '@/shared/utilities'
+import { cache } from '@/server/lib/cache'
+import { toMs, unwrap } from '@/server/utilities'
 import type { paths } from './schema'
 
 const TVDB_API_KEY = process.env.TVDB_API_KEY
