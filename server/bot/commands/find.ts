@@ -13,7 +13,7 @@ import { unwrap } from '@/server/utilities'
 
 export const config: CommandConfig = {
   description: 'Find a show or movie by name',
-  default_member_permissions: ['Administrator'],
+  default_member_permissions: IS_IN_DEV ? ['Administrator'] : undefined,
   integration_type: IS_IN_DEV ? 'Guild' : 'User',
   guilds: IS_IN_DEV ? [DEV_GUILD_ID] : undefined,
   options: [
