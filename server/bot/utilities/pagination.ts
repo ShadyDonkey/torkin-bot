@@ -10,17 +10,22 @@ import {
   TextDisplay,
   Thumbnail,
 } from 'dressed'
+import { updateResponse } from '@/server/bot/utilities/response'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { REMOTE_IDS_MOVIE, REMOTE_IDS_SERIES, search } from '@/shared/lib/tvdb'
 import { unwrap } from '@/shared/utilities'
 
+const ITEMS_PER_PAGE = 3
+
 export async function paginateSearch(interaction: MessageComponentInteraction, page: number) {
   if (!interaction.message.interaction_metadata) {
-    return interaction.update({
+    return updateResponse(interaction, {
       components: [TextDisplay('No interaction found on the original message.')],
       flags: MessageFlags.IsComponentsV2,
     })
   }
+
+  await interaction.deferUpdate()
 
   const [cacheErr, cached] = await unwrap(
     keyv.get<CmdFindCacheEntry>(KEYV_CONFIG.cmd.find.key(interaction.message.interaction_metadata.id)),
@@ -28,28 +33,33 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
 
   if (cacheErr || !cached) {
     console.error({ cacheErr, cached })
-    return interaction.update({
+    return updateResponse(interaction, {
       components: [TextDisplay('Could not retrieve cached search results, please try again later.')],
       flags: MessageFlags.IsComponentsV2,
     })
   }
 
+  if (interaction.user.id !== cached.userId) {
+    return interaction.reply({
+      content: "You cannot interact with another user's search results.",
+      ephemeral: true,
+    })
+  }
+
   const [searchErr, searchResponse] = await unwrap(
-    search(cached.query, cached.searchType === 'tv' ? 'series' : 'movie', page, 3),
+    search(cached.query, cached.searchType === 'tv' ? 'series' : 'movie', page, ITEMS_PER_PAGE),
   )
 
   if (searchErr || !searchResponse.data) {
     console.error({ searchErr })
-    return interaction.update({
+    return updateResponse(interaction, {
       components: [TextDisplay('An error occurred while searching for movies, please try again later.')],
       flags: MessageFlags.IsComponentsV2,
     })
   }
 
-  console.log(searchResponse.data[0])
-
   const totalResults = searchResponse.links?.total_items || 1
-  const totalPages = Math.ceil(totalResults / 5)
+  const totalPages = Math.ceil(totalResults / ITEMS_PER_PAGE)
   const paginationComponents = buildPaginationButtons(page, totalPages)
 
   const entries = searchResponse.data
@@ -104,7 +114,7 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
 
   const components = [Container(...entries), paginationComponents]
 
-  return interaction.update({
+  return updateResponse(interaction, {
     components,
     flags: MessageFlags.IsComponentsV2,
   })
