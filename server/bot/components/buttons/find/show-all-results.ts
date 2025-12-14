@@ -1,5 +1,5 @@
 import type { MessageComponentInteraction } from 'dressed'
-import { paginateSearch } from '@/server/bot/utilities/pagination'
+import { paginateSearch } from '@/server/bot/utilities/commands/find'
 
 export const pattern = 'find-all-results'
 
