@@ -50,7 +50,9 @@ export default async function (interaction: CommandInteraction<typeof config>) {
   console.log('Slash command interaction ID:', interaction.id)
   interaction.deferReply()
   const subcommand = (interaction.getOption('movie') || interaction.getOption('tv'))?.subcommand()
-  if (!subcommand) return interaction.editReply('Unknown subcommand')
+  if (!subcommand) {
+    return interaction.editReply('Unknown subcommand')
+  }
 
   const searchType = subcommand.name
   const query = subcommand.getOption('query', true).string()
