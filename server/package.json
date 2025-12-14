@@ -3,11 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "bot:build": "dressed build -R ./bot",
+    "bot:build": "dressed build",
     "lib:tmdb:generate-schema": "openapi-typescript https://developer.themoviedb.org/openapi/tmdb-api.json -o ./lib/tmdb/schema.d.ts",
     "lib:tvdb:generate-schema": "openapi-typescript https://thetvdb.github.io/v4-api/swagger.yml -o ./lib/tvdb/schema.d.ts"
   },
   "dependencies": {
+    "@dressed/matcher": "^1.4.0",
     "@keyv/redis": "^5.1.5",
     "@lukeed/ms": "^2.0.2",
     "@sindresorhus/slugify": "^3.0.0",

@@ -1,7 +1,6 @@
 import type { Params } from '@dressed/matcher'
 import { MessageFlags } from 'discord-api-types/v10'
 import { ActionRow, Button, type MessageComponentInteraction, TextDisplay } from 'dressed'
-import { updateResponse } from '@/server/bot/utilities/response'
 import { buildDetailsComponent } from '@/server/bot/utilities/tmdb'
 import { type CmdTrendingCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { unwrap } from '@/server/utilities'
@@ -10,7 +9,7 @@ export const pattern = 'trending-view-details-:id{-:originPage}'
 
 export default async function (interaction: MessageComponentInteraction, args: Params<typeof pattern>) {
   if (!interaction.message.interaction_metadata) {
-    return updateResponse(interaction, {
+    return interaction.updateResponse({
       components: [TextDisplay('No interaction found on the original message.')],
       flags: MessageFlags.IsComponentsV2,
     })
@@ -24,7 +23,7 @@ export default async function (interaction: MessageComponentInteraction, args: P
 
   if (cacheErr || !cached) {
     console.error({ cacheErr, cached })
-    return updateResponse(interaction, {
+    return interaction.updateResponse({
       components: [TextDisplay('Could not retrieve cached trending results, please try again later.')],
       flags: MessageFlags.IsComponentsV2,
     })
@@ -36,7 +35,7 @@ export default async function (interaction: MessageComponentInteraction, args: P
       ephemeral: true,
     })
   }
-  return updateResponse(interaction, {
+  return interaction.updateResponse({
     components: [
       ...(await buildDetailsComponent(args.id, cached.type)),
       ActionRow(Button({ custom_id: `trending-goto-${args.originPage ?? 1}-back`, label: 'Back to Trending' })),

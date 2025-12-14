@@ -11,7 +11,6 @@ import {
   Thumbnail,
 } from 'dressed'
 import { buildPaginationButtons } from '@/server/bot/utilities/pagination'
-import { updateResponse } from '@/server/bot/utilities/response'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { REMOTE_IDS_MOVIE, REMOTE_IDS_SERIES, search } from '@/server/lib/tvdb'
 import { unwrap } from '@/server/utilities'
@@ -20,7 +19,7 @@ const ITEMS_PER_PAGE = 3
 
 export async function paginateSearch(interaction: MessageComponentInteraction, page: number) {
   if (!interaction.message.interaction_metadata) {
-    return updateResponse(interaction, {
+    return interaction.updateResponse({
       components: [TextDisplay('No interaction found on the original message.')],
       flags: MessageFlags.IsComponentsV2,
     })
@@ -34,7 +33,7 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
 
   if (cacheErr || !cached) {
     console.error({ cacheErr, cached })
-    return updateResponse(interaction, {
+    return interaction.updateResponse({
       components: [TextDisplay('Could not retrieve cached search results, please try again later.')],
       flags: MessageFlags.IsComponentsV2,
     })
@@ -53,7 +52,7 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
 
   if (searchErr || !searchResponse.data) {
     console.error({ searchErr })
-    return updateResponse(interaction, {
+    return interaction.updateResponse({
       components: [TextDisplay('An error occurred while searching for movies, please try again later.')],
       flags: MessageFlags.IsComponentsV2,
     })
@@ -115,7 +114,7 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
 
   const components = [Container(...entries), paginationComponents]
 
-  return updateResponse(interaction, {
+  return interaction.updateResponse({
     components,
     flags: MessageFlags.IsComponentsV2,
   })
