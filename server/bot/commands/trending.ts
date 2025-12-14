@@ -13,6 +13,7 @@ import {
 import { buildPaginationButtons } from '@/server/bot/utilities/pagination'
 import { updateResponse } from '@/server/bot/utilities/response'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
+import { keyv } from '@/server/lib/keyv'
 import { getTrendingMovies, getTrendingTv } from '@/server/lib/tmdb/helpers'
 import { paginateArray, unwrap } from '@/server/utilities'
 
@@ -70,13 +71,15 @@ export default async function (interaction: CommandInteraction<typeof config>) {
   const period = (subcommand?.getOption('period')?.string() || 'day') as 'day' | 'week'
   const type = subcommand?.name
 
-  // if (interaction.getOption('movie')) {
-  //   const results = await handleMovie(period)
-  //   interaction.editReply({ components: results, flags: MessageFlags.IsComponentsV2 })
-  // } else if (interaction.getOption('tv')) {
-  //   // TV handling to be implemented
-  //   interaction.editReply('TV trending is not yet implemented.')
-  // }
+  try {
+    await interaction.editReply({
+      components: await (type === 'movie' ? handleMovie : handleTv)(period),
+      flags: MessageFlags.IsComponentsV2,
+    })
+  } catch (err) {
+    console.error(err)
+    return interaction.editReply('Something went wrong when fetching trending content...')
+  }
 }
 
 async function handleMovie(timeWindow: 'day' | 'week', page: number = 1) {
