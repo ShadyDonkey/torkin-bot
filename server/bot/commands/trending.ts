@@ -1,6 +1,6 @@
 import { format } from 'date-fns'
 import { MessageFlags } from 'discord-api-types/v10'
-import { h2, h3, link } from 'discord-fmt'
+import { h3 } from 'discord-fmt'
 import {
   Button,
   type CommandConfig,
@@ -11,9 +11,7 @@ import {
   Separator,
 } from 'dressed'
 import { buildPaginationButtons } from '@/server/bot/utilities/pagination'
-import { updateResponse } from '@/server/bot/utilities/response'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
-import { keyv } from '@/server/lib/keyv'
 import { getTrendingMovies, getTrendingTv } from '@/server/lib/tmdb/helpers'
 import { paginateArray, unwrap } from '@/server/utilities'
 
