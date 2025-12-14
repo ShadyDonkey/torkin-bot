@@ -3,7 +3,6 @@ import { MessageFlags } from 'discord-api-types/v10'
 import { h2, h3 } from 'discord-fmt'
 import { Button, Container, type MessageComponentInteraction, Section, Separator, TextDisplay } from 'dressed'
 import { buildPaginationButtons } from '@/server/bot/utilities/pagination'
-import { updateResponse } from '@/server/bot/utilities/response'
 import { type CmdTrendingCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { getTrendingMovies, getTrendingTv } from '@/server/lib/tmdb/helpers'
 import { paginateArray, unwrap } from '@/server/utilities'
@@ -136,7 +135,7 @@ export async function handleTv(timeWindow: 'day' | 'week', page: number) {
 
 export async function handlePagination(interaction: MessageComponentInteraction, page: number) {
   if (!interaction.message.interaction_metadata) {
-    return updateResponse(interaction, {
+    return interaction.updateResponse({
       components: [TextDisplay('No interaction found on the original message.')],
       flags: MessageFlags.IsComponentsV2,
     })
@@ -150,7 +149,7 @@ export async function handlePagination(interaction: MessageComponentInteraction,
 
   if (cacheErr || !cached) {
     console.error({ cacheErr, cached })
-    return updateResponse(interaction, {
+    return interaction.updateResponse({
       components: [TextDisplay('Could not retrieve cached search results, please try again later.')],
       flags: MessageFlags.IsComponentsV2,
     })
@@ -163,7 +162,7 @@ export async function handlePagination(interaction: MessageComponentInteraction,
     })
   }
 
-  await updateResponse(interaction, {
+  await interaction.updateResponse({
     components: await (cached.type === 'movie' ? handleMovie : handleTv)(cached.timeWindow, page),
     flags: MessageFlags.IsComponentsV2,
   })
