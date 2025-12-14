@@ -1682,7 +1682,6 @@ export interface components {
         };
         /** @description search result */
         SearchResult: {
-            [x: string]: any; // Temp hack because TVDB API is not consistent in response fields
             aliases?: string[];
             companies?: string[];
             companyType?: string;

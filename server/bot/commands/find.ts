@@ -11,7 +11,7 @@ import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { searchMovie, searchTv } from '@/server/lib/tmdb'
 import { unwrap } from '@/server/utilities'
 
-export const config: CommandConfig = {
+export const config = {
   description: 'Find a show or movie by name',
   default_member_permissions: ['Administrator'],
   integration_type: IS_IN_DEV ? 'Guild' : 'User',
@@ -44,13 +44,13 @@ export const config: CommandConfig = {
       ],
     }),
   ],
-}
+} satisfies CommandConfig
 
-export default async function (interaction: CommandInteraction) {
+export default async function (interaction: CommandInteraction<typeof config>) {
   console.log('Slash command interaction ID:', interaction.id)
   interaction.deferReply()
-  const subcommand = interaction.getOption('movie')?.subcommand() || interaction.getOption('tv')?.subcommand()
-  const query = subcommand?.getOption('query')?.string()
+  const subcommand = (interaction.getOption('movie') || interaction.getOption('tv'))?.subcommand()
+  const query = subcommand?.getOption('query', true)?.string()
   let searchType: 'movie' | 'tv' | null = null
   let components = []
 

@@ -5671,7 +5671,9 @@ export interface operations {
     };
     "credit-details": {
         parameters: {
-            query?: never;
+            query?: {
+                language?: string;
+            };
             header?: never;
             path: {
                 credit_id: string;
@@ -6067,7 +6069,7 @@ export interface operations {
     "find-by-id": {
         parameters: {
             query: {
-                external_source: "" | "imdb_id" | "facebook_id" | "instagram_id" | "tvdb_id" | "tiktok_id" | "twitter_id" | "wikidata_id" | "youtube_id";
+                external_source: "imdb_id" | "facebook_id" | "instagram_id" | "tvdb_id" | "tiktok_id" | "twitter_id" | "wikidata_id" | "youtube_id";
                 language?: string;
             };
             header?: never;
