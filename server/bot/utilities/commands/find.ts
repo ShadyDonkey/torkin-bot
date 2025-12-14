@@ -10,6 +10,7 @@ import {
   TextDisplay,
   Thumbnail,
 } from 'dressed'
+import { buildPaginationButtons } from '@/server/bot/utilities/pagination'
 import { updateResponse } from '@/server/bot/utilities/response'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { REMOTE_IDS_MOVIE, REMOTE_IDS_SERIES, search } from '@/server/lib/tvdb'
@@ -60,7 +61,7 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
 
   const totalResults = searchResponse.links?.total_items || 1
   const totalPages = Math.ceil(totalResults / ITEMS_PER_PAGE)
-  const paginationComponents = buildPaginationButtons(page, totalPages)
+  const paginationComponents = buildPaginationButtons(page, totalPages, 'find')
 
   const entries = searchResponse.data
     .map((entry, index) => {
@@ -118,49 +119,4 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
     components,
     flags: MessageFlags.IsComponentsV2,
   })
-}
-
-export function buildPaginationButtons(currentPage: number, totalPages: number) {
-  const JUMP_TO_FIRST = currentPage !== 1
-  const JUMP_TO_LAST = currentPage !== totalPages
-  const PREVIOUS_PAGE = currentPage !== 1
-  const NEXT_PAGE = currentPage !== totalPages
-
-  return ActionRow(
-    Button({
-      custom_id: 'find-goto-1-first',
-      label: '«',
-      disabled: !JUMP_TO_FIRST,
-      style: 'Primary',
-    }),
-
-    Button({
-      custom_id: `find-goto-${currentPage - 1}-prev`,
-      label: '‹',
-      disabled: !PREVIOUS_PAGE,
-      style: 'Primary',
-    }),
-
-    Button({
-      custom_id: 'find-activepage',
-      // label: `⌂`,
-      label: `${currentPage} / ${totalPages}`,
-      disabled: true,
-      style: 'Secondary',
-    }),
-
-    Button({
-      custom_id: `find-goto-${currentPage + 1}-next`,
-      label: '›',
-      disabled: !NEXT_PAGE,
-      style: 'Primary',
-    }),
-
-    Button({
-      custom_id: `find-goto-${totalPages}-last`,
-      label: '»',
-      disabled: !JUMP_TO_LAST,
-      style: 'Primary',
-    }),
-  )
 }
