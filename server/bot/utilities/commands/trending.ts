@@ -48,7 +48,7 @@ export async function handleMovie(timeWindow: 'day' | 'week', page: number) {
         Section(
           [body],
           Button({
-            custom_id: `trending-view-details-${movie.id > 0 ? movie.id : Math.random()}`,
+            custom_id: `trending-view-details-${movie.id > 0 ? movie.id : Math.random()}-${page}`,
             label: `‹ View Details`,
             style: 'Secondary',
             disabled: !movie.id,
@@ -110,7 +110,7 @@ export async function handleTv(timeWindow: 'day' | 'week', page: number) {
         Section(
           [body],
           Button({
-            custom_id: `trending-view-details-${tv.id}`,
+            custom_id: `trending-view-details-${tv.id}-${page}`,
             label: `‹ View Details`,
             style: 'Secondary',
             disabled: !tv.id,

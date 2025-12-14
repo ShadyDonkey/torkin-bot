@@ -6,7 +6,7 @@ import { buildDetailsComponent } from '@/server/bot/utilities/tmdb'
 import { type CmdTrendingCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { unwrap } from '@/server/utilities'
 
-export const pattern = 'trending-view-details-:id'
+export const pattern = 'trending-view-details-:id{-:originPage}'
 
 export default async function (interaction: MessageComponentInteraction, args: Params<typeof pattern>) {
   if (!interaction.message.interaction_metadata) {
@@ -39,13 +39,7 @@ export default async function (interaction: MessageComponentInteraction, args: P
   return updateResponse(interaction, {
     components: [
       ...(await buildDetailsComponent(args.id, cached.type)),
-      ActionRow(
-        Button({
-          custom_id: 'trending-all-results',
-          label: 'Back to Trending',
-          style: 'Primary',
-        }),
-      ),
+      ActionRow(Button({ custom_id: `trending-goto-${args.originPage ?? 1}-back`, label: 'Back to Trending' })),
     ],
     flags: MessageFlags.IsComponentsV2,
   })

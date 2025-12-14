@@ -6,7 +6,7 @@ import { buildDetailsComponent } from '@/server/bot/utilities/tmdb'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { unwrap } from '@/server/utilities'
 
-export const pattern = 'find-view-details-:id'
+export const pattern = 'find-view-details-:id{-:originPage}'
 
 export default async function (interaction: MessageComponentInteraction, args: Params<typeof pattern>) {
   if (!interaction.message.interaction_metadata) {
@@ -40,11 +40,10 @@ export default async function (interaction: MessageComponentInteraction, args: P
     components: [
       ...(await buildDetailsComponent(args.id, cached.searchType)),
       ActionRow(
-        Button({
-          custom_id: 'find-all-results',
-          label: 'See All Results',
-          style: 'Primary',
-        }),
+        Button({ custom_id: 'find-all-results', label: 'See All Results' }),
+        ...(args.originPage
+          ? [Button({ custom_id: `find-goto-${args.originPage}-back`, label: 'Back', style: 'Secondary' })]
+          : []),
       ),
     ],
     flags: MessageFlags.IsComponentsV2,

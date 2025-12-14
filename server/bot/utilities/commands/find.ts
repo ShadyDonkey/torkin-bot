@@ -96,7 +96,7 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
         section,
         ActionRow(
           Button({
-            custom_id: `find-view-details-${tmdbId || entry.id}`,
+            custom_id: `find-view-details-${tmdbId || entry.id}-${page}`,
             label: `⌃ View Details`,
             style: 'Secondary',
             disabled: !tmdbId,
