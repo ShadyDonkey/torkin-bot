@@ -50,30 +50,20 @@ export default async function (interaction: CommandInteraction<typeof config>) {
   console.log('Slash command interaction ID:', interaction.id)
   interaction.deferReply()
   const subcommand = (interaction.getOption('movie') || interaction.getOption('tv'))?.subcommand()
-  const query = subcommand?.getOption('query', true)?.string()
-  let searchType: 'movie' | 'tv' | null = null
-  let components = []
+  if (!subcommand) return interaction.editReply('Unknown subcommand')
+
+  const searchType = subcommand.name
+  const query = subcommand.getOption('query', true).string()
 
   if (!query) {
     return interaction.editReply('You must provide a title')
   }
 
   try {
-    switch (subcommand?.name) {
-      case 'movie': {
-        searchType = 'movie'
-        components = await handleMovie(query)
-        break
-      }
-      case 'tv': {
-        searchType = 'tv'
-        components = await handleTv(query)
-        break
-      }
-      default: {
-        return interaction.editReply('Unknown subcommand')
-      }
-    }
+    await interaction.editReply({
+      components: await (searchType === 'movie' ? handleMovie : handleTv)(query),
+      flags: MessageFlags.IsComponentsV2,
+    })
   } catch (err) {
     console.error(err)
     return interaction.editReply('Something went wrong when finding that...')
@@ -82,24 +72,14 @@ export default async function (interaction: CommandInteraction<typeof config>) {
   const [cacheErr, cached] = await unwrap(
     keyv.set<CmdFindCacheEntry>(
       KEYV_CONFIG.cmd.find.key(interaction.id),
-      {
-        searchType,
-        query,
-        userId: interaction.user.id,
-      },
+      { searchType, query, userId: interaction.user.id },
       KEYV_CONFIG.cmd.find.ttl,
     ),
   )
 
   if (cacheErr || !cached) {
     console.error({ cacheErr, cached })
-    return interaction.editReply('Could not cache search results, please try again later.')
   }
-
-  return interaction.editReply({
-    components,
-    flags: MessageFlags.IsComponentsV2,
-  })
 }
 
 async function handleMovie(
