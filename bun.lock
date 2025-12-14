@@ -6,6 +6,7 @@
       "name": "torkin-bot",
       "devDependencies": {
         "@biomejs/biome": "2.3.8",
+        "@dressed/matcher": "^1.4.0",
         "@types/bun": "latest",
         "@types/node": "^24.10.2",
         "lefthook": "^2.0.9",

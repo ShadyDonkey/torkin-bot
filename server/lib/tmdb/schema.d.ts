@@ -5671,7 +5671,9 @@ export interface operations {
     };
     "credit-details": {
         parameters: {
-            query?: never;
+            query?: {
+                language?: string;
+            };
             header?: never;
             path: {
                 credit_id: string;

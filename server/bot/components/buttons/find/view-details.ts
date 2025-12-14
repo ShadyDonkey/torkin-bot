@@ -1,3 +1,4 @@
+import type { Params } from '@dressed/matcher'
 import { MessageFlags } from 'discord-api-types/v10'
 import { type MessageComponentInteraction, TextDisplay } from 'dressed'
 import { updateResponse } from '@/server/bot/utilities/response'
@@ -7,7 +8,7 @@ import { unwrap } from '@/server/utilities'
 
 export const pattern = 'find-view-details-:id'
 
-export default async function (interaction: MessageComponentInteraction, args: { id: string }) {
+export default async function (interaction: MessageComponentInteraction, args: Params<typeof pattern>) {
   if (!interaction.message.interaction_metadata) {
     return updateResponse(interaction, {
       components: [TextDisplay('No interaction found on the original message.')],

@@ -1,20 +1,8 @@
 {
   "name": "torkin-bot",
-  "private": true,
-  "workspaces": {
-    "packages": ["server"],
-    "catalog": {
-      "await-to-js": "^3.0.0",
-      "better-auth": "^1.4.6",
-      "elysia": "^1.4.18"
-    }
-  },
-  "scripts": {
-    "sherif": "sherif -r root-package-manager-field",
-    "sherif:fix": "sherif -r root-package-manager-field --fix"
-  },
   "devDependencies": {
     "@biomejs/biome": "2.3.8",
+    "@dressed/matcher": "^1.4.0",
     "@types/bun": "latest",
     "@types/node": "^24.10.2",
     "lefthook": "^2.0.9",
@@ -22,5 +10,18 @@
   },
   "peerDependencies": {
     "typescript": "^5.9.3"
+  },
+  "private": true,
+  "scripts": {
+    "sherif": "sherif -r root-package-manager-field",
+    "sherif:fix": "sherif -r root-package-manager-field --fix"
+  },
+  "workspaces": {
+    "packages": ["server"],
+    "catalog": {
+      "await-to-js": "^3.0.0",
+      "better-auth": "^1.4.6",
+      "elysia": "^1.4.18"
+    }
   }
 }

@@ -11,7 +11,7 @@ import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { searchMovie, searchTv } from '@/server/lib/tmdb'
 import { unwrap } from '@/server/utilities'
 
-export const config: CommandConfig = {
+export const config = {
   description: 'Find a show or movie by name',
   default_member_permissions: IS_IN_DEV ? ['Administrator'] : undefined,
   integration_type: IS_IN_DEV ? 'Guild' : 'User',
@@ -44,33 +44,26 @@ export const config: CommandConfig = {
       ],
     }),
   ],
-}
+} satisfies CommandConfig
 
-export default async function (interaction: CommandInteraction) {
+export default async function (interaction: CommandInteraction<typeof config>) {
   console.log('Slash command interaction ID:', interaction.id)
   interaction.deferReply()
-  const subcommand = interaction.getOption('movie')?.subcommand() || interaction.getOption('tv')?.subcommand()
-  const query = subcommand?.getOption('query')?.string()
-  let components = []
+  const subcommand = (interaction.getOption('movie') || interaction.getOption('tv'))?.subcommand()
+  if (!subcommand) return interaction.editReply('Unknown subcommand')
+
+  const searchType = subcommand.name
+  const query = subcommand.getOption('query', true).string()
 
   if (!query) {
     return interaction.editReply('You must provide a title')
   }
 
   try {
-    switch (subcommand?.name) {
-      case 'movie': {
-        components = await handleMovie(query)
-        break
-      }
-      case 'tv': {
-        components = await handleTv(query)
-        break
-      }
-      default: {
-        return interaction.editReply('Unknown subcommand')
-      }
-    }
+    await interaction.editReply({
+      components: await (searchType === 'movie' ? handleMovie : handleTv)(query),
+      flags: MessageFlags.IsComponentsV2,
+    })
   } catch (err) {
     console.error(err)
     return interaction.editReply('Something went wrong when finding that...')
@@ -79,24 +72,14 @@ export default async function (interaction: CommandInteraction) {
   const [cacheErr, cached] = await unwrap(
     keyv.set<CmdFindCacheEntry>(
       KEYV_CONFIG.cmd.find.key(interaction.id),
-      {
-        searchType: subcommand.name,
-        query,
-        userId: interaction.user.id,
-      },
+      { searchType, query, userId: interaction.user.id },
       KEYV_CONFIG.cmd.find.ttl,
     ),
   )
 
   if (cacheErr || !cached) {
     console.error({ cacheErr, cached })
-    return interaction.editReply('Could not cache search results, please try again later.')
   }
-
-  return interaction.editReply({
-    components,
-    flags: MessageFlags.IsComponentsV2,
-  })
 }
 
 async function handleMovie(
