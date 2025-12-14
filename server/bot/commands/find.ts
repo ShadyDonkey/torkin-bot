@@ -4,7 +4,7 @@ import {
   type APIContainerComponent,
   MessageFlags,
 } from 'discord-api-types/v10'
-import { type CommandConfig, type CommandInteraction, CommandOption } from 'dressed'
+import { ActionRow, Button, type CommandConfig, type CommandInteraction, CommandOption } from 'dressed'
 import { buildDetailsComponent } from '@/server/bot/utilities/tmdb'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
@@ -106,7 +106,16 @@ async function handleMovie(
     throw new Error('This movie is for adults only')
   }
 
-  return buildDetailsComponent(first.id.toString(), 'movie')
+  return [
+    ...(await buildDetailsComponent(first.id.toString(), 'movie')),
+    ActionRow(
+      Button({
+        custom_id: 'find-all-results',
+        label: 'See All Results',
+        style: 'Primary',
+      }),
+    ),
+  ]
 }
 
 async function handleTv(query: string) {
@@ -130,5 +139,14 @@ async function handleTv(query: string) {
     throw new Error('This TV show is for adults only')
   }
 
-  return buildDetailsComponent(first.id.toString(), 'tv')
+  return [
+    ...(await buildDetailsComponent(first.id.toString(), 'tv')),
+    ActionRow(
+      Button({
+        custom_id: 'find-all-results',
+        label: 'See All Results',
+        style: 'Primary',
+      }),
+    ),
+  ]
 }

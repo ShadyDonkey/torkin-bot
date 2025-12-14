@@ -3,10 +3,10 @@ import { MessageFlags } from 'discord-api-types/v10'
 import { ActionRow, Button, type MessageComponentInteraction, TextDisplay } from 'dressed'
 import { updateResponse } from '@/server/bot/utilities/response'
 import { buildDetailsComponent } from '@/server/bot/utilities/tmdb'
-import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
+import { type CmdTrendingCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { unwrap } from '@/server/utilities'
 
-export const pattern = 'find-view-details-:id'
+export const pattern = 'trending-view-details-:id'
 
 export default async function (interaction: MessageComponentInteraction, args: Params<typeof pattern>) {
   if (!interaction.message.interaction_metadata) {
@@ -19,13 +19,13 @@ export default async function (interaction: MessageComponentInteraction, args: P
   await interaction.deferUpdate()
 
   const [cacheErr, cached] = await unwrap(
-    keyv.get<CmdFindCacheEntry>(KEYV_CONFIG.cmd.find.key(interaction.message.interaction_metadata.id)),
+    keyv.get<CmdTrendingCacheEntry>(KEYV_CONFIG.cmd.trending.key(interaction.message.interaction_metadata.id)),
   )
 
   if (cacheErr || !cached) {
     console.error({ cacheErr, cached })
     return updateResponse(interaction, {
-      components: [TextDisplay('Could not retrieve cached search results, please try again later.')],
+      components: [TextDisplay('Could not retrieve cached trending results, please try again later.')],
       flags: MessageFlags.IsComponentsV2,
     })
   }
@@ -38,11 +38,11 @@ export default async function (interaction: MessageComponentInteraction, args: P
   }
   return updateResponse(interaction, {
     components: [
-      ...(await buildDetailsComponent(args.id, cached.searchType)),
+      ...(await buildDetailsComponent(args.id, cached.type)),
       ActionRow(
         Button({
-          custom_id: 'find-all-results',
-          label: 'See All Results',
+          custom_id: 'trending-all-results',
+          label: 'Back to Trending',
           style: 'Primary',
         }),
       ),

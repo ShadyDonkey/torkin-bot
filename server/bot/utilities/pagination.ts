@@ -23,7 +23,6 @@ export function buildPaginationButtons(currentPage: number, totalPages: number, 
 
     Button({
       custom_id: `${prefix}-activepage`,
-      // label: `⌂`,
       label: `${currentPage} / ${totalPages}`,
       disabled: true,
       style: 'Secondary',

@@ -1,6 +1,6 @@
 import { format, getUnixTime } from 'date-fns'
 import { h2, h3, subtext, TimestampStyle, timestamp } from 'discord-fmt'
-import { ActionRow, Button, Container, Section, Thumbnail } from 'dressed'
+import { Container, Section, Thumbnail } from 'dressed'
 import {
   getImageUrl,
   getMovieDetails,
@@ -15,16 +15,16 @@ import { unwrap } from '@/server/utilities'
 const REQUIRED_ATTRIBUTES_MOVIE = ['title', 'overview']
 const REQUIRED_ATTRIBUTES_TV = ['name', 'overview', 'status']
 
-export async function buildDetailsComponent(id: string, searchType: 'movie' | 'tv') {
+export async function buildDetailsComponent(id: string, type: 'movie' | 'tv') {
   let detailsErr: Error | null = null
   let details: TvDetailsResponse | MovieDetailsResponse | null | undefined = null
   let requiredAttributes: string[] = []
   const missingAttributes: string[] = []
 
-  if (searchType === 'movie') {
+  if (type === 'movie') {
     ;[detailsErr, details] = await unwrap<MovieDetailsResponse>(getMovieDetails(id))
     requiredAttributes = REQUIRED_ATTRIBUTES_MOVIE
-  } else if (searchType === 'tv') {
+  } else if (type === 'tv') {
     ;[detailsErr, details] = await unwrap<TvDetailsResponse>(getTvDetails(id))
     requiredAttributes = REQUIRED_ATTRIBUTES_TV
   }
@@ -48,20 +48,11 @@ export async function buildDetailsComponent(id: string, searchType: 'movie' | 't
   }
 
   const body =
-    searchType === 'movie'
+    type === 'movie'
       ? await buildMovieBody(details as MovieDetailsResponse, id)
       : await buildTvBody(details as TvDetailsResponse, id)
 
-  const components = [
-    Container(Section([body], Thumbnail(getImageUrl(details.poster_path ?? '')))),
-    ActionRow(
-      Button({
-        custom_id: 'find-all-results',
-        label: 'See All Results',
-        style: 'Primary',
-      }),
-    ),
-  ]
+  const components = [Container(Section([body], Thumbnail(getImageUrl(details.poster_path ?? ''))))]
 
   return components
 }

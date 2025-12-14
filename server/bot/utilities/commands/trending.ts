@@ -1,8 +1,10 @@
 import { format } from 'date-fns'
-import { h3 } from 'discord-fmt'
-import { Button, Container, Section, Separator } from 'dressed'
+import { MessageFlags } from 'discord-api-types/v10'
+import { h2, h3 } from 'discord-fmt'
+import { Button, Container, type MessageComponentInteraction, Section, Separator, TextDisplay } from 'dressed'
 import { buildPaginationButtons } from '@/server/bot/utilities/pagination'
-import type { TrendingMovieResponse } from '@/server/lib/tmdb'
+import { updateResponse } from '@/server/bot/utilities/response'
+import { type CmdTrendingCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { getTrendingMovies, getTrendingTv } from '@/server/lib/tmdb/helpers'
 import { paginateArray, unwrap } from '@/server/utilities'
 
@@ -46,7 +48,7 @@ export async function handleMovie(timeWindow: 'day' | 'week', page: number) {
         Section(
           [body],
           Button({
-            custom_id: `trending-view-details-${movie.id}`,
+            custom_id: `trending-view-details-${movie.id > 0 ? movie.id : Math.random()}`,
             label: `‹ View Details`,
             style: 'Secondary',
             disabled: !movie.id,
@@ -63,7 +65,11 @@ export async function handleMovie(timeWindow: 'day' | 'week', page: number) {
     .filter((entry) => entry !== null)
     .flat()
 
-  return [Container(...entries), paginationComponents]
+  return [
+    TextDisplay(h2(`Trending Movies ${timeWindow === 'day' ? 'Today' : 'this Week'}`)),
+    Container(...entries),
+    paginationComponents,
+  ]
 }
 
 export async function handleTv(timeWindow: 'day' | 'week', page: number) {
@@ -121,5 +127,44 @@ export async function handleTv(timeWindow: 'day' | 'week', page: number) {
     .filter((entry) => entry !== null)
     .flat()
 
-  return [Container(...entries), paginationComponents]
+  return [
+    TextDisplay(h2(`Trending TV Shows ${timeWindow === 'day' ? 'Today' : 'this Week'}`)),
+    Container(...entries),
+    paginationComponents,
+  ]
+}
+
+export async function handlePagination(interaction: MessageComponentInteraction, page: number) {
+  if (!interaction.message.interaction_metadata) {
+    return updateResponse(interaction, {
+      components: [TextDisplay('No interaction found on the original message.')],
+      flags: MessageFlags.IsComponentsV2,
+    })
+  }
+
+  await interaction.deferUpdate()
+
+  const [cacheErr, cached] = await unwrap(
+    keyv.get<CmdTrendingCacheEntry>(KEYV_CONFIG.cmd.trending.key(interaction.message.interaction_metadata.id)),
+  )
+
+  if (cacheErr || !cached) {
+    console.error({ cacheErr, cached })
+    return updateResponse(interaction, {
+      components: [TextDisplay('Could not retrieve cached search results, please try again later.')],
+      flags: MessageFlags.IsComponentsV2,
+    })
+  }
+
+  if (interaction.user.id !== cached.userId) {
+    return interaction.reply({
+      content: "You cannot interact with another user's search results.",
+      ephemeral: true,
+    })
+  }
+
+  await updateResponse(interaction, {
+    components: await (cached.type === 'movie' ? handleMovie : handleTv)(cached.timeWindow, page),
+    flags: MessageFlags.IsComponentsV2,
+  })
 }

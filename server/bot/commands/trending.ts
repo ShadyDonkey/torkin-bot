@@ -1,20 +1,9 @@
-import { format } from 'date-fns'
 import { MessageFlags } from 'discord-api-types/v10'
-import { h3 } from 'discord-fmt'
-import {
-  Button,
-  type CommandConfig,
-  type CommandInteraction,
-  CommandOption,
-  Container,
-  Section,
-  Separator,
-} from 'dressed'
+import { type CommandConfig, type CommandInteraction, CommandOption } from 'dressed'
 import { handleMovie, handleTv } from '@/server/bot/utilities/commands/trending'
-import { buildPaginationButtons } from '@/server/bot/utilities/pagination'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
-import { getTrendingMovies, getTrendingTv } from '@/server/lib/tmdb/helpers'
-import { paginateArray, unwrap } from '@/server/utilities'
+import { type CmdTrendingCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
+import { unwrap } from '@/server/utilities'
 
 function getPeriodChoices(description: string) {
   return [
@@ -70,5 +59,21 @@ export default async function (interaction: CommandInteraction<typeof config>) {
   } catch (err) {
     console.error(err)
     return interaction.editReply('Something went wrong when fetching trending content...')
+  }
+
+  const [cacheErr, cached] = await unwrap(
+    keyv.set<CmdTrendingCacheEntry>(
+      KEYV_CONFIG.cmd.trending.key(interaction.id),
+      {
+        timeWindow: period,
+        type,
+        userId: interaction.user.id,
+      },
+      KEYV_CONFIG.cmd.trending.ttl,
+    ),
+  )
+
+  if (cacheErr || !cached) {
+    console.error({ cacheErr, cached })
   }
 }

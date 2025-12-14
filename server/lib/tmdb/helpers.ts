@@ -21,12 +21,14 @@ export async function getTrendingMovies(timeWindow: 'day' | 'week'): Promise<Tre
 }
 
 export async function requestTrendingMovies(timeWindow: 'day' | 'week'): Promise<TrendingMovieResponse['results']> {
+  console.log('Requesting all trending movies from TMDB.')
   const pages = await Promise.all(
     Array.from({ length: MAX_TRENDING_PAGES }, (_, i) => getTrending('movie', timeWindow, i + 1)),
   )
 
   const allResults = pages.flatMap((page) => page.results || [])
-  const filtered = allResults.filter((movie) => movie.poster_path !== null)
+  const uniqueResults = Array.from(new Map(allResults.map((movie) => [movie.id, movie])).values())
+  const filtered = uniqueResults.filter((movie) => movie.poster_path !== null)
   filtered.sort((a, b) => b.popularity - a.popularity)
 
   return filtered
@@ -47,6 +49,7 @@ export async function getTrendingTv(timeWindow: 'day' | 'week'): Promise<Trendin
 }
 
 export async function requestTrendingTv(timeWindow: 'day' | 'week'): Promise<TrendingTvResponse['results']> {
+  console.log('Requesting all trending TV shows from TMDB.')
   const pages = await Promise.all(
     Array.from({ length: MAX_TRENDING_PAGES }, (_, i) => getTrending('tv', timeWindow, i + 1)),
   )

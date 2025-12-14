@@ -13,11 +13,21 @@ export const KEYV_CONFIG = {
       key: (id: string) => `cmd:find:${id}`,
       ttl: toMs('1h'),
     },
+    trending: {
+      key: (id: string) => `cmd:trending:${id}`,
+      ttl: toMs('1h'),
+    },
   },
 } as const
 
 export type CmdFindCacheEntry = {
   searchType: 'movie' | 'tv'
   query: string
+  userId: string
+}
+
+export type CmdTrendingCacheEntry = {
+  timeWindow: 'day' | 'week'
+  type: 'movie' | 'tv'
   userId: string
 }
