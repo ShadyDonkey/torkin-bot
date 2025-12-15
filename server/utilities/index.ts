@@ -1,3 +1,11 @@
+import pkgSlugify from '@sindresorhus/slugify'
+
+export function slugify(str: string) {
+  return pkgSlugify(str, {
+    separator: '_',
+  })
+}
+
 export async function paginateArray<T>(
   items: T[],
   page: number,
