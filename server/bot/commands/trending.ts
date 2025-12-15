@@ -58,7 +58,7 @@ export default async function (interaction: CommandInteraction<typeof config>) {
     })
   } catch (err) {
     console.error(err)
-    return interaction.editReply('Something went wrong when fetching trending content...')
+    return await interaction.editReply('Something went wrong when fetching trending content...')
   }
 
   const [cacheErr, cached] = await unwrap(

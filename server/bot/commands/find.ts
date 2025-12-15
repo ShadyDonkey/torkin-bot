@@ -48,17 +48,17 @@ export const config = {
 
 export default async function (interaction: CommandInteraction<typeof config>) {
   console.log('Slash command interaction ID:', interaction.id)
-  interaction.deferReply()
+  await interaction.deferReply()
   const subcommand = (interaction.getOption('movie') || interaction.getOption('tv'))?.subcommand()
   if (!subcommand) {
-    return interaction.editReply('Unknown subcommand')
+    return await interaction.editReply('Unknown subcommand')
   }
 
   const searchType = subcommand.name
   const query = subcommand.getOption('query', true).string()
 
   if (!query) {
-    return interaction.editReply('You must provide a title')
+    return await interaction.editReply('You must provide a title')
   }
 
   try {
@@ -68,7 +68,7 @@ export default async function (interaction: CommandInteraction<typeof config>) {
     })
   } catch (err) {
     console.error(err)
-    return interaction.editReply('Something went wrong when finding that...')
+    return await interaction.editReply('Something went wrong when finding that...')
   }
 
   const [cacheErr, cached] = await unwrap(
