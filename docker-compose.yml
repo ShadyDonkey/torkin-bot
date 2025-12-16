@@ -10,12 +10,12 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  adminer:
-    image: adminer
-    ports:
-      - 8080:8080
-    depends_on:
-      - db
+  # adminer:
+  #   image: adminer
+  #   ports:
+  #     - 8080:8080
+  #   depends_on:
+  #     - db
 
   dragonfly:
     image: 'docker.dragonflydb.io/dragonflydb/dragonfly'
