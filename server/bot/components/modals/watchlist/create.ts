@@ -48,6 +48,11 @@ export default async function (interaction: ModalSubmitInteraction) {
           label: 'View Watchlist',
           style: 'Primary',
         }),
+        Button({
+          custom_id: `watchlist-goto-1-all`,
+          label: 'All Watchlists',
+          style: 'Secondary',
+        }),
       ),
     ],
     flags: MessageFlags.IsComponentsV2,

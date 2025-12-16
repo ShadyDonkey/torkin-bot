@@ -1,8 +1,10 @@
-import { codeBlock } from 'discord-fmt'
-import { Label, SelectMenu, TextDisplay, TextInput } from 'dressed'
+import { bold, h2, italic, link, subtext } from 'discord-fmt'
+import { ActionRow, Button, Container, Label, Section, SelectMenu, Separator, TextDisplay, TextInput } from 'dressed'
+import { buildPaginationButtons } from '@/server/bot/utilities/pagination'
+import { watchlistIdToUrl } from '@/server/bot/utilities/website'
 import { db } from '@/server/lib/db'
 import { unwrap } from '@/server/utilities'
-import { WatchlistState } from '@/server/zenstack/models'
+import { type Watchlist, WatchlistState } from '@/server/zenstack/models'
 
 export function modalComponents() {
   return {
@@ -28,7 +30,7 @@ export function modalComponents() {
           placeholder: 'Enter watchlist description',
           required: false,
           style: 'Paragraph',
-          max_length: 500,
+          max_length: 255,
         }),
       ),
       Label(
@@ -87,13 +89,38 @@ export function convertToState(str: string): WatchlistState {
   return stateMap[str.toLowerCase().trim()] ?? WatchlistState.PRIVATE
 }
 
-export async function buildListComponents(userId: string, page: number, limit: number = 5) {
+export function convertStateToLabel(state: WatchlistState): string {
+  const stateMap: Record<WatchlistState, string> = {
+    [WatchlistState.PUBLIC]: 'Public',
+    [WatchlistState.PRIVATE]: 'Private',
+    [WatchlistState.UNLISTED]: 'Unlisted',
+  }
+
+  return stateMap[state] ?? 'Unknown State'
+}
+
+export async function buildListComponents(
+  userId: string,
+  page: number,
+  {
+    limit = 5,
+    sortKey = 'createdAt',
+    sortDirection = 'desc',
+  }: {
+    limit?: number
+    sortKey?: keyof Watchlist
+    sortDirection?: 'asc' | 'desc'
+  } = {},
+) {
   const skip = (page - 1) * limit
 
   const [err, lists] = await unwrap(
     db.watchlist.findMany({
       where: {
         discordUserId: userId,
+      },
+      orderBy: {
+        [sortKey]: sortDirection,
       },
       skip,
       take: limit,
@@ -105,5 +132,47 @@ export async function buildListComponents(userId: string, page: number, limit: n
     return [TextDisplay('Could not retrieve watchlists, please try again later.')]
   }
 
-  return [TextDisplay(codeBlock(JSON.stringify(lists, null, 2)))]
+  const count = await db.watchlist.count({ where: { discordUserId: userId } })
+  const totalPages = Math.ceil(count / limit)
+  const pagination = buildPaginationButtons(page, totalPages, 'watchlist')
+
+  const listComponents = lists
+    .map((list, index) => {
+      const components = []
+
+      let body = bold(`${list.name ?? 'Unnamed Watchlist'} - ${convertStateToLabel(list.state)}`)
+      // body += `\n${subtext(`${count} Items`)}`
+
+      if (list.description) {
+        body += `\n\n${list.description}`
+      }
+
+      body += `\n\n${subtext(link('View on Torkin ↗', watchlistIdToUrl(list.id)))}`
+
+      components.push(
+        Section(
+          [body],
+          // TODO: I don't like this wording...maybe come back to this.
+          Button({
+            custom_id: `watchlist-details-${list.id}-${page}`,
+            label: `Details`,
+            style: 'Secondary',
+          }),
+        ),
+      )
+
+      if (index !== lists.length - 1) {
+        components.push(Separator())
+      }
+
+      return components
+    })
+    .filter((c) => c !== null)
+    .flat()
+
+  return [
+    // TextDisplay(codeBlock(JSON.stringify(lists, null, 2))),
+    Container(...listComponents),
+    pagination,
+  ]
 }
