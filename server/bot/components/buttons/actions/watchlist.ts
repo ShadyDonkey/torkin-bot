@@ -1,7 +1,7 @@
 import type { Params } from '@dressed/matcher'
 import { MessageFlags } from 'discord-api-types/v10'
 import { type MessageComponentInteraction, TextDisplay } from 'dressed'
-import { db } from '@/server/lib/db'
+import { db, PG_ERROR } from '@/server/lib/db'
 import { unwrap } from '@/server/utilities'
 import { addItemToWatchlist, removeItemFromWatchlist } from '@/server/utilities/db/watchlist'
 
@@ -43,6 +43,24 @@ export default async function (interaction: MessageComponentInteraction, args: P
     )
 
     if (err) {
+      // TODO: Make this a helper function and remove this
+      if ('dbErrorCode' in err) {
+        switch (err.dbErrorCode) {
+          case PG_ERROR.UNIQUE_VIOLATION:
+            return await interaction.editReply({
+              components: [TextDisplay('Item is already in watchlist')],
+              flags: MessageFlags.IsComponentsV2,
+            })
+
+          default:
+            console.error(err)
+            return await interaction.editReply({
+              components: [TextDisplay('Failed to add item to watchlist due to unknown DB error')],
+              flags: MessageFlags.IsComponentsV2,
+            })
+        }
+      }
+
       console.error(err)
       return await interaction.editReply({
         components: [TextDisplay('Failed to add item to watchlist')],
@@ -66,6 +84,7 @@ export default async function (interaction: MessageComponentInteraction, args: P
 
     if (err) {
       console.error(err)
+
       return await interaction.editReply({
         components: [TextDisplay('Failed to remove item from watchlist')],
         flags: MessageFlags.IsComponentsV2,
