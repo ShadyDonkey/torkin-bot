@@ -2,8 +2,8 @@ import './mixins'
 
 enum WatchlistState {
   PUBLIC
-  PRIVATE
-  UNLISTED
+  // PRIVATE
+  // UNLISTED
 
   @@map('watchlist_state')
 }

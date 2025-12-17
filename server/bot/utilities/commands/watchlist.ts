@@ -43,16 +43,17 @@ export function modalComponents() {
             {
               label: 'Public',
               value: 'public',
-            },
-            {
-              label: 'Private',
-              value: 'private',
               default: true,
             },
-            {
-              label: 'Unlisted',
-              value: 'unlisted',
-            },
+            // {
+            //   label: 'Private',
+            //   value: 'private',
+            //   default: true,
+            // },
+            // {
+            //   label: 'Unlisted',
+            //   value: 'unlisted',
+            // },
           ],
         }),
       ),
@@ -82,8 +83,8 @@ export function modalComponents() {
 export function convertToState(str: string): WatchlistState {
   const stateMap: Record<string, WatchlistState> = {
     public: WatchlistState.PUBLIC,
-    private: WatchlistState.PRIVATE,
-    unlisted: WatchlistState.UNLISTED,
+    // private: WatchlistState.PRIVATE,
+    // unlisted: WatchlistState.UNLISTED,
   }
 
   return stateMap[str.toLowerCase().trim()] ?? WatchlistState.PRIVATE
@@ -92,8 +93,8 @@ export function convertToState(str: string): WatchlistState {
 export function convertStateToLabel(state: WatchlistState): string {
   const stateMap: Record<WatchlistState, string> = {
     [WatchlistState.PUBLIC]: 'Public',
-    [WatchlistState.PRIVATE]: 'Private',
-    [WatchlistState.UNLISTED]: 'Unlisted',
+    // [WatchlistState.PRIVATE]: 'Private',
+    // [WatchlistState.UNLISTED]: 'Unlisted',
   }
 
   return stateMap[state] ?? 'Unknown State'
@@ -176,3 +177,5 @@ export async function buildListComponents(
     pagination,
   ]
 }
+
+// export async function buildItemListInternalComponents()
