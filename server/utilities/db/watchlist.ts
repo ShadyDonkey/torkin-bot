@@ -40,7 +40,7 @@ export type AddWatchlistItem = {
   discordUserId: string
   watchlistId: string
   externalId: string
-  externalProvider: string
+  externalProvider: 'tmdb'
 }
 
 export async function addItemToWatchlist(data: AddWatchlistItem) {
@@ -52,6 +52,7 @@ export async function addItemToWatchlist(data: AddWatchlistItem) {
       createdBy: data.discordUserId,
     },
   })
+
   return item
 }
 
@@ -59,7 +60,7 @@ export type RemoveWatchlistItem = {
   discordUserId: string
   watchlistId: string
   externalId: string
-  externalProvider: string
+  externalProvider: 'tmdb'
 }
 
 export async function removeItemFromWatchlist(data: RemoveWatchlistItem) {

@@ -5,6 +5,7 @@ import {
   MessageFlags,
 } from 'discord-api-types/v10'
 import { ActionRow, Button, type CommandConfig, type CommandInteraction, CommandOption } from 'dressed'
+import { buildItemActions } from '@/server/bot/utilities/builders'
 import { buildDetailsComponent } from '@/server/bot/utilities/tmdb'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
@@ -108,6 +109,7 @@ async function handleMovie(
 
   return [
     ...(await buildDetailsComponent(first.id.toString(), 'movie')),
+    ...buildItemActions(first.id.toString()),
     ActionRow(
       Button({
         custom_id: 'find-all-results',
@@ -141,6 +143,7 @@ async function handleTv(query: string) {
 
   return [
     ...(await buildDetailsComponent(first.id.toString(), 'tv')),
+    ...buildItemActions(first.id.toString()),
     ActionRow(
       Button({
         custom_id: 'find-all-results',

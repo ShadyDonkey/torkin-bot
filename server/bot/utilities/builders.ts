@@ -43,3 +43,16 @@ export function buildPaginationButtons(currentPage: number, totalPages: number, 
     }),
   )
 }
+
+export function buildItemActions(id: string) {
+  // actions: add to watchlist
+  return [
+    ActionRow(
+      Button({
+        custom_id: `action-watchlist-add-${id}-default`,
+        label: 'Add to Watchlist',
+        style: 'Secondary',
+      }),
+    ),
+  ]
+}

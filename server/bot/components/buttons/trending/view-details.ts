@@ -1,6 +1,7 @@
 import type { Params } from '@dressed/matcher'
 import { MessageFlags } from 'discord-api-types/v10'
 import { ActionRow, Button, type MessageComponentInteraction, TextDisplay } from 'dressed'
+import { buildItemActions } from '@/server/bot/utilities/builders'
 import { buildDetailsComponent } from '@/server/bot/utilities/tmdb'
 import { type CmdTrendingCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { unwrap } from '@/server/utilities'
@@ -38,6 +39,7 @@ export default async function (interaction: MessageComponentInteraction, args: P
   return interaction.updateResponse({
     components: [
       ...(await buildDetailsComponent(args.id, cached.type)),
+      ...buildItemActions(args.id),
       ActionRow(Button({ custom_id: `trending-goto-${args.originPage ?? 1}-back`, label: 'Back to Trending' })),
     ],
     flags: MessageFlags.IsComponentsV2,
