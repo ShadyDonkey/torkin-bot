@@ -10,8 +10,17 @@ export const pattern = 'trending-view-details-:id{-:originPage}'
 
 export default async function (interaction: MessageComponentInteraction, args: Params<typeof pattern>) {
   if (!interaction.message.interaction_metadata) {
-    return interaction.updateResponse({
+    return await interaction.reply({
       components: [TextDisplay('No interaction found on the original message.')],
+      ephemeral: true,
+      flags: MessageFlags.IsComponentsV2,
+    })
+  }
+
+  if (interaction.message.interaction_metadata.user.id !== interaction.user.id) {
+    return await interaction.reply({
+      components: [TextDisplay('This interaction is not for you.')],
+      ephemeral: true,
       flags: MessageFlags.IsComponentsV2,
     })
   }

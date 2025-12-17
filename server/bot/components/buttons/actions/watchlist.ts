@@ -9,10 +9,18 @@ export const pattern = 'action-watchlist-:action(add|remove)-:id-:list(default|o
 
 export default async function (interaction: MessageComponentInteraction, args: Params<typeof pattern>) {
   if (!interaction.message.interaction_metadata) {
-    return interaction.reply({
+    return await interaction.reply({
       components: [TextDisplay('No interaction found on the original message.')],
-      flags: MessageFlags.IsComponentsV2,
       ephemeral: true,
+      flags: MessageFlags.IsComponentsV2,
+    })
+  }
+
+  if (interaction.message.interaction_metadata.user.id !== interaction.user.id) {
+    return await interaction.reply({
+      components: [TextDisplay('This interaction is not for you.')],
+      ephemeral: true,
+      flags: MessageFlags.IsComponentsV2,
     })
   }
 

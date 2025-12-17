@@ -9,15 +9,24 @@ import { unwrap } from '@/server/utilities'
 export const pattern = 'watchlist-goto-:page(\\d+)-:throwaway'
 
 export default async function (interaction: MessageComponentInteraction, args: Params<typeof pattern>) {
-  const page = Number.parseInt(args.page, 10)
-  await interaction.deferUpdate()
-
   if (!interaction.message.interaction_metadata) {
-    return await interaction.updateResponse({
+    return await interaction.reply({
       components: [TextDisplay('No interaction found on the original message.')],
+      ephemeral: true,
       flags: MessageFlags.IsComponentsV2,
     })
   }
+
+  if (interaction.message.interaction_metadata.user.id !== interaction.user.id) {
+    return await interaction.reply({
+      components: [TextDisplay('This interaction is not for you.')],
+      ephemeral: true,
+      flags: MessageFlags.IsComponentsV2,
+    })
+  }
+
+  const page = Number.parseInt(args.page, 10)
+  await interaction.deferUpdate()
 
   return await interaction.updateResponse({
     components: await buildListComponents(interaction.message.interaction_metadata.user.id, page),

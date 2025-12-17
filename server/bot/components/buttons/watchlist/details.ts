@@ -1,7 +1,8 @@
 import type { Params } from '@dressed/matcher'
 import { count } from 'console'
-import { bold, codeBlock, link, list, subtext } from 'discord-fmt'
-import { ActionRow, Button, Container, type MessageComponentInteraction, TextDisplay } from 'dressed'
+import { MessageFlags } from 'discord-api-types/v10'
+import { bold, codeBlock, h2, link, list, subtext } from 'discord-fmt'
+import { ActionRow, Button, Container, type MessageComponentInteraction, Separator, TextDisplay } from 'dressed'
 import { convertStateToLabel } from '@/server/bot/utilities/commands/watchlist'
 import { watchlistIdToUrl } from '@/server/bot/utilities/website'
 import { db } from '@/server/lib/db'
@@ -11,6 +12,22 @@ import { WatchlistState } from '@/server/zenstack/models'
 export const pattern = 'watchlist-details-:id{-:originPage}'
 
 export default async function (interaction: MessageComponentInteraction, args: Params<typeof pattern>) {
+  if (!interaction.message.interaction_metadata) {
+    return await interaction.reply({
+      components: [TextDisplay('No interaction found on the original message.')],
+      ephemeral: true,
+      flags: MessageFlags.IsComponentsV2,
+    })
+  }
+
+  if (interaction.message.interaction_metadata.user.id !== interaction.user.id) {
+    return await interaction.reply({
+      components: [TextDisplay('This interaction is not for you.')],
+      ephemeral: true,
+      flags: MessageFlags.IsComponentsV2,
+    })
+  }
+
   const { id, originPage } = args
 
   await interaction.deferUpdate()
