@@ -43,9 +43,9 @@ export default async function (interaction: MessageComponentInteraction, args: P
     return await interaction.updateResponse({ content: 'Watchlist not found.' })
   }
 
-  if (watchlist.state === WatchlistState.PRIVATE && watchlist.discordUserId !== interaction.user.id) {
-    return await interaction.updateResponse({ content: 'You do not have permission to view this watchlist.' })
-  }
+  // if (watchlist.state === WatchlistState.PRIVATE && watchlist.discordUserId !== interaction.user.id) {
+  //   return await interaction.updateResponse({ content: 'You do not have permission to view this watchlist.' })
+  // }
 
   const count = await db.watchlistItem.count({ where: { watchlistId: watchlist.id } })
 

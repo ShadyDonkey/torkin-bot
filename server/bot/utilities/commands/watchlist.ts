@@ -87,7 +87,8 @@ export function convertToState(str: string): WatchlistState {
     // unlisted: WatchlistState.UNLISTED,
   }
 
-  return stateMap[str.toLowerCase().trim()] ?? WatchlistState.PRIVATE
+  return stateMap[str.toLowerCase().trim()]
+  // ?? WatchlistState.PRIVATE
 }
 
 export function convertStateToLabel(state: WatchlistState): string {
@@ -177,5 +178,3 @@ export async function buildListComponents(
     pagination,
   ]
 }
-
-// export async function buildItemListInternalComponents()
