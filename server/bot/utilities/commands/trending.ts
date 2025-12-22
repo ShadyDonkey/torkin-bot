@@ -40,7 +40,7 @@ export async function handleMovie(timeWindow: 'day' | 'week', page: number) {
       }
 
       if (movie.overview) {
-        body += `\n${movie.overview.substring(0, 255)}...\n`
+        body += `\n${movie.overview.substring(0, 255)} [...]\n`
       }
 
       const components: any[] = [
@@ -102,7 +102,7 @@ export async function handleTv(timeWindow: 'day' | 'week', page: number) {
       }
 
       if (tv.overview) {
-        body += `\n${tv.overview.substring(0, 255)}...\n`
+        body += `\n${tv.overview.substring(0, 255)} [...]\n`
       }
 
       const components: any[] = [

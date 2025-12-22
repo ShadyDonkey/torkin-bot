@@ -90,7 +90,7 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
       }
 
       if (entry.overview) {
-        body += `\n${entry.overview.substring(0, 255)}...\n`
+        body += `\n${entry.overview.substring(0, 255)} [...]\n`
       }
 
       const section = Section([body], Thumbnail(entry.image_url))
