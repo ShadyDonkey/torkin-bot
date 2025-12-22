@@ -110,7 +110,7 @@ async function handleMovie(
 
   return [
     ...(await buildDetailsComponent(first.id.toString(), 'movie')),
-    ...buildItemActions(first.id.toString(), WatchlistItemType.MOVIE),
+    ...buildItemActions(first.id.toString(), 'movie'),
     ActionRow(
       Button({
         custom_id: 'find-all-results',
@@ -144,7 +144,7 @@ async function handleTv(query: string) {
 
   return [
     ...(await buildDetailsComponent(first.id.toString(), 'tv')),
-    ...buildItemActions(first.id.toString(), WatchlistItemType.TV),
+    ...buildItemActions(first.id.toString(), 'tv'),
     ActionRow(
       Button({
         custom_id: 'find-all-results',

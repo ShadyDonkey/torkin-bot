@@ -48,7 +48,7 @@ export default async function (interaction: MessageComponentInteraction, args: P
   return interaction.updateResponse({
     components: [
       ...(await buildDetailsComponent(args.id, cached.searchType)),
-      ...buildItemActions(args.id, cached.searchType === 'movie' ? WatchlistItemType.MOVIE : WatchlistItemType.TV),
+      ...buildItemActions(args.id, cached.searchType),
       ActionRow(
         Button({ custom_id: 'find-all-results', label: 'See All Results' }),
         ...(args.originPage

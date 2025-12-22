@@ -49,7 +49,7 @@ export default async function (interaction: MessageComponentInteraction, args: P
   return interaction.updateResponse({
     components: [
       ...(await buildDetailsComponent(args.id, cached.type)),
-      ...buildItemActions(args.id, cached.type === 'movie' ? WatchlistItemType.MOVIE : WatchlistItemType.TV),
+      ...buildItemActions(args.id, cached.type),
       ActionRow(Button({ custom_id: `trending-goto-${args.originPage ?? 1}-back`, label: 'Back to Trending' })),
     ],
     flags: MessageFlags.IsComponentsV2,

@@ -45,7 +45,7 @@ export function buildPaginationButtons(currentPage: number, totalPages: number, 
   )
 }
 
-export function buildItemActions(id: string, type: WatchlistItemType) {
+export function buildItemActions(id: string, type: 'movie' | 'tv') {
   return [
     ActionRow(
       Button({
