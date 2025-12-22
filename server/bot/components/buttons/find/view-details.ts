@@ -5,6 +5,7 @@ import { buildItemActions } from '@/server/bot/utilities/builders'
 import { buildDetailsComponent } from '@/server/bot/utilities/tmdb'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { unwrap } from '@/server/utilities'
+import { WatchlistItemType } from '@/server/zenstack/models'
 
 export const pattern = 'find-view-details-:id{-:originPage}'
 
@@ -47,7 +48,7 @@ export default async function (interaction: MessageComponentInteraction, args: P
   return interaction.updateResponse({
     components: [
       ...(await buildDetailsComponent(args.id, cached.searchType)),
-      ...buildItemActions(args.id),
+      ...buildItemActions(args.id, cached.searchType === 'movie' ? WatchlistItemType.MOVIE : WatchlistItemType.TV),
       ActionRow(
         Button({ custom_id: 'find-all-results', label: 'See All Results' }),
         ...(args.originPage

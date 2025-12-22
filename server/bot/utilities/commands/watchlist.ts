@@ -87,7 +87,7 @@ export function convertToState(str: string): WatchlistState {
     // unlisted: WatchlistState.UNLISTED,
   }
 
-  return stateMap[str.toLowerCase().trim()]
+  return stateMap[str.toLowerCase().trim()] ?? WatchlistState.PUBLIC
   // ?? WatchlistState.PRIVATE
 }
 
@@ -136,7 +136,7 @@ export async function buildListComponents(
 
   const count = await db.watchlist.count({ where: { discordUserId: userId } })
   const totalPages = Math.ceil(count / limit)
-  const pagination = buildPaginationButtons(page, totalPages, 'watchlist')
+  const pagination = buildPaginationButtons(page, totalPages, 'watchlist-results')
 
   const listComponents = lists
     .map((list, index) => {

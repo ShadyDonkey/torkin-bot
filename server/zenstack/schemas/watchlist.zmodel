@@ -8,6 +8,11 @@ enum WatchlistState {
   @@map('watchlist_state')
 }
 
+enum WatchlistItemType {
+  MOVIE
+  TV
+}
+
 model Watchlist with TimestampMixin {
   id            String          @id @default(cuid(2))
   discordUserId String
@@ -24,7 +29,8 @@ model WatchlistItem with TimestampMixin {
   externalId       String
   externalProvider String
   watchlistId      String
-  watchlist        Watchlist @relation(fields: [watchlistId], references: [id])
+  watchlist        Watchlist         @relation(fields: [watchlistId], references: [id])
+  type             WatchlistItemType
 
   @@id([externalId, watchlistId], name: 'watchlist_item_pkey')
 

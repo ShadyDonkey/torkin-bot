@@ -1,4 +1,5 @@
 import { ActionRow, Button } from 'dressed'
+import type { WatchlistItemType } from '@/server/zenstack/models'
 
 export function buildPaginationButtons(currentPage: number, totalPages: number, prefix: string) {
   const JUMP_TO_FIRST = currentPage !== 1
@@ -44,12 +45,11 @@ export function buildPaginationButtons(currentPage: number, totalPages: number, 
   )
 }
 
-export function buildItemActions(id: string) {
-  // actions: add to watchlist
+export function buildItemActions(id: string, type: WatchlistItemType) {
   return [
     ActionRow(
       Button({
-        custom_id: `action-watchlist-add-${id}-default`,
+        custom_id: `action-watchlist-add-${id}-${type}-default`,
         label: 'Add to Watchlist',
         style: 'Secondary',
       }),

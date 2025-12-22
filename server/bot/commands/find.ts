@@ -11,6 +11,7 @@ import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { searchMovie, searchTv } from '@/server/lib/tmdb'
 import { unwrap } from '@/server/utilities'
+import { WatchlistItemType } from '@/server/zenstack/models'
 
 export const config = {
   description: 'Find a show or movie by name',
@@ -109,7 +110,7 @@ async function handleMovie(
 
   return [
     ...(await buildDetailsComponent(first.id.toString(), 'movie')),
-    ...buildItemActions(first.id.toString()),
+    ...buildItemActions(first.id.toString(), WatchlistItemType.MOVIE),
     ActionRow(
       Button({
         custom_id: 'find-all-results',
@@ -143,7 +144,7 @@ async function handleTv(query: string) {
 
   return [
     ...(await buildDetailsComponent(first.id.toString(), 'tv')),
-    ...buildItemActions(first.id.toString()),
+    ...buildItemActions(first.id.toString(), WatchlistItemType.TV),
     ActionRow(
       Button({
         custom_id: 'find-all-results',

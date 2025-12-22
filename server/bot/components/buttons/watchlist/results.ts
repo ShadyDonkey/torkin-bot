@@ -6,7 +6,7 @@ import { buildListComponents } from '@/server/bot/utilities/commands/watchlist'
 import { db } from '@/server/lib/db'
 import { unwrap } from '@/server/utilities'
 
-export const pattern = 'watchlist-goto-:page(\\d+)-:throwaway'
+export const pattern = 'watchlist-results-goto-:page(\\d+)-:throwaway'
 
 export default async function (interaction: MessageComponentInteraction, args: Params<typeof pattern>) {
   if (!interaction.message.interaction_metadata) {

@@ -49,14 +49,14 @@ export default async function (interaction: MessageComponentInteraction, args: P
 
   const count = await db.watchlistItem.count({ where: { watchlistId: watchlist.id } })
 
-  let body = bold(`${watchlist.name ?? 'Unnamed Watchlist'} - ${convertStateToLabel(watchlist.state)}`)
-  body += `\n${subtext(`${count} Items`)}`
+  let body = h2(`${watchlist.name ?? 'Unnamed Watchlist'} - ${convertStateToLabel(watchlist.state)}`)
+  body += `\n${subtext(`${count} Total Items`)}`
 
   if (watchlist.description) {
     body += `\n\n${watchlist.description}`
   }
 
-  body += `\n\n${subtext(link('View on Torkin ↗', watchlistIdToUrl(watchlist.id)))}`
+  body += `\n${subtext(link('View on Torkin ↗', watchlistIdToUrl(watchlist.id)))}`
 
   return await interaction.updateResponse({
     components: [
@@ -65,9 +65,14 @@ export default async function (interaction: MessageComponentInteraction, args: P
       Container(TextDisplay(body)),
       ActionRow(
         Button({
+          custom_id: `watchlist-items-${watchlist.id}-goto-${originPage || '1'}-back`,
+          label: 'View Items',
+          style: 'Primary',
+        }),
+        Button({
           custom_id: `watchlist-goto-${originPage || '1'}-back`,
           label: originPage ? 'Back to Lists' : 'Show All Lists',
-          style: 'Primary',
+          style: 'Secondary',
         }),
       ),
     ],

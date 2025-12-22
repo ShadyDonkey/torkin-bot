@@ -1,5 +1,5 @@
 import { db } from '@/server/lib/db'
-import type { WatchlistState } from '@/server/zenstack/models'
+import type { WatchlistItemType, WatchlistState } from '@/server/zenstack/models'
 
 export type CreateWatchlist = {
   discordUserId: string
@@ -41,6 +41,7 @@ export type AddWatchlistItem = {
   watchlistId: string
   externalId: string
   externalProvider: 'tmdb'
+  type: WatchlistItemType
 }
 
 export async function addItemToWatchlist(data: AddWatchlistItem) {
@@ -50,6 +51,7 @@ export async function addItemToWatchlist(data: AddWatchlistItem) {
       externalProvider: data.externalProvider,
       watchlistId: data.watchlistId,
       createdBy: data.discordUserId,
+      type: data.type,
     },
   })
 

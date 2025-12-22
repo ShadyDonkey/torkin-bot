@@ -4,9 +4,9 @@ import { type MessageComponentInteraction, TextDisplay } from 'dressed'
 import { db, PG_ERROR } from '@/server/lib/db'
 import { unwrap } from '@/server/utilities'
 import { addItemToWatchlist, removeItemFromWatchlist } from '@/server/utilities/db/watchlist'
-import { WatchlistState } from '@/server/zenstack/models'
+import { WatchlistItemType, WatchlistState } from '@/server/zenstack/models'
 
-export const pattern = 'action-watchlist-:action(add|remove)-:id-:list(default|other)'
+export const pattern = 'action-watchlist-:action(add|remove)-:id-:type(movie|tv)-:list(default|other)'
 
 export default async function (interaction: MessageComponentInteraction, args: Params<typeof pattern>) {
   if (!interaction.message.interaction_metadata) {
@@ -40,6 +40,7 @@ export default async function (interaction: MessageComponentInteraction, args: P
         watchlistId: watchlistId,
         externalId: args.id,
         externalProvider: 'tmdb',
+        type: args.type === 'movie' ? WatchlistItemType.MOVIE : WatchlistItemType.TV,
       }),
     )
 
