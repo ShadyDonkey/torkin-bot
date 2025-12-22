@@ -4,6 +4,7 @@ import { type MessageComponentInteraction, TextDisplay } from 'dressed'
 import { db, PG_ERROR } from '@/server/lib/db'
 import { unwrap } from '@/server/utilities'
 import { addItemToWatchlist, removeItemFromWatchlist } from '@/server/utilities/db/watchlist'
+import { WatchlistState } from '@/server/zenstack/models'
 
 export const pattern = 'action-watchlist-:action(add|remove)-:id-:list(default|other)'
 
@@ -51,7 +52,6 @@ export default async function (interaction: MessageComponentInteraction, args: P
               components: [TextDisplay('Item is already in watchlist')],
               flags: MessageFlags.IsComponentsV2,
             })
-
           default:
             console.error(err)
             return await interaction.editReply({
@@ -101,7 +101,7 @@ export default async function (interaction: MessageComponentInteraction, args: P
 async function getWatchlistId(userId: string, _args: Params<typeof pattern>) {
   // TODO: Support other watchlist handling
 
-  const watchlist = await db.watchlist.findFirstOrThrow({
+  let watchlist = await db.watchlist.findFirst({
     where: {
       discordUserId: userId,
       default: true,
@@ -110,6 +110,20 @@ async function getWatchlistId(userId: string, _args: Params<typeof pattern>) {
       id: true,
     },
   })
+
+  if (!watchlist) {
+    console.error('No default watchlist found for user', userId)
+
+    watchlist = await db.watchlist.create({
+      data: {
+        default: true,
+        discordUserId: userId,
+        name: 'My Watchlist',
+        state: WatchlistState.PUBLIC,
+        createdBy: userId,
+      },
+    })
+  }
 
   return watchlist.id
 }

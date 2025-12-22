@@ -1,5 +1,6 @@
 server/.dressed
 server/zenstack/*.ts
+.env.keys
 
 # dependencies (bun install)
 node_modules
