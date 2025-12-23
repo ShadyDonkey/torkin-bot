@@ -1,15 +1,6 @@
 import { MessageFlags } from 'discord-api-types/v10'
 import { link, list } from 'discord-fmt'
-import {
-  type CommandConfig,
-  type CommandInteraction,
-  CommandOption,
-  Container,
-  MediaGallery,
-  MediaGalleryItem,
-  TextDisplay,
-} from 'dressed'
-import { buildListComponents, modalComponents } from '@/server/bot/utilities/commands/watchlist'
+import { type CommandConfig, type CommandInteraction, Container, TextDisplay } from 'dressed'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 
 export const config = {
