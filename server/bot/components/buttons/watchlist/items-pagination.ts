@@ -1,6 +1,6 @@
 import type { Params } from '@dressed/matcher'
 import { format } from 'date-fns'
-import { ComponentType, MessageFlags } from 'discord-api-types/v10'
+import { type APIComponentInContainer, ComponentType, MessageFlags } from 'discord-api-types/v10'
 import { h2, h3 } from 'discord-fmt'
 import {
   ActionRow,
@@ -171,8 +171,7 @@ export default async function (interaction: MessageComponentInteraction, args: P
   const components = [
     Container(
       TextDisplay(h2(watchlist?.name ?? 'Unnamed Watchlist')),
-      // @ts-expect-error
-      ...entries.flatMap((entry, index) => {
+      ...entries.flatMap((entry, index): APIComponentInContainer[] => {
         if (entry.type === ComponentType.ActionRow && index < entries.length - 1) {
           return [entry, Separator()]
         }
