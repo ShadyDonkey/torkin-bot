@@ -1,7 +1,6 @@
-import { MessageFlags } from 'discord-api-types/v10'
+import { type APIComponentInContainer, MessageFlags } from 'discord-api-types/v10'
 import { bold, subtext } from 'discord-fmt'
 import {
-  ActionRow,
   Button,
   Container,
   type MessageComponentInteraction,
@@ -14,6 +13,7 @@ import { buildPaginationButtons } from '@/server/bot/utilities/builders'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { REMOTE_IDS_MOVIE, REMOTE_IDS_SERIES, search } from '@/server/lib/tvdb'
 import { unwrap } from '@/server/utilities'
+import carp from '@/server/utilities/carp'
 
 const ITEMS_PER_PAGE = 3
 
@@ -71,60 +71,42 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
   const totalPages = Math.ceil(totalResults / ITEMS_PER_PAGE)
   const paginationComponents = buildPaginationButtons(page, totalPages, 'find')
 
-  const entries = searchResponse.data
-    .map((entry, index) => {
+  const entries = carp<APIComponentInContainer>(
+    searchResponse.data.flatMap((entry, index) => {
       if (!entry.image_url) {
         return null
       }
 
-      let body = ''
-
-      if (entry.extended_title) {
-        body += `${bold(entry.extended_title)}\n`
-      } else {
-        body += `${bold(entry.title ?? entry.name ?? 'Unknown')} ${entry.year ? `(${entry.year})` : ''}\n`
-      }
-
-      if (entry.genres && entry.genres.length > 0) {
-        body += `${subtext(entry.genres.join(', '))}\n`
-      }
-
-      if (entry.overview) {
-        body += `\n${entry.overview.substring(0, 255)} [...]\n`
-      }
-
-      const section = Section([body], Thumbnail(entry.image_url))
       const tmdbId = entry.remote_ids?.find((remoteId) =>
         cached.searchType === 'movie'
           ? remoteId.type === REMOTE_IDS_MOVIE.tmdb
           : remoteId.type === REMOTE_IDS_SERIES.tmdb,
       )?.id
 
-      const components: any[] = [
-        section,
-        ActionRow(
+      const yearText = entry.year ? `(${entry.year})` : ''
+      const titleWithYear = `${bold(entry.title ?? entry.name ?? 'Unknown')} ${yearText}`
+
+      return carp(
+        Section(
+          carp(
+            entry.extended_title ? bold(entry.extended_title) : titleWithYear,
+            entry.genres && entry.genres.length > 0 && subtext(entry.genres.join(', ')),
+          ),
           Button({
             custom_id: `find-view-details-${tmdbId || entry.id}-${page}`,
-            label: `⌃ View Details`,
+            label: 'View Details',
             style: 'Secondary',
             disabled: !tmdbId,
           }),
         ),
-      ]
-
-      if (searchResponse.data?.length && index < searchResponse.data.length - 1) {
-        components.push(Separator())
-      }
-
-      return components
-    })
-    .filter((entry) => entry !== null)
-    .flat()
-
-  const components = [Container(...entries), paginationComponents]
+        Section([entry.overview ? `${entry.overview.substring(0, 255)}...` : '‎ '], Thumbnail(entry.image_url)),
+        searchResponse.data?.length && index < searchResponse.data.length - 1 && Separator(),
+      )
+    }),
+  )
 
   return await interaction.updateResponse({
-    components,
+    components: [Container(...entries), paginationComponents],
     flags: MessageFlags.IsComponentsV2,
   })
 }

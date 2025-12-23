@@ -1,11 +1,12 @@
 import { format } from 'date-fns'
-import { MessageFlags } from 'discord-api-types/v10'
+import { type APIComponentInContainer, MessageFlags } from 'discord-api-types/v10'
 import { h2, h3 } from 'discord-fmt'
 import { Button, Container, type MessageComponentInteraction, Section, Separator, TextDisplay } from 'dressed'
 import { buildPaginationButtons } from '@/server/bot/utilities/builders'
 import { type CmdTrendingCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { getTrendingMovies, getTrendingTv } from '@/server/lib/tmdb/helpers'
 import { paginateArray, unwrap } from '@/server/utilities'
+import carp from '@/server/utilities/carp'
 
 const ITEMS_PER_PAGE = 5
 
@@ -23,29 +24,17 @@ export async function handleMovie(timeWindow: 'day' | 'week', page: number) {
   const paginatedItems = await paginateArray(trending, page, ITEMS_PER_PAGE)
   const paginationComponents = buildPaginationButtons(paginatedItems.page, paginatedItems.totalPages, 'trending')
 
-  const entries = paginatedItems.results
-    .map((movie, index) => {
+  const entries = carp<APIComponentInContainer>(
+    paginatedItems.results.flatMap((movie, index) => {
       if ((!movie.title && !movie.original_title) || !movie.overview || movie.adult) {
         return null
       }
-
-      let body = ''
-
-      body += `${h3(movie.title ?? movie.original_title ?? 'Unknown')}`
-
-      if (movie.release_date) {
-        body += ` (${format(new Date(movie.release_date), 'yyyy')})\n`
-      } else {
-        body += ` (Not Released)\n`
-      }
-
-      if (movie.overview) {
-        body += `\n${movie.overview.substring(0, 255)} [...]\n`
-      }
-
-      const components: any[] = [
+      return [
         Section(
-          [body],
+          carp(
+            `${h3(movie.title ?? movie.original_title ?? 'Unknown')} (${movie.release_date ? format(new Date(movie.release_date), 'yyyy') : 'Not Released'})`,
+            movie.overview && `${movie.overview.substring(0, 255)} [...]`,
+          ),
           Button({
             custom_id: `trending-view-details-${movie.id > 0 ? movie.id : Math.random()}-${page}`,
             label: `‹ View Details`,
@@ -53,16 +42,10 @@ export async function handleMovie(timeWindow: 'day' | 'week', page: number) {
             disabled: !movie.id,
           }),
         ),
+        index < paginatedItems.results.length - 1 && Separator(),
       ]
-
-      if (index < paginatedItems.results.length - 1) {
-        components.push(Separator())
-      }
-
-      return components
-    })
-    .filter((entry) => entry !== null)
-    .flat()
+    }),
+  )
 
   return [
     TextDisplay(h2(`Trending Movies ${timeWindow === 'day' ? 'Today' : 'this Week'}`)),
@@ -85,29 +68,17 @@ export async function handleTv(timeWindow: 'day' | 'week', page: number) {
   const paginatedItems = await paginateArray(trending, page, ITEMS_PER_PAGE)
   const paginationComponents = buildPaginationButtons(paginatedItems.page, paginatedItems.totalPages, 'trending')
 
-  const entries = paginatedItems.results
-    .map((tv, index) => {
+  const entries = carp<APIComponentInContainer>(
+    paginatedItems.results.flatMap((tv, index) => {
       if ((!tv.name && !tv.original_name) || !tv.overview || tv.adult) {
         return null
       }
-
-      let body = ''
-
-      body += `${h3(tv.name ?? tv.original_name ?? 'Unknown')}`
-
-      if (tv.first_air_date) {
-        body += ` (${format(new Date(tv.first_air_date), 'yyyy')})\n`
-      } else {
-        body += ` (Not Released)\n`
-      }
-
-      if (tv.overview) {
-        body += `\n${tv.overview.substring(0, 255)} [...]\n`
-      }
-
-      const components: any[] = [
+      return [
         Section(
-          [body],
+          carp(
+            `${h3(tv.name ?? tv.original_name ?? 'Unknown')} (${tv.first_air_date ? format(new Date(tv.first_air_date), 'yyyy') : 'Not Released'})`,
+            `${tv.overview.substring(0, 255)} [...]`,
+          ),
           Button({
             custom_id: `trending-view-details-${tv.id}-${page}`,
             label: `‹ View Details`,
@@ -115,16 +86,10 @@ export async function handleTv(timeWindow: 'day' | 'week', page: number) {
             disabled: !tv.id,
           }),
         ),
+        index < paginatedItems.results.length - 1 && Separator(),
       ]
-
-      if (index < paginatedItems.results.length - 1) {
-        components.push(Separator())
-      }
-
-      return components
-    })
-    .filter((entry) => entry !== null)
-    .flat()
+    }),
+  )
 
   return [
     TextDisplay(h2(`Trending TV Shows ${timeWindow === 'day' ? 'Today' : 'this Week'}`)),

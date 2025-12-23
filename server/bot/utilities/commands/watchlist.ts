@@ -1,9 +1,11 @@
+import type { APIComponentInContainer } from 'discord-api-types/v10'
 import { bold, link, subtext } from 'discord-fmt'
 import { Button, Container, Label, Section, SelectMenu, Separator, TextDisplay, TextInput } from 'dressed'
 import { buildPaginationButtons } from '@/server/bot/utilities/builders'
 import { watchlistIdToUrl } from '@/server/bot/utilities/website'
 import { db } from '@/server/lib/db'
 import { unwrap } from '@/server/utilities'
+import carp from '@/server/utilities/carp'
 import { type Watchlist, WatchlistState } from '@/server/zenstack/models'
 
 export function modalComponents() {
@@ -138,39 +140,24 @@ export async function buildListComponents(
   const totalPages = Math.ceil(count / limit)
   const pagination = buildPaginationButtons(page, totalPages, 'watchlist-results')
 
-  const listComponents = lists
-    .map((list, index) => {
-      const components = []
-
-      let body = bold(`${list.name ?? 'Unnamed Watchlist'} - ${convertStateToLabel(list.state)}`)
-      // body += `\n${subtext(`${count} Items`)}`
-
-      if (list.description) {
-        body += `\n\n${list.description}`
-      }
-
-      body += `\n\n${subtext(link('View on Torkin ↗', watchlistIdToUrl(list.id)))}`
-
-      components.push(
-        Section(
-          [body],
-          // TODO: I don't like this wording...maybe come back to this.
-          Button({
-            custom_id: `watchlist-${list.id}-details-${page}`,
-            label: `Details`,
-            style: 'Secondary',
-          }),
+  const listComponents = carp<APIComponentInContainer>(
+    lists.flatMap((list, index) => [
+      Section(
+        carp(
+          bold(`${list.name ?? 'Unnamed Watchlist'} - ${convertStateToLabel(list.state)}`),
+          list.description && `\n${list.description}`,
+          `\n${subtext(link('View on Torkin ↗', watchlistIdToUrl(list.id)))}`,
         ),
-      )
-
-      if (index !== lists.length - 1) {
-        components.push(Separator())
-      }
-
-      return components
-    })
-    .filter((c) => c !== null)
-    .flat()
+        // TODO: I don't like this wording...maybe come back to this.
+        Button({
+          custom_id: `watchlist-${list.id}-details-${page}`,
+          label: 'Details',
+          style: 'Secondary',
+        }),
+      ),
+      index !== lists.length - 1 && Separator(),
+    ]),
+  )
 
   return [
     // TextDisplay(codeBlock(JSON.stringify(lists, null, 2))),
