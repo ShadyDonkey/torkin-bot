@@ -7,7 +7,7 @@ import { watchlistIdToUrl } from '@/server/bot/utilities/website'
 import { db } from '@/server/lib/db'
 import { unwrap } from '@/server/utilities'
 
-export const pattern = 'watchlist-details-:id{-:originPage}'
+export const pattern = 'watchlist-:id-details{-:originPage}'
 
 export default async function (interaction: MessageComponentInteraction, args: Params<typeof pattern>) {
   if (!interaction.message.interaction_metadata) {
@@ -63,12 +63,12 @@ export default async function (interaction: MessageComponentInteraction, args: P
       Container(TextDisplay(body)),
       ActionRow(
         Button({
-          custom_id: `watchlist-items-${watchlist.id}-goto-${originPage || '1'}-back`,
+          custom_id: `watchlist-${watchlist.id}-items-goto-${originPage || '1'}-back`,
           label: 'View Items',
           style: 'Primary',
         }),
         Button({
-          custom_id: `watchlist-goto-${originPage || '1'}-back`,
+          custom_id: `watchlist-results-goto-${originPage || '1'}-back`,
           label: originPage ? 'Back to Lists' : 'Show All Lists',
           style: 'Secondary',
         }),

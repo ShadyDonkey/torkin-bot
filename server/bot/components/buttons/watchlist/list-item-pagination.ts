@@ -18,7 +18,7 @@ import { getImageUrl, getMovieDetails, getTvDetails } from '@/server/lib/tmdb'
 import { unwrap } from '@/server/utilities'
 import { WatchlistItemType } from '@/server/zenstack/models'
 
-export const pattern = 'watchlist-items-:id-goto-:page(\\d+)-:throwaway'
+export const pattern = 'watchlist-:id-items-goto-:page(\\d+)-:throwaway'
 
 export default async function (interaction: MessageComponentInteraction, args: Params<typeof pattern>) {
   if (!interaction.message.interaction_metadata) {
@@ -78,23 +78,38 @@ export default async function (interaction: MessageComponentInteraction, args: P
     },
   })
   const totalPages = Math.ceil(count / take)
-  const paginationButtons = buildPaginationButtons(page, totalPages, `watchlist-items-${watchlistId}`)
+  const paginationButtons = buildPaginationButtons(page, totalPages, `watchlist-${watchlistId}-items`)
 
-  const tvPromises = results.filter((e) => e.type === WatchlistItemType.TV).map((e) => getTvDetails(e.externalId))
-  const tvResults = await Promise.all(tvPromises)
+  const providerResults = await Promise.all(
+    results.map((e) =>
+      e.type === WatchlistItemType.MOVIE ? getMovieDetails(e.externalId) : getTvDetails(e.externalId),
+    ),
+  )
 
-  const tvEntries = tvResults
-    .map((entry) => {
+  const entries = providerResults
+    .map((entry, index) => {
       if (!entry?.poster_path || entry.adult) {
         return null
       }
 
       let body = ''
+      let type = 'movie'
 
-      if (entry.first_air_date) {
-        body += h3(`${entry.name} (${format(new Date(entry.first_air_date), 'yyyy')})\n`)
-      } else {
-        body += `${h3(entry.name ?? '')}\n`
+      if ('release_date' in entry) {
+        if (entry.release_date) {
+          body += h3(`${entry.title} (${format(new Date(entry.release_date), 'yyyy')})\n`)
+        } else {
+          body += `${h3(entry.title ?? '')}\n`
+        }
+      }
+
+      if ('first_air_date' in entry) {
+        type = 'tv'
+        if (entry.first_air_date) {
+          body += h3(`${entry.name} (${format(new Date(entry.first_air_date), 'yyyy')})\n`)
+        } else {
+          body += `${h3(entry.name ?? '')}\n`
+        }
       }
 
       if (entry.overview) {
@@ -103,85 +118,39 @@ export default async function (interaction: MessageComponentInteraction, args: P
 
       const section = Section([body], Thumbnail(getImageUrl(entry.poster_path)))
 
-      return [
+      const components: APIComponentInContainer[] = [
         section,
         ActionRow(
           Button({
-            custom_id: Math.random().toString(),
+            custom_id: `watchlist-${watchlistId}-item-details-${entry.id}-${type}-${page}`,
             label: 'View Details',
             style: 'Secondary',
           }),
+          // TODO: this
           Button({
             custom_id: Math.random().toString(),
             label: 'Remove',
             style: 'Secondary',
+            disabled: true,
           }),
         ),
       ]
+
+      if (index < providerResults.length - 1) {
+        components.push(Separator())
+      }
+
+      return components
     })
     .filter((entry) => entry !== null)
     .flat()
-
-  const moviePromises = results
-    .filter((e) => e.type === WatchlistItemType.MOVIE)
-    .map((e) => getMovieDetails(e.externalId))
-  const movieResults = await Promise.all(moviePromises)
-
-  const movieEntries = movieResults
-    .map((entry) => {
-      if (!entry?.poster_path || entry.adult) {
-        return null
-      }
-
-      let body = ''
-      if (entry.release_date) {
-        body += h3(`${entry.title} (${format(new Date(entry.release_date), 'yyyy')})\n`)
-      } else {
-        body += `${h3(entry.title ?? '')}\n`
-      }
-
-      if (entry.overview) {
-        body += `\n${entry.overview.substring(0, 125)} [...]\n`
-      }
-
-      const section = Section([body], Thumbnail(getImageUrl(entry.poster_path)))
-
-      return [
-        section,
-        ActionRow(
-          Button({
-            custom_id: Math.random().toString(),
-            label: 'View Details',
-            style: 'Secondary',
-          }),
-          Button({
-            custom_id: Math.random().toString(),
-            label: 'Remove',
-            style: 'Secondary',
-          }),
-        ),
-      ]
-    })
-    .filter((entry) => entry !== null)
-    .flat()
-
-  const entries = [...tvEntries, ...movieEntries]
 
   const components = [
-    Container(
-      TextDisplay(h2(watchlist?.name ?? 'Unnamed Watchlist')),
-      ...entries.flatMap((entry, index): APIComponentInContainer[] => {
-        if (entry.type === ComponentType.ActionRow && index < entries.length - 1) {
-          return [entry, Separator()]
-        }
-
-        return [entry]
-      }),
-    ),
+    Container(TextDisplay(h2(watchlist?.name ?? 'Unnamed Watchlist')), ...entries),
     paginationButtons,
     ActionRow(
       Button({
-        custom_id: Math.random().toString(),
+        custom_id: `watchlist-${watchlistId}-details`,
         label: 'Back',
         style: 'Secondary',
       }),

@@ -156,7 +156,7 @@ export async function buildListComponents(
           [body],
           // TODO: I don't like this wording...maybe come back to this.
           Button({
-            custom_id: `watchlist-details-${list.id}-${page}`,
+            custom_id: `watchlist-${list.id}-details-${page}`,
             label: `Details`,
             style: 'Secondary',
           }),
