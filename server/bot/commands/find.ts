@@ -2,9 +2,10 @@ import {
   type APIActionRowComponent,
   type APIButtonComponent,
   type APIContainerComponent,
+  type APITextDisplayComponent,
   MessageFlags,
 } from 'discord-api-types/v10'
-import { ActionRow, Button, type CommandConfig, type CommandInteraction, CommandOption } from 'dressed'
+import { ActionRow, Button, type CommandConfig, type CommandInteraction, CommandOption, TextDisplay } from 'dressed'
 import { buildItemActions } from '@/server/bot/utilities/builders'
 import { buildDetailsComponent } from '@/server/bot/utilities/tmdb'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
@@ -88,24 +89,24 @@ export default async function (interaction: CommandInteraction<typeof config>) {
 
 async function handleMovie(
   query: string,
-): Promise<(APIContainerComponent | APIActionRowComponent<APIButtonComponent>)[]> {
+): Promise<(APIContainerComponent | APIActionRowComponent<APIButtonComponent> | APITextDisplayComponent)[]> {
   const [searchErr, results] = await unwrap(searchMovie(query))
   if (searchErr) {
     throw new Error('Failed to search for movie')
   }
 
   if (!results?.results || results.results.length === 0) {
-    throw new Error('No results found')
+    return [TextDisplay('No results found')]
   }
 
   const first = results.results.at(0)
 
   if (!first) {
-    throw new Error('No results found')
+    return [TextDisplay('No results found')]
   }
 
   if (first.adult) {
-    throw new Error('This movie is for adults only')
+    return [TextDisplay('This movie is for adults only')]
   }
 
   return [
@@ -125,21 +126,21 @@ async function handleTv(query: string) {
   const [searchErr, results] = await unwrap(searchTv(query))
 
   if (searchErr) {
-    throw new Error('Failed to search for TV show')
+    return [TextDisplay('Failed to search for TV show')]
   }
 
   if (!results?.results || results.results.length === 0) {
-    throw new Error('No results found')
+    return [TextDisplay('No results found')]
   }
 
   const first = results.results.at(0)
 
   if (!first) {
-    throw new Error('No results found')
+    return [TextDisplay('No results found')]
   }
 
   if (first.adult) {
-    throw new Error('This TV show is for adults only')
+    return [TextDisplay('This TV show is for adults only')]
   }
 
   return [
