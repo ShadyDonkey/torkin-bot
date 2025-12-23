@@ -86,7 +86,7 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
       const yearText = entry.year ? `(${entry.year})` : ''
       const titleWithYear = `${bold(entry.title ?? entry.name ?? 'Unknown')} ${yearText}`
 
-      return carp(
+      return [
         Section(
           carp(
             entry.extended_title ? bold(entry.extended_title) : titleWithYear,
@@ -101,7 +101,7 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
         ),
         Section([entry.overview ? `${entry.overview.substring(0, 255)}...` : '‎ '], Thumbnail(entry.image_url)),
         searchResponse.data?.length && index < searchResponse.data.length - 1 && Separator(),
-      )
+      ]
     }),
   )
 
