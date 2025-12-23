@@ -45,7 +45,7 @@ export default async function (interaction: CommandInteraction<typeof config>) {
   const subcommand = (interaction.getOption('movie') || interaction.getOption('tv'))?.subcommand()
 
   if (!subcommand) {
-    return interaction.editReply('Unknown subcommand')
+    return await interaction.editReply('Unknown subcommand')
   }
 
   const period = (subcommand?.getOption('period')?.string() || 'day') as 'day' | 'week'

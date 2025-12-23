@@ -42,14 +42,14 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
 
   if (cacheErr || !cached) {
     console.error({ cacheErr, cached })
-    return interaction.updateResponse({
+    return await interaction.updateResponse({
       components: [TextDisplay('Could not retrieve cached search results, please try again later.')],
       flags: MessageFlags.IsComponentsV2,
     })
   }
 
   if (interaction.user.id !== cached.userId) {
-    return interaction.reply({
+    return await interaction.reply({
       content: "You cannot interact with another user's search results.",
       ephemeral: true,
     })
@@ -61,7 +61,7 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
 
   if (searchErr || !searchResponse.data) {
     console.error({ searchErr })
-    return interaction.updateResponse({
+    return await interaction.updateResponse({
       components: [TextDisplay('An error occurred while searching for movies, please try again later.')],
       flags: MessageFlags.IsComponentsV2,
     })
@@ -123,7 +123,7 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
 
   const components = [Container(...entries), paginationComponents]
 
-  return interaction.updateResponse({
+  return await interaction.updateResponse({
     components,
     flags: MessageFlags.IsComponentsV2,
   })
