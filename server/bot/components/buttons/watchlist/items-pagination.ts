@@ -13,7 +13,6 @@ import {
   Thumbnail,
 } from 'dressed'
 import { buildPaginationButtons } from '@/server/bot/utilities/builders'
-import { convertStateToLabel } from '@/server/bot/utilities/commands/watchlist'
 import { db } from '@/server/lib/db'
 import { getImageUrl, getMovieDetails, getTvDetails } from '@/server/lib/tmdb'
 import { unwrap } from '@/server/utilities'

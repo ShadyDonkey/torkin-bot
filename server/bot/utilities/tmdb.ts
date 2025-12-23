@@ -87,6 +87,13 @@ async function buildTvBody(details: TvDetailsResponse, id: string) {
     )
   }
 
+  if (details.first_air_date) {
+    const epoch = getUnixTime(new Date(details.first_air_date)).toString()
+    detailsList.push(
+      `First Air Date: ${timestamp(epoch, TimestampStyle.ShortDate)} (${timestamp(epoch, TimestampStyle.RelativeTime)})`,
+    )
+  }
+
   // TODO: This
   // if (details.next_episode_to_air) {
   //   detailsList.push(`Next Episode: ${details.next_episode_to_air}`)
@@ -143,6 +150,13 @@ async function buildMovieBody(details: MovieDetailsResponse, id: string) {
 
   if (details.status) {
     detailsList.push(`Status: ${details.status}`)
+  }
+
+  if (details.release_date) {
+    const epoch = getUnixTime(new Date(details.release_date)).toString()
+    detailsList.push(
+      `Release Date: ${timestamp(epoch, TimestampStyle.ShortDate)} (${timestamp(epoch, TimestampStyle.RelativeTime)})`,
+    )
   }
 
   if (details.runtime) {
