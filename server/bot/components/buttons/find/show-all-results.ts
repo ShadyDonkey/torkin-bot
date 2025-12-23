@@ -4,5 +4,5 @@ import { paginateSearch } from '@/server/bot/utilities/commands/find'
 export const pattern = 'find-all-results'
 
 export default async function (interaction: MessageComponentInteraction) {
-  await paginateSearch(interaction, 1)
+  return await paginateSearch(interaction, 1)
 }

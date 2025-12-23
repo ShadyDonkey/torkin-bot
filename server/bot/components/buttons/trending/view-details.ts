@@ -45,6 +45,7 @@ export default async function (interaction: MessageComponentInteraction, args: P
       ephemeral: true,
     })
   }
+
   return await interaction.updateResponse({
     components: [
       ...(await buildDetailsComponent(args.id, cached.type)),

@@ -24,6 +24,7 @@ export default async function (interaction: MessageComponentInteraction, args: P
       flags: MessageFlags.IsComponentsV2,
     })
   }
+
   await interaction.deferUpdate()
 
   const [cacheErr, cached] = await unwrap(
@@ -44,6 +45,7 @@ export default async function (interaction: MessageComponentInteraction, args: P
       ephemeral: true,
     })
   }
+
   return await interaction.updateResponse({
     components: [
       ...(await buildDetailsComponent(args.id, cached.searchType)),
