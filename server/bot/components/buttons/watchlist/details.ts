@@ -1,13 +1,11 @@
 import type { Params } from '@dressed/matcher'
-import { count } from 'console'
 import { MessageFlags } from 'discord-api-types/v10'
-import { bold, codeBlock, h2, link, list, subtext } from 'discord-fmt'
-import { ActionRow, Button, Container, type MessageComponentInteraction, Separator, TextDisplay } from 'dressed'
+import { h2, link, subtext } from 'discord-fmt'
+import { ActionRow, Button, Container, type MessageComponentInteraction, TextDisplay } from 'dressed'
 import { convertStateToLabel } from '@/server/bot/utilities/commands/watchlist'
 import { watchlistIdToUrl } from '@/server/bot/utilities/website'
 import { db } from '@/server/lib/db'
 import { unwrap } from '@/server/utilities'
-import { WatchlistState } from '@/server/zenstack/models'
 
 export const pattern = 'watchlist-details-:id{-:originPage}'
 
