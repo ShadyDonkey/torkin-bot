@@ -1,7 +1,6 @@
 import { MessageFlags } from 'discord-api-types/v10'
 import { emoji } from 'discord-fmt'
 import { ActionRow, Button, type ModalSubmitInteraction, TextDisplay } from 'dressed'
-import { handlePagination } from '@/server/bot/utilities/commands/trending'
 import { convertToState } from '@/server/bot/utilities/commands/watchlist'
 import { unwrap } from '@/server/utilities'
 import { createWatchlist } from '@/server/utilities/db/watchlist'

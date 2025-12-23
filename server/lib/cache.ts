@@ -2,7 +2,7 @@ import KeyvRedis from '@keyv/redis'
 import { Cacheable } from 'cacheable'
 import { Keyv } from 'keyv'
 import { LRUCache } from 'lru-cache'
-import { slugify, toMs } from '@/server/utilities'
+import { slugify } from '@/server/utilities'
 
 const primary = new Keyv({
   store: new LRUCache({

@@ -1,5 +1,4 @@
 import { ActionRow, Button } from 'dressed'
-import type { WatchlistItemType } from '@/server/zenstack/models'
 
 export function buildPaginationButtons(currentPage: number, totalPages: number, prefix: string) {
   const JUMP_TO_FIRST = currentPage !== 1

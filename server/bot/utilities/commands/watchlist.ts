@@ -1,5 +1,5 @@
-import { bold, h2, italic, link, subtext } from 'discord-fmt'
-import { ActionRow, Button, Container, Label, Section, SelectMenu, Separator, TextDisplay, TextInput } from 'dressed'
+import { bold, link, subtext } from 'discord-fmt'
+import { Button, Container, Label, Section, SelectMenu, Separator, TextDisplay, TextInput } from 'dressed'
 import { buildPaginationButtons } from '@/server/bot/utilities/builders'
 import { watchlistIdToUrl } from '@/server/bot/utilities/website'
 import { db } from '@/server/lib/db'

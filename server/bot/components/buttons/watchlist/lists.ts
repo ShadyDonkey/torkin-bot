@@ -1,10 +1,7 @@
 import type { Params } from '@dressed/matcher'
 import { MessageFlags } from 'discord-api-types/v10'
-import { codeBlock } from 'discord-fmt'
 import { type MessageComponentInteraction, TextDisplay } from 'dressed'
 import { buildListComponents } from '@/server/bot/utilities/commands/watchlist'
-import { db } from '@/server/lib/db'
-import { unwrap } from '@/server/utilities'
 
 export const pattern = 'watchlist-results-goto-:page(\\d+)-:throwaway'
 

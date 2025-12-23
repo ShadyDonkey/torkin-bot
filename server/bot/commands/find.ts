@@ -12,7 +12,6 @@ import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { searchMovie, searchTv } from '@/server/lib/tmdb'
 import { unwrap } from '@/server/utilities'
-import { WatchlistItemType } from '@/server/zenstack/models'
 
 export const config = {
   description: 'Find a show or movie by name',

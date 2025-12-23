@@ -3,7 +3,14 @@
   "vcs": { "enabled": false, "clientKind": "git", "useIgnoreFile": false },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!**/client/src/routeTree.gen.ts", "!**/client/src/styles.css"]
+    "includes": [
+      "**",
+      "!**/client/src/routeTree.gen.ts",
+      "!**/client/src/styles.css",
+      "!**/server/.dressed",
+      "!**/schema.d.ts",
+      "!**/server/zenstack"
+    ]
   },
   "formatter": {
     "enabled": true,

@@ -1,6 +1,6 @@
 import type { Params } from '@dressed/matcher'
 import { format } from 'date-fns'
-import { type APIComponentInContainer, ComponentType, MessageFlags } from 'discord-api-types/v10'
+import { type APIComponentInContainer, MessageFlags } from 'discord-api-types/v10'
 import { h2, h3 } from 'discord-fmt'
 import {
   ActionRow,

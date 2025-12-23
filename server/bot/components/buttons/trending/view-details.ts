@@ -5,7 +5,6 @@ import { buildItemActions } from '@/server/bot/utilities/builders'
 import { buildDetailsComponent } from '@/server/bot/utilities/tmdb'
 import { type CmdTrendingCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { unwrap } from '@/server/utilities'
-import { WatchlistItemType } from '@/server/zenstack/models'
 
 export const pattern = 'trending-view-details-:id{-:originPage}'
 

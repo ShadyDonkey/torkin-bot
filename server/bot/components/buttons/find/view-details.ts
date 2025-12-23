@@ -5,7 +5,6 @@ import { buildItemActions } from '@/server/bot/utilities/builders'
 import { buildDetailsComponent } from '@/server/bot/utilities/tmdb'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { unwrap } from '@/server/utilities'
-import { WatchlistItemType } from '@/server/zenstack/models'
 
 export const pattern = 'find-view-details-:id{-:originPage}'
 
