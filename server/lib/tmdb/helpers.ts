@@ -1,8 +1,8 @@
 import { CACHE_CONFIG, cache } from '@/server/lib/cache'
-import { logger } from '@/server/lib/pino'
 import type { TrendingMovieResponse, TrendingTvResponse } from '@/server/lib/tmdb'
 import { getMovieGenres, getTrending, getTvGenres } from '@/server/lib/tmdb'
 import { unwrap } from '@/server/utilities'
+import { logger } from '@/server/utilities/logger'
 
 const MAX_TRENDING_PAGES = 5
 
@@ -15,7 +15,7 @@ export async function getTrendingMovies(timeWindow: 'day' | 'week'): Promise<Tre
   )
 
   if (cacheErr) {
-    logger.error('Error fetching cached trending movies:', cacheErr)
+    logger.error({ error: cacheErr }, 'Error fetching cached trending movies:')
   }
 
   return cached || []
@@ -43,7 +43,7 @@ export async function getTrendingTv(timeWindow: 'day' | 'week'): Promise<Trendin
   )
 
   if (cacheErr) {
-    logger.error('Error fetching cached trending TV shows:', cacheErr)
+    logger.error({ error: cacheErr }, 'Error fetching cached trending TV shows:')
   }
 
   return cached || []
@@ -76,11 +76,11 @@ export async function getGenres() {
       const [tvErr, tvGenres] = await unwrap(getTvGenres())
 
       if (movieErr) {
-        logger.error('Error fetching movie genres:', movieErr)
+        logger.error({ error: movieErr }, 'Error fetching movie genres:')
       }
 
       if (tvErr) {
-        logger.error('Error fetching TV genres:', tvErr)
+        logger.error({ error: tvErr }, 'Error fetching TV genres:')
       }
 
       movieGenres?.genres?.forEach((genre) => {
@@ -100,7 +100,7 @@ export async function getGenres() {
   )
 
   if (cacheErr) {
-    logger.error('Error fetching cached genres:', cacheErr)
+    logger.error({ error: cacheErr }, 'Error fetching cached genres:')
   }
 
   return cached || {}

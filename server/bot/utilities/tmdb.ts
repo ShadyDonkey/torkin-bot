@@ -1,7 +1,7 @@
 import { format, getUnixTime } from 'date-fns'
 import { h2, h3, subtext, TimestampStyle, timestamp } from 'discord-fmt'
 import { Container, Section, Thumbnail } from 'dressed'
-import { logger } from '@/server/lib/pino'
+import { logger } from '@/server/bot/utilities/logger'
 import {
   getImageUrl,
   getMovieDetails,

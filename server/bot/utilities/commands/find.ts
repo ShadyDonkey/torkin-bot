@@ -10,8 +10,8 @@ import {
   Thumbnail,
 } from 'dressed'
 import { buildPaginationButtons } from '@/server/bot/utilities/builders'
+import { logger } from '@/server/bot/utilities/logger'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
-import { logger } from '@/server/lib/pino'
 import { REMOTE_IDS_MOVIE, REMOTE_IDS_SERIES, search } from '@/server/lib/tvdb'
 import { unwrap } from '@/server/utilities'
 import carp from '@/server/utilities/carp'

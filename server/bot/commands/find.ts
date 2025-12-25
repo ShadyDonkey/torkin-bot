@@ -7,10 +7,10 @@ import {
 } from 'discord-api-types/v10'
 import { ActionRow, Button, type CommandConfig, type CommandInteraction, CommandOption, TextDisplay } from 'dressed'
 import { buildItemActions } from '@/server/bot/utilities/builders'
+import { logger } from '@/server/bot/utilities/logger'
 import { buildDetailsComponent } from '@/server/bot/utilities/tmdb'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
-import { logger } from '@/server/lib/pino'
 import { searchMovie, searchTv } from '@/server/lib/tmdb'
 import { unwrap } from '@/server/utilities'
 

@@ -1,4 +1,4 @@
-import { logger } from '@/server/lib/pino'
+import { logger } from '@/server/bot/utilities/logger'
 
 export function overrideConsole() {
   // const originalConsole = console

@@ -1,6 +1,6 @@
 import pino from 'pino'
 
-const transport = pino.transport({
+export const transport = pino.transport({
   targets: [
     {
       target: 'pino-loki',
@@ -28,4 +28,4 @@ const transport = pino.transport({
   ],
 })
 
-export const logger = pino(transport)
+// export const logger = pino(transport)

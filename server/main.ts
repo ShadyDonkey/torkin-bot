@@ -1,7 +1,7 @@
 import { handleRequest, installCommands } from 'dressed/server'
 import { Elysia } from 'elysia'
 import { commands, components, config, events } from '@/server/.dressed'
-import { logger } from '@/server/lib/pino'
+import { logger } from '@/server/utilities/logger'
 import { overrideConsole } from '@/server/utilities/overrides'
 
 const app = new Elysia()
