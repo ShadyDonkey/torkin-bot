@@ -15,7 +15,7 @@ const app = new Elysia()
 
     return 'Commands installed'
   })
-  .post('/', ({ request }) => handleRequest(request, commands, components, events, config), {
+  .post('/discord/handle-interaction', ({ request }) => handleRequest(request, commands, components, events, config), {
     parse: 'none',
   })
   .listen(3000)
