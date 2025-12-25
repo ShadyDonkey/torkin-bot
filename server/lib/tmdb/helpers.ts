@@ -1,4 +1,5 @@
 import { CACHE_CONFIG, cache } from '@/server/lib/cache'
+import { logger } from '@/server/lib/pino'
 import type { TrendingMovieResponse, TrendingTvResponse } from '@/server/lib/tmdb'
 import { getMovieGenres, getTrending, getTvGenres } from '@/server/lib/tmdb'
 import { unwrap } from '@/server/utilities'
@@ -14,14 +15,14 @@ export async function getTrendingMovies(timeWindow: 'day' | 'week'): Promise<Tre
   )
 
   if (cacheErr) {
-    console.error('Error fetching cached trending movies:', cacheErr)
+    logger.error('Error fetching cached trending movies:', cacheErr)
   }
 
   return cached || []
 }
 
 export async function requestTrendingMovies(timeWindow: 'day' | 'week'): Promise<TrendingMovieResponse['results']> {
-  console.log('Requesting all trending movies from TMDB.')
+  logger.info('Requesting all trending movies from TMDB.')
   const pages = await Promise.all(
     Array.from({ length: MAX_TRENDING_PAGES }, (_, i) => getTrending('movie', timeWindow, i + 1)),
   )
@@ -42,14 +43,14 @@ export async function getTrendingTv(timeWindow: 'day' | 'week'): Promise<Trendin
   )
 
   if (cacheErr) {
-    console.error('Error fetching cached trending TV shows:', cacheErr)
+    logger.error('Error fetching cached trending TV shows:', cacheErr)
   }
 
   return cached || []
 }
 
 export async function requestTrendingTv(timeWindow: 'day' | 'week'): Promise<TrendingTvResponse['results']> {
-  console.log('Requesting all trending TV shows from TMDB.')
+  logger.info('Requesting all trending TV shows from TMDB.')
   const pages = await Promise.all(
     Array.from({ length: MAX_TRENDING_PAGES }, (_, i) => getTrending('tv', timeWindow, i + 1)),
   )
@@ -75,11 +76,11 @@ export async function getGenres() {
       const [tvErr, tvGenres] = await unwrap(getTvGenres())
 
       if (movieErr) {
-        console.error('Error fetching movie genres:', movieErr)
+        logger.error('Error fetching movie genres:', movieErr)
       }
 
       if (tvErr) {
-        console.error('Error fetching TV genres:', tvErr)
+        logger.error('Error fetching TV genres:', tvErr)
       }
 
       movieGenres?.genres?.forEach((genre) => {
@@ -99,7 +100,7 @@ export async function getGenres() {
   )
 
   if (cacheErr) {
-    console.error('Error fetching cached genres:', cacheErr)
+    logger.error('Error fetching cached genres:', cacheErr)
   }
 
   return cached || {}

@@ -14,6 +14,7 @@ import {
 } from 'dressed'
 import { buildPaginationButtons } from '@/server/bot/utilities/builders'
 import { db } from '@/server/lib/db'
+import { logger } from '@/server/lib/pino'
 import { getImageUrl, getMovieDetails, getTvDetails } from '@/server/lib/tmdb'
 import { unwrap } from '@/server/utilities'
 import { WatchlistItemType } from '@/server/zenstack/models'
@@ -59,7 +60,7 @@ export default async function (interaction: MessageComponentInteraction, args: P
   )
 
   if (dbErr) {
-    console.error(dbErr)
+    logger.error(dbErr)
     return await interaction.updateResponse({
       components: [TextDisplay('Error fetching watchlist items.')],
       flags: MessageFlags.IsComponentsV2,

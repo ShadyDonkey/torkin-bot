@@ -4,6 +4,7 @@ import { h2, h3 } from 'discord-fmt'
 import { Button, Container, type MessageComponentInteraction, Section, Separator, TextDisplay } from 'dressed'
 import { buildPaginationButtons } from '@/server/bot/utilities/builders'
 import { type CmdTrendingCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
+import { logger } from '@/server/lib/pino'
 import { getTrendingMovies, getTrendingTv } from '@/server/lib/tmdb/helpers'
 import { paginateArray, unwrap } from '@/server/utilities'
 import carp from '@/server/utilities/carp'
@@ -122,7 +123,7 @@ export async function handlePagination(interaction: MessageComponentInteraction,
   )
 
   if (cacheErr || !cached) {
-    console.error({ cacheErr, cached })
+    logger.error({ cacheErr, cached })
     return await interaction.updateResponse({
       components: [TextDisplay('Could not retrieve cached search results, please try again later.')],
       flags: MessageFlags.IsComponentsV2,

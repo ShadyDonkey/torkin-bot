@@ -4,6 +4,7 @@ import { ActionRow, Button, type MessageComponentInteraction, TextDisplay } from
 import { buildItemActions } from '@/server/bot/utilities/builders'
 import { buildDetailsComponent } from '@/server/bot/utilities/tmdb'
 import { type CmdTrendingCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
+import { logger } from '@/server/lib/pino'
 import { unwrap } from '@/server/utilities'
 
 export const pattern = 'trending-view-details-:id{-:originPage}'
@@ -32,7 +33,7 @@ export default async function (interaction: MessageComponentInteraction, args: P
   )
 
   if (cacheErr || !cached) {
-    console.error({ cacheErr, cached })
+    logger.error({ cacheErr, cached })
     return await interaction.updateResponse({
       components: [TextDisplay('Could not retrieve cached trending results, please try again later.')],
       flags: MessageFlags.IsComponentsV2,

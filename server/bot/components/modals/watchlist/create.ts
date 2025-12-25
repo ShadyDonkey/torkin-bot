@@ -2,6 +2,7 @@ import { MessageFlags } from 'discord-api-types/v10'
 import { emoji } from 'discord-fmt'
 import { ActionRow, Button, type ModalSubmitInteraction, TextDisplay } from 'dressed'
 import { convertToState } from '@/server/bot/utilities/commands/watchlist'
+import { logger } from '@/server/lib/pino'
 import { unwrap } from '@/server/utilities'
 import { createWatchlist } from '@/server/utilities/db/watchlist'
 
@@ -30,7 +31,7 @@ export default async function (interaction: ModalSubmitInteraction) {
   )
 
   if (createErr) {
-    console.error(createErr)
+    logger.error(createErr)
     return await interaction.updateResponse({
       components: [TextDisplay(`Error creating watchlist. Please try again later.`)],
       flags: MessageFlags.IsComponentsV2,

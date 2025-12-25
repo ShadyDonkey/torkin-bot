@@ -2,6 +2,7 @@ import type { Params } from '@dressed/matcher'
 import { MessageFlags } from 'discord-api-types/v10'
 import { type MessageComponentInteraction, TextDisplay } from 'dressed'
 import { db, PG_ERROR } from '@/server/lib/db'
+import { logger } from '@/server/lib/pino'
 import { unwrap } from '@/server/utilities'
 import { addItemToWatchlist, removeItemFromWatchlist } from '@/server/utilities/db/watchlist'
 import { WatchlistItemType, WatchlistState } from '@/server/zenstack/models'
@@ -54,7 +55,7 @@ export default async function (interaction: MessageComponentInteraction, args: P
               flags: MessageFlags.IsComponentsV2,
             })
           default:
-            console.error(err)
+            logger.error(err)
             return await interaction.editReply({
               components: [TextDisplay('Failed to add item to watchlist due to unknown DB error')],
               flags: MessageFlags.IsComponentsV2,
@@ -62,7 +63,7 @@ export default async function (interaction: MessageComponentInteraction, args: P
         }
       }
 
-      console.error(err)
+      logger.error(err)
       return await interaction.editReply({
         components: [TextDisplay('Failed to add item to watchlist')],
         flags: MessageFlags.IsComponentsV2,
@@ -84,7 +85,7 @@ export default async function (interaction: MessageComponentInteraction, args: P
     )
 
     if (err) {
-      console.error(err)
+      logger.error(err)
 
       return await interaction.editReply({
         components: [TextDisplay('Failed to remove item from watchlist')],
@@ -113,7 +114,7 @@ async function getWatchlistId(userId: string, _args: Params<typeof pattern>) {
   })
 
   if (!watchlist) {
-    console.error('No default watchlist found for user', userId)
+    logger.error('No default watchlist found for user', userId)
 
     watchlist = await db.watchlist.create({
       data: {

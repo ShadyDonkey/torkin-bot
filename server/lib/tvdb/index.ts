@@ -1,5 +1,6 @@
 import ky, { type KyInstance } from 'ky'
 import { cache } from '@/server/lib/cache'
+import { logger } from '@/server/lib/pino'
 import { toMs, unwrap } from '@/server/utilities'
 import type { paths } from './schema'
 
@@ -22,8 +23,7 @@ export async function getTvDBClient() {
         const [err, token] = await unwrap(login())
 
         if (err) {
-          // TODO: switch to proper logger
-          console.error('TVDB login failed', err)
+          logger.error({ err }, 'TVDB login failed')
         }
 
         if (!token) {
@@ -31,7 +31,7 @@ export async function getTvDBClient() {
         }
 
         if (token.data?.token) {
-          console.debug('Retrieved TVDB token from cache')
+          logger.debug('Retrieved TVDB token from cache')
           return token.data?.token
         }
 
