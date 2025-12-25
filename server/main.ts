@@ -2,6 +2,7 @@ import { handleRequest, installCommands } from 'dressed/server'
 import { Elysia } from 'elysia'
 import { commands, components, config, events } from '@/server/.dressed'
 import { logger } from '@/server/lib/pino'
+import { overrideConsole } from '@/server/utilities/overrides'
 
 const app = new Elysia()
   .onError((err) => {
@@ -18,5 +19,8 @@ const app = new Elysia()
     parse: 'none',
   })
   .listen(3000)
+
+// Have to do this to hijack Dressed's logs and pipe them to pino/LOKI
+overrideConsole()
 
 logger.info(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`)
