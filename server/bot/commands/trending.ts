@@ -3,6 +3,7 @@ import { type CommandConfig, type CommandInteraction, CommandOption } from 'dres
 import { handleMovie, handleTv } from '@/server/bot/utilities/commands/trending'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 import { type CmdTrendingCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
+import { logger } from '@/server/lib/pino'
 import { unwrap } from '@/server/utilities'
 
 function getPeriodChoices(description: string) {
@@ -57,7 +58,7 @@ export default async function (interaction: CommandInteraction<typeof config>) {
       flags: MessageFlags.IsComponentsV2,
     })
   } catch (err) {
-    console.error(err)
+    logger.error(err)
     return await interaction.editReply('Something went wrong when fetching trending content...')
   }
 
@@ -74,6 +75,6 @@ export default async function (interaction: CommandInteraction<typeof config>) {
   )
 
   if (cacheErr || !cached) {
-    console.error({ cacheErr, cached })
+    logger.error({ cacheErr, cached })
   }
 }

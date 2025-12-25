@@ -11,6 +11,7 @@ import {
 } from 'dressed'
 import { buildPaginationButtons } from '@/server/bot/utilities/builders'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
+import { logger } from '@/server/lib/pino'
 import { REMOTE_IDS_MOVIE, REMOTE_IDS_SERIES, search } from '@/server/lib/tvdb'
 import { unwrap } from '@/server/utilities'
 import carp from '@/server/utilities/carp'
@@ -41,7 +42,7 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
   )
 
   if (cacheErr || !cached) {
-    console.error({ cacheErr, cached })
+    logger.error({ cacheErr, cached })
     return await interaction.updateResponse({
       components: [TextDisplay('Could not retrieve cached search results, please try again later.')],
       flags: MessageFlags.IsComponentsV2,
@@ -60,7 +61,7 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
   )
 
   if (searchErr || !searchResponse.data) {
-    console.error({ searchErr })
+    logger.error({ searchErr })
     return await interaction.updateResponse({
       components: [TextDisplay('An error occurred while searching for movies, please try again later.')],
       flags: MessageFlags.IsComponentsV2,

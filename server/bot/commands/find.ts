@@ -10,6 +10,7 @@ import { buildItemActions } from '@/server/bot/utilities/builders'
 import { buildDetailsComponent } from '@/server/bot/utilities/tmdb'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
+import { logger } from '@/server/lib/pino'
 import { searchMovie, searchTv } from '@/server/lib/tmdb'
 import { unwrap } from '@/server/utilities'
 
@@ -49,8 +50,8 @@ export const config = {
 } satisfies CommandConfig
 
 export default async function (interaction: CommandInteraction<typeof config>) {
-  console.log('Slash command interaction ID:', interaction.id)
   await interaction.deferReply()
+
   const subcommand = (interaction.getOption('movie') || interaction.getOption('tv'))?.subcommand()
   if (!subcommand) {
     return await interaction.editReply('Unknown subcommand')
@@ -69,7 +70,7 @@ export default async function (interaction: CommandInteraction<typeof config>) {
       flags: MessageFlags.IsComponentsV2,
     })
   } catch (err) {
-    console.error(err)
+    logger.error(err)
     return await interaction.editReply('Something went wrong when finding that...')
   }
 
@@ -82,7 +83,7 @@ export default async function (interaction: CommandInteraction<typeof config>) {
   )
 
   if (cacheErr || !cached) {
-    console.error({ cacheErr, cached })
+    logger.error({ cacheErr, cached })
   }
 }
 

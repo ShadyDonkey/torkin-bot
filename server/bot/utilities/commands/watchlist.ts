@@ -4,6 +4,7 @@ import { Button, Container, Label, Section, SelectMenu, Separator, TextDisplay, 
 import { buildPaginationButtons } from '@/server/bot/utilities/builders'
 import { watchlistIdToUrl } from '@/server/bot/utilities/website'
 import { db } from '@/server/lib/db'
+import { logger } from '@/server/lib/pino'
 import { unwrap } from '@/server/utilities'
 import carp from '@/server/utilities/carp'
 import { type Watchlist, WatchlistState } from '@/server/zenstack/models'
@@ -132,7 +133,7 @@ export async function buildListComponents(
   )
 
   if (err) {
-    console.error({ err })
+    logger.error({ err })
     return [TextDisplay('Could not retrieve watchlists, please try again later.')]
   }
 

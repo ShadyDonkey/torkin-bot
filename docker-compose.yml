@@ -17,6 +17,15 @@ services:
   #   depends_on:
   #     - db
 
+  lgtm:
+    image: grafana/otel-lgtm:latest
+    ports:
+      - '3001:3000' # Grafana
+      - '3100:3100' # Loki HTTP API
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+
   dragonfly:
     image: 'docker.dragonflydb.io/dragonflydb/dragonfly'
     ulimits:

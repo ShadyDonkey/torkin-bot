@@ -1,6 +1,7 @@
 import { format, getUnixTime } from 'date-fns'
 import { h2, h3, subtext, TimestampStyle, timestamp } from 'discord-fmt'
 import { Container, Section, Thumbnail } from 'dressed'
+import { logger } from '@/server/lib/pino'
 import {
   getImageUrl,
   getMovieDetails,
@@ -31,7 +32,7 @@ export async function buildDetailsComponent(id: string, type: 'movie' | 'tv') {
 
   if (detailsErr || !details) {
     if (detailsErr) {
-      console.error(detailsErr)
+      logger.error(detailsErr)
     }
 
     throw new Error('No details found')

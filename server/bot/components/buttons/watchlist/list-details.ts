@@ -5,6 +5,7 @@ import { ActionRow, Button, Container, type MessageComponentInteraction, TextDis
 import { convertStateToLabel } from '@/server/bot/utilities/commands/watchlist'
 import { watchlistIdToUrl } from '@/server/bot/utilities/website'
 import { db } from '@/server/lib/db'
+import { logger } from '@/server/lib/pino'
 import { unwrap } from '@/server/utilities'
 
 export const pattern = 'watchlist-:id-details{-:originPage}'
@@ -33,7 +34,7 @@ export default async function (interaction: MessageComponentInteraction, args: P
   const [err, watchlist] = await unwrap(db.watchlist.findFirst({ where: { id, discordUserId: interaction.user.id } }))
 
   if (err) {
-    console.error(err)
+    logger.error(err)
     return await interaction.updateResponse({ content: 'An error occurred while fetching the watchlist.' })
   }
 
