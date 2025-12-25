@@ -13,8 +13,8 @@ import {
   Thumbnail,
 } from 'dressed'
 import { buildPaginationButtons } from '@/server/bot/utilities/builders'
+import { logger } from '@/server/bot/utilities/logger'
 import { db } from '@/server/lib/db'
-import { logger } from '@/server/lib/pino'
 import { getImageUrl, getMovieDetails, getTvDetails } from '@/server/lib/tmdb'
 import { unwrap } from '@/server/utilities'
 import { WatchlistItemType } from '@/server/zenstack/models'

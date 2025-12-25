@@ -1,8 +1,8 @@
 import type { Params } from '@dressed/matcher'
 import { MessageFlags } from 'discord-api-types/v10'
 import { type MessageComponentInteraction, TextDisplay } from 'dressed'
+import { logger } from '@/server/bot/utilities/logger'
 import { db, PG_ERROR } from '@/server/lib/db'
-import { logger } from '@/server/lib/pino'
 import { unwrap } from '@/server/utilities'
 import { addItemToWatchlist, removeItemFromWatchlist } from '@/server/utilities/db/watchlist'
 import { WatchlistItemType, WatchlistState } from '@/server/zenstack/models'
@@ -114,7 +114,12 @@ async function getWatchlistId(userId: string, _args: Params<typeof pattern>) {
   })
 
   if (!watchlist) {
-    logger.error('No default watchlist found for user', userId)
+    logger.error(
+      {
+        userId,
+      },
+      'No default watchlist found for user',
+    )
 
     watchlist = await db.watchlist.create({
       data: {

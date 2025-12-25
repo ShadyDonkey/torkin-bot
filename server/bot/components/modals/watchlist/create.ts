@@ -2,7 +2,7 @@ import { MessageFlags } from 'discord-api-types/v10'
 import { emoji } from 'discord-fmt'
 import { ActionRow, Button, type ModalSubmitInteraction, TextDisplay } from 'dressed'
 import { convertToState } from '@/server/bot/utilities/commands/watchlist'
-import { logger } from '@/server/lib/pino'
+import { logger } from '@/server/bot/utilities/logger'
 import { unwrap } from '@/server/utilities'
 import { createWatchlist } from '@/server/utilities/db/watchlist'
 

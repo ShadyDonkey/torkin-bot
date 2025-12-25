@@ -1,9 +1,9 @@
 import { MessageFlags } from 'discord-api-types/v10'
 import { type CommandConfig, type CommandInteraction, CommandOption } from 'dressed'
 import { handleMovie, handleTv } from '@/server/bot/utilities/commands/trending'
+import { logger } from '@/server/bot/utilities/logger'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 import { type CmdTrendingCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
-import { logger } from '@/server/lib/pino'
 import { unwrap } from '@/server/utilities'
 
 function getPeriodChoices(description: string) {
