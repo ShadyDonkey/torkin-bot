@@ -63,11 +63,7 @@ export default async function (interaction: MessageComponentInteraction, args: P
 
       Container(TextDisplay(body)),
       ActionRow(
-        Button({
-          custom_id: `watchlist-${watchlist.id}-items-goto-${originPage || '1'}-back`,
-          label: 'View Items',
-          style: 'Primary',
-        }),
+        Button({ custom_id: `watchlist-${watchlist.id}-items-goto-${originPage || '1'}-back`, label: 'View Items' }),
         Button({
           custom_id: `watchlist-results-goto-${originPage || '1'}-back`,
           label: originPage ? 'Back to Lists' : 'Show All Lists',

@@ -43,11 +43,7 @@ export default async function (interaction: ModalSubmitInteraction) {
     components: [
       TextDisplay(`Watchlist created successfully!`),
       ActionRow(
-        Button({
-          custom_id: `watchlist-${created.id}-details`,
-          label: 'View Watchlist',
-          style: 'Primary',
-        }),
+        Button({ custom_id: `watchlist-${created.id}-details`, label: 'View Watchlist' }),
         Button({
           custom_id: `watchlist-results-goto-1-all`,
           label: 'All Watchlists',
