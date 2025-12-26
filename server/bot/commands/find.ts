@@ -1,11 +1,5 @@
-import {
-  type APIActionRowComponent,
-  type APIButtonComponent,
-  type APIContainerComponent,
-  type APITextDisplayComponent,
-  MessageFlags,
-} from 'discord-api-types/v10'
-import { ActionRow, Button, type CommandConfig, type CommandInteraction, CommandOption, TextDisplay } from 'dressed'
+import { type APIMessageTopLevelComponent, MessageFlags } from 'discord-api-types/v10'
+import { Button, type CommandConfig, type CommandInteraction, CommandOption, TextDisplay } from 'dressed'
 import { buildItemActions } from '@/server/bot/utilities/builders'
 import { logger } from '@/server/bot/utilities/logger'
 import { buildDetailsComponent } from '@/server/bot/utilities/tmdb'
@@ -13,6 +7,7 @@ import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { searchMovie, searchTv } from '@/server/lib/tmdb'
 import { unwrap } from '@/server/utilities'
+import carp from '@/server/utilities/carp'
 
 export const config = {
   description: 'Find a show or movie by name',
@@ -87,9 +82,7 @@ export default async function (interaction: CommandInteraction<typeof config>) {
   }
 }
 
-async function handleMovie(
-  query: string,
-): Promise<(APIContainerComponent | APIActionRowComponent<APIButtonComponent> | APITextDisplayComponent)[]> {
+async function handleMovie(query: string) {
   const [searchErr, results] = await unwrap(searchMovie(query))
   if (searchErr) {
     throw new Error('Failed to search for movie')
@@ -109,17 +102,10 @@ async function handleMovie(
     return [TextDisplay('This movie is for adults only')]
   }
 
-  return [
-    ...(await buildDetailsComponent(first.id.toString(), 'movie')),
-    ...buildItemActions(first.id.toString(), 'movie'),
-    ActionRow(
-      Button({
-        custom_id: 'find-all-results',
-        label: 'See All Results',
-        style: 'Primary',
-      }),
-    ),
-  ]
+  return carp<APIMessageTopLevelComponent>(
+    await buildDetailsComponent(first.id.toString(), 'movie'),
+    buildItemActions(first.id.toString(), 'movie', [Button({ custom_id: 'find-goto-1', label: 'See All Results' })]),
+  )
 }
 
 async function handleTv(query: string) {
@@ -143,15 +129,8 @@ async function handleTv(query: string) {
     return [TextDisplay('This TV show is for adults only')]
   }
 
-  return [
-    ...(await buildDetailsComponent(first.id.toString(), 'tv')),
-    ...buildItemActions(first.id.toString(), 'tv'),
-    ActionRow(
-      Button({
-        custom_id: 'find-all-results',
-        label: 'See All Results',
-        style: 'Primary',
-      }),
-    ),
-  ]
+  return carp<APIMessageTopLevelComponent>(
+    await buildDetailsComponent(first.id.toString(), 'tv'),
+    buildItemActions(first.id.toString(), 'tv', [Button({ custom_id: 'find-goto-1', label: 'See All Results' })]),
+  )
 }

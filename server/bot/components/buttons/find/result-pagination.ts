@@ -2,7 +2,7 @@ import type { Params } from '@dressed/matcher'
 import type { MessageComponentInteraction } from 'dressed'
 import { paginateSearch } from '@/server/bot/utilities/commands/find'
 
-export const pattern = 'find-goto-:page(\\d+)-:throwaway'
+export const pattern = 'find-goto-:page(\\d+){-:throwaway}'
 
 export default async function (interaction: MessageComponentInteraction, args: Params<typeof pattern>) {
   return await paginateSearch(interaction, Number.parseInt(args.page, 10))
