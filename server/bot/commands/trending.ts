@@ -1,5 +1,5 @@
-import { MessageFlags } from 'discord-api-types/v10'
-import { type CommandConfig, type CommandInteraction, CommandOption } from 'dressed'
+import type { CommandInteraction } from '@dressed/react'
+import { type CommandConfig, CommandOption } from 'dressed'
 import { handleMovie, handleTv } from '@/server/bot/utilities/commands/trending'
 import { logger } from '@/server/bot/utilities/logger'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
@@ -53,10 +53,7 @@ export default async function (interaction: CommandInteraction<typeof config>) {
   const type = subcommand?.name
 
   try {
-    await interaction.editReply({
-      components: await (type === 'movie' ? handleMovie : handleTv)(period, 1),
-      flags: MessageFlags.IsComponentsV2,
-    })
+    await interaction.editReply(await (type === 'movie' ? handleMovie : handleTv)(period, 1))
   } catch (err) {
     logger.error(err)
     return await interaction.editReply('Something went wrong when fetching trending content...')

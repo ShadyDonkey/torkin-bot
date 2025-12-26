@@ -1,5 +1,5 @@
 import type { Params } from '@dressed/matcher'
-import type { MessageComponentInteraction } from 'dressed'
+import type { MessageComponentInteraction } from '@dressed/react'
 import { paginateSearch } from '@/server/bot/utilities/commands/find'
 
 export const pattern = 'find-goto-:page(\\d+){-:throwaway}'

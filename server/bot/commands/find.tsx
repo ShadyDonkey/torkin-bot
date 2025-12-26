@@ -1,13 +1,12 @@
-import { type APIMessageTopLevelComponent, MessageFlags } from 'discord-api-types/v10'
-import { Button, type CommandConfig, type CommandInteraction, CommandOption, TextDisplay } from 'dressed'
-import { buildItemActions } from '@/server/bot/utilities/builders'
+import { Button, type CommandInteraction } from '@dressed/react'
+import { type CommandConfig, CommandOption } from 'dressed'
+import { ItemActions } from '@/server/bot/utilities/builders'
 import { logger } from '@/server/bot/utilities/logger'
-import { buildDetailsComponent } from '@/server/bot/utilities/tmdb'
+import { buildSelectionDetails } from '@/server/bot/utilities/tmdb'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { searchMovie, searchTv } from '@/server/lib/tmdb'
 import { unwrap } from '@/server/utilities'
-import carp from '@/server/utilities/carp'
 
 export const config = {
   description: 'Find a show or movie by name',
@@ -60,10 +59,7 @@ export default async function (interaction: CommandInteraction<typeof config>) {
   }
 
   try {
-    await interaction.editReply({
-      components: await (searchType === 'movie' ? handleMovie : handleTv)(query),
-      flags: MessageFlags.IsComponentsV2,
-    })
+    await interaction.editReply(await (searchType === 'movie' ? handleMovie : handleTv)(query))
   } catch (err) {
     logger.error(err)
     return await interaction.editReply('Something went wrong when finding that...')
@@ -89,22 +85,26 @@ async function handleMovie(query: string) {
   }
 
   if (!results?.results || results.results.length === 0) {
-    return [TextDisplay('No results found')]
+    return 'No results found'
   }
 
   const first = results.results.at(0)
 
   if (!first) {
-    return [TextDisplay('No results found')]
+    return 'No results found'
   }
 
   if (first.adult) {
-    return [TextDisplay('This movie is for adults only')]
+    return 'This movie is for adults only'
   }
 
-  return carp<APIMessageTopLevelComponent>(
-    await buildDetailsComponent(first.id.toString(), 'movie'),
-    buildItemActions(first.id.toString(), 'movie', [Button({ custom_id: 'find-goto-1', label: 'See All Results' })]),
+  return (
+    <>
+      {await buildSelectionDetails(first.id.toString(), 'movie')}
+      <ItemActions id={first.id.toString()} type="movie">
+        <Button custom_id="find-goto-1" label="See All Results" />
+      </ItemActions>
+    </>
   )
 }
 
@@ -112,25 +112,25 @@ async function handleTv(query: string) {
   const [searchErr, results] = await unwrap(searchTv(query))
 
   if (searchErr) {
-    return [TextDisplay('Failed to search for TV show')]
+    return 'Failed to search for TV show'
   }
 
-  if (!results?.results || results.results.length === 0) {
-    return [TextDisplay('No results found')]
-  }
-
-  const first = results.results.at(0)
+  const first = results?.results?.at(0)
 
   if (!first) {
-    return [TextDisplay('No results found')]
+    return 'No results found'
   }
 
   if (first.adult) {
-    return [TextDisplay('This TV show is for adults only')]
+    return 'This TV show is for adults only'
   }
 
-  return carp<APIMessageTopLevelComponent>(
-    await buildDetailsComponent(first.id.toString(), 'tv'),
-    buildItemActions(first.id.toString(), 'tv', [Button({ custom_id: 'find-goto-1', label: 'See All Results' })]),
+  return (
+    <>
+      {await buildSelectionDetails(first.id.toString(), 'tv')}
+      <ItemActions id={first.id.toString()} type="tv">
+        <Button custom_id="find-goto-1" label="See All Results" />
+      </ItemActions>
+    </>
   )
 }
