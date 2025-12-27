@@ -12,10 +12,8 @@ export const trendingJobs = {
       '@daily',
       {
         name: 'fetch-movie-trending-day',
-        protect: true,
-        catch: (err) => {
-          logger.error({ error: err }, 'Error in fetch-movie-trending-day job')
-        },
+        protect,
+        catch: catchHandler,
       },
       async () => {
         const [resultErr, results] = await unwrap(requestTrendingMovies('day'))
@@ -51,10 +49,8 @@ export const trendingJobs = {
       '@daily',
       {
         name: 'fetch-movie-trending-week',
-        protect: true,
-        catch: (err) => {
-          logger.error({ error: err }, 'Error in fetch-movie-trending-week job')
-        },
+        protect,
+        catch: catchHandler,
       },
       async () => {
         const [resultErr, results] = await unwrap(requestTrendingMovies('week'))
@@ -92,10 +88,8 @@ export const trendingJobs = {
       '@daily',
       {
         name: 'fetch-tv-trending-day',
-        protect: true,
-        catch: (err) => {
-          logger.error({ error: err }, 'Error in fetch-tv-trending-day job')
-        },
+        protect,
+        catch: catchHandler,
       },
       async () => {
         const [resultErr, results] = await unwrap(requestTrendingTv('day'))
@@ -131,10 +125,8 @@ export const trendingJobs = {
       '@daily',
       {
         name: 'fetch-tv-trending-week',
-        protect: true,
-        catch: (err) => {
-          logger.error({ error: err }, 'Error in fetch-tv-trending-week job')
-        },
+        protect,
+        catch: catchHandler,
       },
       async () => {
         const [resultErr, results] = await unwrap(requestTrendingTv('week'))
@@ -167,4 +159,12 @@ export const trendingJobs = {
       },
     ),
   },
+}
+
+function protect(job: Cron) {
+  logger.warn(`Job ${job.name} is blocked because a run is already in progress from ${job.currentRun()?.toISOString()}`)
+}
+
+function catchHandler(error: unknown, job: Cron) {
+  logger.error({ error }, `Error occurred in ${job.name} job`)
 }
