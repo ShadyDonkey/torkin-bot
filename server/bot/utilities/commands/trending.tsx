@@ -1,14 +1,13 @@
-import { Button, Container, type MessageComponentInteraction, Section, Separator } from '@dressed/react'
-import { format } from 'date-fns'
+import { Container, type MessageComponentInteraction, Separator } from '@dressed/react'
 import { h2 } from 'discord-fmt'
 import { Fragment } from 'react/jsx-runtime'
-import { PaginationButtons } from '@/server/bot/utilities/builders'
+import { ListingPreview, PaginationButtons } from '@/server/bot/utilities/builders'
 import { logger } from '@/server/bot/utilities/logger'
 import { type CmdTrendingCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { getTrendingMovies, getTrendingTv } from '@/server/lib/tmdb/helpers'
 import { paginateArray, unwrap } from '@/server/utilities'
 
-const ITEMS_PER_PAGE = 5
+const ITEMS_PER_PAGE = 4
 
 export async function handleMovie(timeWindow: 'day' | 'week', page: number) {
   const [trendingErr, trending] = await unwrap(getTrendingMovies(timeWindow))
@@ -33,20 +32,13 @@ export async function handleMovie(timeWindow: 'day' | 'week', page: number) {
           }
           return (
             <Fragment key={movie.id}>
-              <Section
-                accessory={
-                  <Button
-                    custom_id={`trending-view-details-${movie.id > 0 ? movie.id : Math.random()}-${page}`}
-                    label="View Details"
-                    disabled={!movie.id}
-                    style="Secondary"
-                  />
-                }
-              >
-                ### {movie.title ?? movie.original_title ?? 'Unknown'} (
-                {movie.release_date ? format(new Date(movie.release_date), 'yyyy') : 'Not Released'}){'\n'}
-                {movie.overview && `${movie.overview.substring(0, 255)} [...]`}
-              </Section>
+              <ListingPreview
+                linkId={`trending-view-details-${movie.id > 0 ? movie.id : Math.random()}-${page}`}
+                title={movie.title ?? movie.original_title}
+                description={movie.overview}
+                releaseDate={movie.release_date}
+                thumbnail={movie.poster_path}
+              />
               {index < paginatedItems.results.length - 1 && <Separator />}
             </Fragment>
           )
@@ -80,20 +72,13 @@ export async function handleTv(timeWindow: 'day' | 'week', page: number) {
           }
           return (
             <Fragment key={tv.id}>
-              <Section
-                accessory={
-                  <Button
-                    custom_id={`trending-view-details-${tv.id}-${page}`}
-                    label="View Details"
-                    disabled={!tv.id}
-                    style="Secondary"
-                  />
-                }
-              >
-                ### {tv.name ?? tv.original_name ?? 'Unknown'} (
-                {tv.first_air_date ? format(new Date(tv.first_air_date), 'yyyy') : 'Not Released'}){'\n'}
-                {tv.overview && `${tv.overview.substring(0, 255)} [...]`}
-              </Section>
+              <ListingPreview
+                linkId={`trending-view-details-${tv.id}-${page}`}
+                title={tv.name ?? tv.original_name}
+                description={tv.overview}
+                releaseDate={tv.first_air_date}
+                thumbnail={tv.poster_path}
+              />
               {index < paginatedItems.results.length - 1 && <Separator />}
             </Fragment>
           )
