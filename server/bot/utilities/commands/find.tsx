@@ -41,7 +41,9 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
     <>
       <Container>
         {searchResponse.data.map((entry, index) => {
-          if (!entry.image_url) return null
+          if (!entry.image_url) {
+            return null
+          }
 
           const tmdbId = entry.remote_ids?.find((remoteId) =>
             cached.searchType === 'movie'

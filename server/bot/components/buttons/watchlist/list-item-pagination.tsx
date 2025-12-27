@@ -76,12 +76,16 @@ export default async function (interaction: MessageComponentInteraction, args: P
       <Container>
         {h2(watchlist?.name ?? 'Unnamed Watchlist')}
         {providerResults.map((entry, index) => {
-          if (!entry?.poster_path || entry.adult) return null
+          if (!entry?.poster_path || entry.adult) {
+            return null
+          }
 
           const type = 'release_date' in entry ? 'movie' : 'tv'
 
           function MovieBody() {
-            if (!('release_date' in entry)) return null
+            if (!('release_date' in entry)) {
+              return null
+            }
             return (
               <>
                 ### {entry.title ?? entry.original_title ?? 'Unknown'}
@@ -91,7 +95,9 @@ export default async function (interaction: MessageComponentInteraction, args: P
           }
 
           function TVBody() {
-            if (!('first_air_date' in entry)) return null
+            if (!('first_air_date' in entry)) {
+              return null
+            }
             return (
               <>
                 ### {entry.name ?? entry.original_name ?? 'Unknown'}
