@@ -6,16 +6,16 @@ export function slugify(str: string) {
   })
 }
 
-export async function paginateArray<T>(
+export function paginateArray<T>(
   items: T[],
   page: number,
   limit: number,
-): Promise<{
+): {
   results: T[]
   page: number
   totalPages: number
   totalResults: number
-}> {
+} {
   const start = (page - 1) * limit
   const end = start + limit
   const results = items.slice(start, end)

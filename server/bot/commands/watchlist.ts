@@ -1,5 +1,5 @@
-import { MessageFlags } from 'discord-api-types/v10'
-import { type CommandConfig, type CommandInteraction, CommandOption } from 'dressed'
+import type { CommandInteraction } from '@dressed/react'
+import { type CommandConfig, CommandOption } from 'dressed'
 import { buildListComponents, modalComponents } from '@/server/bot/utilities/commands/watchlist'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 
@@ -30,15 +30,12 @@ export default async function (interaction: CommandInteraction<typeof config>) {
   }
 
   if (subcommand.name === 'create') {
-    return await interaction.showModal(modalComponents())
+    return await interaction.showModal(...modalComponents())
   }
 
   await interaction.deferReply()
 
   if (subcommand.name === 'list') {
-    return await interaction.editReply({
-      components: await buildListComponents(interaction.user.id, 1),
-      flags: MessageFlags.IsComponentsV2,
-    })
+    return await interaction.editReply(await buildListComponents(interaction.user.id, 1))
   }
 }
