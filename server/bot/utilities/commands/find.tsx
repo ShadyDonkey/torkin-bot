@@ -1,13 +1,12 @@
-import { Button, Container, type MessageComponentInteraction, Section, Separator, Thumbnail } from '@dressed/react'
-import { bold, subtext } from 'discord-fmt'
+import { Container, type MessageComponentInteraction, Separator } from '@dressed/react'
 import { Fragment } from 'react/jsx-runtime'
-import { PaginationButtons } from '@/server/bot/utilities/builders'
+import { ListingPreview, PaginationButtons } from '@/server/bot/utilities/builders'
 import { logger } from '@/server/bot/utilities/logger'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { REMOTE_IDS_MOVIE, REMOTE_IDS_SERIES, search } from '@/server/lib/tvdb'
 import { unwrap } from '@/server/utilities'
 
-const ITEMS_PER_PAGE = 3
+const ITEMS_PER_PAGE = 4
 
 export async function paginateSearch(interaction: MessageComponentInteraction, page: number) {
   if (!interaction.message.interaction_metadata) {
@@ -34,7 +33,7 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
     return await interaction.updateResponse('An error occurred while searching for movies, please try again later.')
   }
 
-  const totalResults = searchResponse.links?.total_items || 1
+  const totalResults = searchResponse.links?.total_items ?? 1
   const totalPages = Math.ceil(totalResults / ITEMS_PER_PAGE)
 
   return await interaction.updateResponse(
@@ -51,27 +50,16 @@ export async function paginateSearch(interaction: MessageComponentInteraction, p
               : remoteId.type === REMOTE_IDS_SERIES.tmdb,
           )?.id
 
-          const yearText = entry.year ? `(${entry.year})` : ''
-          const titleWithYear = `${bold(entry.title ?? entry.name ?? 'Unknown')} ${yearText}`
-
           return (
             <Fragment key={entry.id}>
-              <Section
-                accessory={
-                  <Button
-                    custom_id={`find-view-details-${tmdbId || entry.id}-${page}`}
-                    label="View Details"
-                    style="Secondary"
-                    disabled={!tmdbId}
-                  />
-                }
-              >
-                {entry.extended_title ? bold(entry.extended_title) : titleWithYear}
-                {entry.genres && entry.genres.length > 0 && `\n${subtext(entry.genres.join(', '))}`}
-              </Section>
-              <Section accessory={<Thumbnail media={entry.image_url} />}>
-                {entry.overview ? `${entry.overview.substring(0, 255)}...` : '‎ '}
-              </Section>
+              <ListingPreview
+                linkId={`find-view-details-${tmdbId || entry.id}-${page}`}
+                title={entry.title ?? entry.name}
+                subtitle={entry.genres?.join(', ')}
+                description={entry.overview}
+                releaseDate={entry.year}
+                thumbnail={entry.image_url}
+              />
               {searchResponse.data?.length && index < searchResponse.data.length - 1 && <Separator />}
             </Fragment>
           )
