@@ -1,8 +1,11 @@
 import { Cron } from 'croner'
 import { CACHE_CONFIG, cache } from '@/server/lib/cache'
+import { getWatchProviderRegions } from '@/server/lib/tmdb'
 import { requestTrendingMovies, requestTrendingTv } from '@/server/lib/tmdb/helpers'
 import { unwrap } from '@/server/utilities'
 import { logger } from '@/server/utilities/logger'
+
+const PROVIDER_JOB_CRON_PATTERN = '0 0 * * 0-6/2'
 
 logger.info('Starting scheduled jobs')
 
@@ -159,6 +162,18 @@ export const trendingJobs = {
       },
     ),
   },
+}
+
+export const providerJobs = {
+  regions: new Cron(
+    PROVIDER_JOB_CRON_PATTERN,
+    {
+      name: 'fetch-provider-regions',
+      protect,
+      catch: catchHandler,
+    },
+    async () => {},
+  ),
 }
 
 function protect(job: Cron) {
