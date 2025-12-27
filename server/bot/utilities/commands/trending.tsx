@@ -28,7 +28,9 @@ export async function handleMovie(timeWindow: 'day' | 'week', page: number) {
       {h2(`Trending Movies ${timeWindow === 'day' ? 'Today' : 'this Week'}`)}
       <Container>
         {paginatedItems.results.map((movie, index) => {
-          if ((!movie.title && !movie.original_title) || !movie.overview || movie.adult) return null
+          if ((!movie.title && !movie.original_title) || !movie.overview || movie.adult) {
+            return null
+          }
           return (
             <Fragment key={movie.id}>
               <Section
@@ -73,7 +75,9 @@ export async function handleTv(timeWindow: 'day' | 'week', page: number) {
       {h2(`Trending TV Shows ${timeWindow === 'day' ? 'Today' : 'this Week'}`)}
       <Container>
         {paginatedItems.results.map((tv, index) => {
-          if ((!tv.name && !tv.original_name) || !tv.overview || tv.adult) return null
+          if ((!tv.name && !tv.original_name) || !tv.overview || tv.adult) {
+            return null
+          }
           return (
             <Fragment key={tv.id}>
               <Section

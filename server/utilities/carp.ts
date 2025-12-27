@@ -12,8 +12,11 @@ type CarpNode = (APIBaseComponent<ComponentType> | string | undefined | false | 
 export default function carp<T extends APIBaseComponent<ComponentType>>(...components: CarpNode[]): T[] {
   const combined = (components.flat().filter(Boolean) as (T | string)[]).reduce<(T | string)[]>((acc, curr) => {
     const prev = acc.at(-1)
-    if (typeof curr === 'string' && typeof prev === 'string') acc[acc.length - 1] = `${prev}\n${curr}`
-    else acc.push(curr)
+    if (typeof curr === 'string' && typeof prev === 'string') {
+      acc[acc.length - 1] = `${prev}\n${curr}`
+    } else {
+      acc.push(curr)
+    }
     return acc
   }, [])
 

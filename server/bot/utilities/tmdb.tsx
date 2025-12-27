@@ -99,7 +99,9 @@ async function buildTvBody(details: TvDetailsResponse, id: string) {
       detailsList.push(`Networks: ${details.networks.map((network) => network.name).join(', ')}`)
     }
 
-    if (detailsList.length === 0) return null
+    if (detailsList.length === 0) {
+      return null
+    }
 
     return `${h3('More Info')}\n${detailsList.join('\n')}`
   }
@@ -150,7 +152,9 @@ async function buildMovieBody(details: MovieDetailsResponse, id: string) {
       detailsList.push(`Production Companies: ${details.production_companies.map((pc) => pc.name).join(', ')}`)
     }
 
-    if (detailsList.length === 0) return null
+    if (detailsList.length === 0) {
+      return null
+    }
 
     return `${h3('More Info')}\n${detailsList.join('\n')}`
   }
