@@ -1,6 +1,7 @@
-import { cacheEntry } from '@/server/lib/cache'
+import { cache, cacheEntry } from '@/server/lib/cache'
+import * as api from '@/server/lib/tmdb/api'
 import type { TimeWindow, TypeSelection } from '@/server/lib/tmdb/types'
-import { slugify } from '@/server/utilities'
+import { slugify, unwrap } from '@/server/utilities'
 
 const CACHE_PREFIX = 'lib:tmdb'
 const CACHE_CONFIG = {
@@ -24,3 +25,68 @@ const CACHE_CONFIG = {
     '14d',
   ),
 } as const
+
+async function getOrSet<T>(key: string, ttl: string, fetcher: () => Promise<T>) {
+  const [err, result] = await unwrap(
+    cache.getOrSet(key, fetcher, {
+      ttl,
+    }),
+  )
+
+  if (err) {
+    throw err
+  }
+
+  if (!result) {
+    throw new Error('No result found')
+  }
+
+  return result
+}
+
+export async function search<T extends TypeSelection>(type: T, query: string, page: number = 1) {
+  return await api.search<T>(type, query, page)
+}
+
+export async function getTrending<T extends TypeSelection>(type: T, timeWindow: TimeWindow) {
+  return await getOrSet(
+    CACHE_CONFIG.trending.key(type, timeWindow),
+    CACHE_CONFIG.trending.ttl,
+    async () => await api.trending(type, timeWindow),
+  )
+}
+
+export async function getGenres<T extends TypeSelection>(type: T) {
+  return await getOrSet(
+    CACHE_CONFIG[type].genres.key(),
+    CACHE_CONFIG[type].genres.ttl,
+    async () => await api.genres(type),
+  )
+}
+
+export async function getDetails<T extends TypeSelection>(type: T, id: string | number) {
+  return await getOrSet(
+    CACHE_CONFIG[type].details.key(id),
+    CACHE_CONFIG[type].details.ttl,
+    async () => await api.details(type, id),
+  )
+}
+
+export async function getItemWatchProviders<T extends TypeSelection>(
+  type: T,
+  options: T extends 'movie' ? { id: string | number } : { id: string | number; season: string | number },
+) {
+  return await getOrSet(
+    CACHE_CONFIG[type].watchProviders.key(options.id),
+    CACHE_CONFIG[type].watchProviders.ttl,
+    async () => await api.watchProviders(type, options),
+  )
+}
+
+export async function getAvailableWatchProviders<T extends 'regions' | 'movie' | 'tv'>(type: T) {
+  return await getOrSet(
+    CACHE_CONFIG.watchProviders[type].key(),
+    CACHE_CONFIG.watchProviders[type].ttl,
+    async () => await api.availableWatchProviders(type),
+  )
+}
