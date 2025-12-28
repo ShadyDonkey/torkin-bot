@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@dressed/matcher": "^1.4.0",
-    "@dressed/react": "^1.6.0",
+    "@dressed/react": "^1.7.0",
     "@keyv/redis": "^5.1.5",
     "@lukeed/ms": "^2.0.2",
     "@sindresorhus/slugify": "^3.0.0",

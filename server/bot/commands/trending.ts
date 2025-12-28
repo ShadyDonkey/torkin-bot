@@ -1,6 +1,6 @@
 import type { CommandInteraction } from '@dressed/react'
 import { type CommandConfig, CommandOption } from 'dressed'
-import { handleMovie, handleTv } from '@/server/bot/utilities/commands/trending'
+import { TrendingMovies, TrendingTv } from '@/server/bot/utilities/commands/trending'
 import { logger } from '@/server/bot/utilities/logger'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 import { type CmdTrendingCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
@@ -49,11 +49,11 @@ export default async function (interaction: CommandInteraction<typeof config>) {
     return await interaction.editReply('Unknown subcommand')
   }
 
-  const period = (subcommand?.getOption('period')?.string() || 'day') as 'day' | 'week'
+  const window = (subcommand?.getOption('period')?.string() || 'day') as 'day' | 'week'
   const type = subcommand?.name
 
   try {
-    await interaction.editReply(await (type === 'movie' ? handleMovie : handleTv)(period, 1))
+    await interaction.editReply((type === 'movie' ? TrendingMovies : TrendingTv)({ window, page: 1 }))
   } catch (err) {
     logger.error(err)
     return await interaction.editReply('Something went wrong when fetching trending content...')
@@ -63,7 +63,7 @@ export default async function (interaction: CommandInteraction<typeof config>) {
     keyv.set<CmdTrendingCacheEntry>(
       KEYV_CONFIG.cmd.trending.key(interaction.id),
       {
-        timeWindow: period,
+        timeWindow: window,
         type,
         userId: interaction.user.id,
       },

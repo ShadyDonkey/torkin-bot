@@ -4,9 +4,18 @@ import { getMovieGenres, getTrending, getTvGenres } from '@/server/lib/tmdb'
 import { unwrap } from '@/server/utilities'
 import { logger } from '@/server/utilities/logger'
 
-const MAX_TRENDING_PAGES = 5
+const MAX_TRENDING_PAGES = 4
 
-export async function getTrendingMovies(timeWindow: 'day' | 'week'): Promise<TrendingMovieResponse['results']> {
+export interface StandardTrendingListing {
+  id: number
+  title?: string
+  description?: string
+  releaseDate?: string
+  thumbnail?: string
+  adult: boolean
+}
+
+export async function getTrendingMovies(timeWindow: 'day' | 'week'): Promise<StandardTrendingListing[]> {
   const [cacheErr, cached] = await unwrap(
     cache.getOrSet<TrendingMovieResponse['results']>(
       CACHE_CONFIG.lib.tmdb.trending.key('movie', timeWindow),
@@ -18,7 +27,14 @@ export async function getTrendingMovies(timeWindow: 'day' | 'week'): Promise<Tre
     logger.error({ error: cacheErr }, 'Error fetching cached trending movies:')
   }
 
-  return cached || []
+  return (cached || []).map((l) => ({
+    id: l.id,
+    title: l.title ?? l.original_title,
+    description: l.overview,
+    releaseDate: l.release_date,
+    thumbnail: l.poster_path,
+    adult: l.adult,
+  }))
 }
 
 export async function requestTrendingMovies(timeWindow: 'day' | 'week'): Promise<TrendingMovieResponse['results']> {
@@ -35,7 +51,7 @@ export async function requestTrendingMovies(timeWindow: 'day' | 'week'): Promise
   return filtered
 }
 
-export async function getTrendingTv(timeWindow: 'day' | 'week'): Promise<TrendingTvResponse['results']> {
+export async function getTrendingTv(timeWindow: 'day' | 'week'): Promise<StandardTrendingListing[]> {
   const [cacheErr, cached] = await unwrap(
     cache.getOrSet<TrendingTvResponse['results']>(CACHE_CONFIG.lib.tmdb.trending.key('tv', timeWindow), async () =>
       requestTrendingTv(timeWindow),
@@ -46,7 +62,14 @@ export async function getTrendingTv(timeWindow: 'day' | 'week'): Promise<Trendin
     logger.error({ error: cacheErr }, 'Error fetching cached trending TV shows:')
   }
 
-  return cached || []
+  return (cached || []).map((l) => ({
+    id: l.id,
+    title: l.name ?? l.original_name,
+    description: l.overview,
+    releaseDate: l.first_air_date,
+    thumbnail: l.poster_path,
+    adult: l.adult,
+  }))
 }
 
 export async function requestTrendingTv(timeWindow: 'day' | 'week'): Promise<TrendingTvResponse['results']> {

@@ -1,99 +1,78 @@
 import { Container, type MessageComponentInteraction, Separator } from '@dressed/react'
 import { h2 } from 'discord-fmt'
+import { Suspense, use } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 import { ListingPreview, PaginationButtons } from '@/server/bot/utilities/builders'
 import { logger } from '@/server/bot/utilities/logger'
 import { type CmdTrendingCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
-import { getTrendingMovies, getTrendingTv } from '@/server/lib/tmdb/helpers'
+import { getTrendingMovies, getTrendingTv, type StandardTrendingListing } from '@/server/lib/tmdb/helpers'
 import { paginateArray, unwrap } from '@/server/utilities'
 
 const ITEMS_PER_PAGE = 4
 
-export async function handleMovie(timeWindow: 'day' | 'week', page: number) {
-  const [trendingErr, trending] = await unwrap(getTrendingMovies(timeWindow))
-
-  if (trendingErr) {
-    throw trendingErr
-  }
-
-  if (!trending || trending.length === 0) {
-    throw new Error('No trending movies found')
-  }
-
-  const paginatedItems = paginateArray(trending, page, ITEMS_PER_PAGE)
-
+export function TrendingMovies({ window, page }: Readonly<{ window: 'day' | 'week'; page: number }>) {
   return (
     <>
-      {h2(`Trending Movies ${timeWindow === 'day' ? 'Today' : 'this Week'}`)}
-      <Container>
-        {paginatedItems.results.map((movie, index) => {
-          if ((!movie.title && !movie.original_title) || !movie.overview || movie.adult) {
-            return null
-          }
-          return (
-            <Fragment key={movie.id}>
-              <ListingPreview
-                linkId={`trending-view-details-${movie.id > 0 ? movie.id : Math.random()}-${page}`}
-                title={movie.title ?? movie.original_title}
-                description={movie.overview}
-                releaseDate={movie.release_date}
-                thumbnail={movie.poster_path}
-              />
-              {index < paginatedItems.results.length - 1 && <Separator />}
-            </Fragment>
-          )
-        })}
-      </Container>
-      <PaginationButtons currentPage={paginatedItems.page} prefix="trending" totalPages={paginatedItems.totalPages} />
+      {h2(`Trending Movies ${window === 'day' ? 'Today' : 'this Week'}`)}
+      <Suspense
+        fallback={
+          <Container>
+            Fetching trending movies...
+            <PaginationButtons currentPage={page} prefix="LOADING" />
+          </Container>
+        }
+      >
+        <TrendingListings page={page} promise={getTrendingMovies(window)} />
+      </Suspense>
     </>
   )
 }
 
-export async function handleTv(timeWindow: 'day' | 'week', page: number) {
-  const [trendingErr, trending] = await unwrap(getTrendingTv(timeWindow))
-
-  if (trendingErr) {
-    throw trendingErr
-  }
-
-  if (!trending || trending.length === 0) {
-    throw new Error('No trending TV shows found')
-  }
-
-  const paginatedItems = paginateArray(trending, page, ITEMS_PER_PAGE)
-
+export function TrendingTv({ window, page }: Readonly<{ window: 'day' | 'week'; page: number }>) {
   return (
     <>
-      {h2(`Trending TV Shows ${timeWindow === 'day' ? 'Today' : 'this Week'}`)}
+      {h2(`Trending TV Shows ${window === 'day' ? 'Today' : 'this Week'}`)}
+      <Suspense
+        fallback={
+          <Container>
+            Fetching trending shows...
+            <PaginationButtons currentPage={page} prefix="LOADING" />
+          </Container>
+        }
+      >
+        <TrendingListings page={page} promise={getTrendingTv(window)} />
+      </Suspense>
+    </>
+  )
+}
+
+function TrendingListings({ page, promise }: Readonly<{ page: number; promise: Promise<StandardTrendingListing[]> }>) {
+  const trending = use(promise)
+  const { results, totalPages } = paginateArray(trending, page, ITEMS_PER_PAGE)
+  return (
+    <>
       <Container>
-        {paginatedItems.results.map((tv, index) => {
-          if ((!tv.name && !tv.original_name) || !tv.overview || tv.adult) {
+        {results.map((item, index) => {
+          if (!item.title || !item.description || item.adult) {
             return null
           }
           return (
-            <Fragment key={tv.id}>
-              <ListingPreview
-                linkId={`trending-view-details-${tv.id}-${page}`}
-                title={tv.name ?? tv.original_name}
-                description={tv.overview}
-                releaseDate={tv.first_air_date}
-                thumbnail={tv.poster_path}
-              />
-              {index < paginatedItems.results.length - 1 && <Separator />}
+            <Fragment key={item.id}>
+              <ListingPreview linkId={`trending-view-details-${item.id}-${page}`} {...item} />
+              {index < results.length - 1 && <Separator />}
             </Fragment>
           )
         })}
+        {results.length === 0 && 'No trending listings found!'}
       </Container>
-      <PaginationButtons currentPage={paginatedItems.page} prefix="trending" totalPages={paginatedItems.totalPages} />
+      <PaginationButtons currentPage={page} prefix="trending" totalPages={totalPages} />
     </>
   )
 }
 
 export async function handlePagination(interaction: MessageComponentInteraction, page: number) {
   if (!interaction.message.interaction_metadata) {
-    return await interaction.reply('No interaction found on the original message.', {
-      ephemeral: true,
-    })
+    return await interaction.reply('No interaction found on the original message.', { ephemeral: true })
   }
 
   await interaction.deferUpdate()
@@ -107,5 +86,11 @@ export async function handlePagination(interaction: MessageComponentInteraction,
     return await interaction.updateResponse('Could not retrieve cached search results, please try again later.')
   }
 
-  await interaction.updateResponse(await (cached.type === 'movie' ? handleMovie : handleTv)(cached.timeWindow, page))
+  await interaction.updateResponse(
+    cached.type === 'movie' ? (
+      <TrendingMovies window={cached.timeWindow} page={page} />
+    ) : (
+      <TrendingTv window={cached.timeWindow} page={page} />
+    ),
+  )
 }
