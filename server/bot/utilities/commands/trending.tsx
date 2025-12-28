@@ -16,10 +16,10 @@ export function TrendingMovies({ window, page }: Readonly<{ window: 'day' | 'wee
       {h2(`Trending Movies ${window === 'day' ? 'Today' : 'this Week'}`)}
       <Suspense
         fallback={
-          <Container>
-            Fetching trending movies...
+          <>
+            <Container>Fetching trending movies...</Container>
             <PaginationButtons currentPage={page} prefix="LOADING" />
-          </Container>
+          </>
         }
       >
         <TrendingListings page={page} promise={getTrendingMovies(window)} />
@@ -34,10 +34,10 @@ export function TrendingTv({ window, page }: Readonly<{ window: 'day' | 'week'; 
       {h2(`Trending TV Shows ${window === 'day' ? 'Today' : 'this Week'}`)}
       <Suspense
         fallback={
-          <Container>
-            Fetching trending shows...
+          <>
+            <Container>Fetching trending shows...</Container>
             <PaginationButtons currentPage={page} prefix="LOADING" />
-          </Container>
+          </>
         }
       >
         <TrendingListings page={page} promise={getTrendingTv(window)} />
