@@ -1,50 +1,25 @@
+import { cacheEntry } from '@/server/lib/cache'
 import { slugify } from '@/server/utilities'
 
-const CACHE_CONFIG = {
-  availableWatchProviders: {
-    regions: {
-      key: () => 'lib:tmdb:available_watch_providers:regions',
-      ttl: '1d',
-    },
-    tv: {
-      key: () => 'lib:tmdb:available_watch_providers:tv',
-      ttl: '1d',
-    },
-    movie: {
-      key: () => 'lib:tmdb:available_watch_providers:movie',
-      ttl: '1d',
-    },
+const CACHE_PREFIX = 'lib:tmdb'
+export const CACHE_CONFIG = {
+  watchProviders: {
+    regions: cacheEntry(() => `${CACHE_PREFIX}:watch_providers:regions`, '1d'),
+    tv: cacheEntry(() => `${CACHE_PREFIX}:watch_providers:tv`, '1d'),
+    movie: cacheEntry(() => `${CACHE_PREFIX}:watch_providers:movie`, '1d'),
   },
   tv: {
-    details: {
-      key: (id: string) => `lib:tmdb:tv:${slugify(id)}:details`,
-      ttl: '1d',
-    },
-    watchProviders: {
-      key: (id: string) => `lib:tmdb:tv:${slugify(id)}:watch_providers`,
-      ttl: '1d',
-    },
-    genres: {
-      key: () => `lib:tmdb:tv:genres`,
-      ttl: '14d',
-    },
+    details: cacheEntry((id) => `${CACHE_PREFIX}:tv:${slugify(String(id))}:details`, '1d'),
+    watchProviders: cacheEntry((id) => `${CACHE_PREFIX}:tv:${slugify(String(id))}:watch_providers`, '1d'),
+    genres: cacheEntry(() => `${CACHE_PREFIX}:tv:genres`, '14d'),
   },
   movie: {
-    details: {
-      key: (id: string) => `lib:tmdb:movie:${slugify(id)}:details`,
-      ttl: '1d',
-    },
-    watchProviders: {
-      key: (id: string) => `lib:tmdb:movie:${slugify(id)}:watch_providers`,
-      ttl: '1d',
-    },
-    genres: {
-      key: () => `lib:tmdb:movie:genres`,
-      ttl: '14d',
-    },
+    details: cacheEntry((id) => `${CACHE_PREFIX}:movie:${slugify(String(id))}:details`, '1d'),
+    watchProviders: cacheEntry((id) => `${CACHE_PREFIX}:movie:${slugify(String(id))}:watch_providers`, '1d'),
+    genres: cacheEntry(() => `${CACHE_PREFIX}:movie:genres`, '14d'),
   },
-  trending: {
-    key: (type: 'movie' | 'tv', timeWindow: 'day' | 'week') => `lib:tmdb:trending:${type}:${timeWindow}`,
-    ttl: '14d',
-  },
+  trending: cacheEntry(
+    (type: 'movie' | 'tv', timeWindow: 'day' | 'week') => `${CACHE_PREFIX}:trending:${type}:${timeWindow}`,
+    '14d',
+  ),
 } as const

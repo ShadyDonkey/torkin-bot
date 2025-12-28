@@ -18,3 +18,7 @@ export const cache = new Cacheable({
   stats: true,
   ttl: '1h',
 })
+
+export function cacheEntry(key: (...args: unknown[]) => string, ttl: string) {
+  return { key, ttl } as { key: (...args: unknown[]) => string; ttl: string }
+}
