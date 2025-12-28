@@ -68,12 +68,15 @@ export async function watchProviders<T extends MovieTv>(
   type: T,
   options: T extends 'movie' ? { id: string | number } : { id: string | number; season: string | number },
 ) {
-  const url =
-    type === 'movie'
-      ? `movie/${options.id}/watch/providers`
-      : `tv/${options.id}/season/${options.season}/watch/providers`
-
-  return await fetch<T extends 'movie' ? MovieWatchProvidersResponse : TvWatchProvidersResponse>(url)
+  if (type === 'movie') {
+    const movieOptions = options as { id: string | number }
+    const url = `movie/${movieOptions.id}/watch/providers`
+    return await fetch<MovieWatchProvidersResponse>(url)
+  } else {
+    const tvOptions = options as { id: string | number; season: string | number }
+    const url = `tv/${tvOptions.id}/season/${tvOptions.season}/watch/providers`
+    return await fetch<TvWatchProvidersResponse>(url)
+  }
 }
 
 export async function trending<T extends MovieTv>(type: T, timeWindow: 'day' | 'week', page: number = 1) {
