@@ -2,7 +2,9 @@ import { cache, cacheEntry } from '@/server/lib/cache'
 import * as api from '@/server/lib/tmdb/api'
 import type { TimeWindow, TypeSelection } from '@/server/lib/tmdb/types'
 import { slugify, unwrap } from '@/server/utilities'
+import { logger } from '@/server/utilities/logger'
 
+const MAX_TRENDING_PAGES = 5
 const CACHE_PREFIX = 'lib:tmdb'
 const CACHE_CONFIG = {
   watchProviders: {
@@ -44,16 +46,27 @@ async function getOrSet<T>(key: string, ttl: string, fetcher: () => Promise<T>) 
   return result
 }
 
+export function getImageUrl(path: string, width?: number) {
+  return `https://image.tmdb.org/t/p/${width ? `w${width}` : 'original'}${path.startsWith('/') ? path : `/${path}`}`
+}
+
 export async function search<T extends TypeSelection>(type: T, query: string, page: number = 1) {
   return await api.search<T>(type, query, page)
 }
 
 export async function getTrending<T extends TypeSelection>(type: T, timeWindow: TimeWindow) {
-  return await getOrSet(
-    CACHE_CONFIG.trending.key(type, timeWindow),
-    CACHE_CONFIG.trending.ttl,
-    async () => await api.trending(type, timeWindow),
-  )
+  return await getOrSet(CACHE_CONFIG.trending.key(type, timeWindow), CACHE_CONFIG.trending.ttl, async () => {
+    logger.info(`Requesting trending ${type} from TMDB for ${timeWindow}.`)
+
+    const pages = await Promise.all(
+      Array.from({ length: MAX_TRENDING_PAGES }, (_, i) => api.trending(type, timeWindow, i + 1)),
+    )
+
+    const allResults = pages.flatMap((page) => page.results || []).filter(Boolean)
+    const uniqueResults = Array.from(new Map(allResults.map((item) => [item.id, item])).values())
+    const filtered = uniqueResults.filter((item) => item.poster_path !== null)
+    return filtered.sort((a, b) => b.popularity - a.popularity)
+  })
 }
 
 export async function getGenres<T extends TypeSelection>(type: T) {
