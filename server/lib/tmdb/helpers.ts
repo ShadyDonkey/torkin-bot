@@ -23,9 +23,9 @@ export async function getTrendingMovies(timeWindow: 'day' | 'week'): Promise<Sta
     ),
   )
 
-  if (cacheErr) {
-    logger.error({ error: cacheErr }, 'Error fetching cached trending movies:')
-  }
+  //   if (cacheErr) {
+  //     logger.error({ error: cacheErr }, 'Error fetching cached trending movies:')
+  //   }
 
   return (cached || []).map((l) => ({
     id: l.id,
@@ -37,19 +37,19 @@ export async function getTrendingMovies(timeWindow: 'day' | 'week'): Promise<Sta
   }))
 }
 
-export async function requestTrendingMovies(timeWindow: 'day' | 'week'): Promise<TrendingMovieResponse['results']> {
-  logger.info('Requesting all trending movies from TMDB.')
-  const pages = await Promise.all(
-    Array.from({ length: MAX_TRENDING_PAGES }, (_, i) => getTrending('movie', timeWindow, i + 1)),
-  )
+// export async function requestTrendingMovies(timeWindow: 'day' | 'week'): Promise<TrendingMovieResponse['results']> {
+//   logger.info('Requesting all trending movies from TMDB.')
+//   const pages = await Promise.all(
+//     Array.from({ length: MAX_TRENDING_PAGES }, (_, i) => getTrending('movie', timeWindow, i + 1)),
+//   )
 
-  const allResults = pages.flatMap((page) => page.results || [])
-  const uniqueResults = Array.from(new Map(allResults.map((movie) => [movie.id, movie])).values())
-  const filtered = uniqueResults.filter((movie) => movie.poster_path !== null)
-  filtered.sort((a, b) => b.popularity - a.popularity)
+//   const allResults = pages.flatMap((page) => page.results || [])
+//   const uniqueResults = Array.from(new Map(allResults.map((movie) => [movie.id, movie])).values())
+//   const filtered = uniqueResults.filter((movie) => movie.poster_path !== null)
+//   filtered.sort((a, b) => b.popularity - a.popularity)
 
-  return filtered
-}
+//   return filtered
+// }
 
 export async function getTrendingTv(timeWindow: 'day' | 'week'): Promise<StandardTrendingListing[]> {
   const [cacheErr, cached] = await unwrap(
@@ -58,9 +58,9 @@ export async function getTrendingTv(timeWindow: 'day' | 'week'): Promise<Standar
     ),
   )
 
-  if (cacheErr) {
-    logger.error({ error: cacheErr }, 'Error fetching cached trending TV shows:')
-  }
+  //   if (cacheErr) {
+  //     logger.error({ error: cacheErr }, 'Error fetching cached trending TV shows:')
+  //   }
 
   return (cached || []).map((l) => ({
     id: l.id,
@@ -72,59 +72,59 @@ export async function getTrendingTv(timeWindow: 'day' | 'week'): Promise<Standar
   }))
 }
 
-export async function requestTrendingTv(timeWindow: 'day' | 'week'): Promise<TrendingTvResponse['results']> {
-  logger.info('Requesting all trending TV shows from TMDB.')
-  const pages = await Promise.all(
-    Array.from({ length: MAX_TRENDING_PAGES }, (_, i) => getTrending('tv', timeWindow, i + 1)),
-  )
+// export async function requestTrendingTv(timeWindow: 'day' | 'week'): Promise<TrendingTvResponse['results']> {
+//   logger.info('Requesting all trending TV shows from TMDB.')
+//   const pages = await Promise.all(
+//     Array.from({ length: MAX_TRENDING_PAGES }, (_, i) => getTrending('tv', timeWindow, i + 1)),
+//   )
 
-  const allResults = pages.flatMap((page) => page.results || [])
-  const filtered = allResults.filter((tv) => tv.poster_path !== null)
-  filtered.sort((a, b) => b.popularity - a.popularity)
+//   const allResults = pages.flatMap((page) => page.results || [])
+//   const filtered = allResults.filter((tv) => tv.poster_path !== null)
+//   filtered.sort((a, b) => b.popularity - a.popularity)
 
-  return filtered
-}
+//   return filtered
+// }
 
-export async function parseGenreIds(ids: number[]) {
-  const genres = await getGenres()
+// export async function parseGenreIds(ids: number[]) {
+//   const genres = await getGenres()
 
-  return ids.map((id) => genres[id]).filter((name) => !!name)
-}
+//   return ids.map((id) => genres[id]).filter((name) => !!name)
+// }
 
-export async function getGenres() {
-  const [cacheErr, cached] = await unwrap(
-    cache.getOrSet<Record<number, string>>(CACHE_CONFIG.lib.tmdb.genres.key(), async () => {
-      const genres: Record<number, string> = {}
-      const [movieErr, movieGenres] = await unwrap(getMovieGenres())
-      const [tvErr, tvGenres] = await unwrap(getTvGenres())
+// export async function getGenres() {
+//   const [cacheErr, cached] = await unwrap(
+//     cache.getOrSet<Record<number, string>>(CACHE_CONFIG.lib.tmdb.genres.key(), async () => {
+//       const genres: Record<number, string> = {}
+//       const [movieErr, movieGenres] = await unwrap(getMovieGenres())
+//       const [tvErr, tvGenres] = await unwrap(getTvGenres())
 
-      if (movieErr) {
-        logger.error({ error: movieErr }, 'Error fetching movie genres:')
-      }
+//       if (movieErr) {
+//         logger.error({ error: movieErr }, 'Error fetching movie genres:')
+//       }
 
-      if (tvErr) {
-        logger.error({ error: tvErr }, 'Error fetching TV genres:')
-      }
+//       if (tvErr) {
+//         logger.error({ error: tvErr }, 'Error fetching TV genres:')
+//       }
 
-      movieGenres?.genres?.forEach((genre) => {
-        if (genre.id && genre.name) {
-          genres[genre.id] = genre.name
-        }
-      })
+//       movieGenres?.genres?.forEach((genre) => {
+//         if (genre.id && genre.name) {
+//           genres[genre.id] = genre.name
+//         }
+//       })
 
-      tvGenres?.genres?.forEach((genre) => {
-        if (genre.id && genre.name) {
-          genres[genre.id] = genre.name
-        }
-      })
+//       tvGenres?.genres?.forEach((genre) => {
+//         if (genre.id && genre.name) {
+//           genres[genre.id] = genre.name
+//         }
+//       })
 
-      return genres
-    }),
-  )
+//       return genres
+//     }),
+//   )
 
-  if (cacheErr) {
-    logger.error({ error: cacheErr }, 'Error fetching cached genres:')
-  }
+//   if (cacheErr) {
+//     logger.error({ error: cacheErr }, 'Error fetching cached genres:')
+//   }
 
-  return cached || {}
-}
+//   return cached || {}
+// }
