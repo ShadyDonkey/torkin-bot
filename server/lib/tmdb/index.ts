@@ -1,8 +1,9 @@
 import { cacheEntry } from '@/server/lib/cache'
+import type { TimeWindow, TypeSelection } from '@/server/lib/tmdb/types'
 import { slugify } from '@/server/utilities'
 
 const CACHE_PREFIX = 'lib:tmdb'
-export const CACHE_CONFIG = {
+const CACHE_CONFIG = {
   watchProviders: {
     regions: cacheEntry(() => `${CACHE_PREFIX}:watch_providers:regions`, '1d'),
     tv: cacheEntry(() => `${CACHE_PREFIX}:watch_providers:tv`, '1d'),
@@ -19,7 +20,7 @@ export const CACHE_CONFIG = {
     genres: cacheEntry(() => `${CACHE_PREFIX}:movie:genres`, '14d'),
   },
   trending: cacheEntry(
-    (type: 'movie' | 'tv', timeWindow: 'day' | 'week') => `${CACHE_PREFIX}:trending:${type}:${timeWindow}`,
+    (type: TypeSelection, timeWindow: TimeWindow) => `${CACHE_PREFIX}:trending:${type}:${timeWindow}`,
     '14d',
   ),
 } as const

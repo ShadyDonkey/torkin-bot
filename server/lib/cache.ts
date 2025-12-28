@@ -19,6 +19,6 @@ export const cache = new Cacheable({
   ttl: '1h',
 })
 
-export function cacheEntry(key: (...args: unknown[]) => string, ttl: string) {
-  return { key, ttl } as { key: (...args: unknown[]) => string; ttl: string }
+export function cacheEntry<T extends unknown[]>(key: (...args: T) => string, ttl: string) {
+  return { key, ttl } as { key: (...args: T) => string; ttl: string }
 }

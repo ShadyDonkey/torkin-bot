@@ -5,17 +5,18 @@ import type {
   MovieWatchProvidersResponse,
   SearchMovieResponse,
   SearchTvResponse,
+  TimeWindow,
   TrendingMovieResponse,
   TrendingTvResponse,
   TvDetailsResponse,
   TvGenresResponse,
   TvWatchProvidersResponse,
+  TypeSelection,
   WatchProviderRegionsResponse,
   WatchProvidersMovieResponse,
   WatchProvidersTvResponse,
 } from '@/server/lib/tmdb/types'
 
-type MovieTv = 'movie' | 'tv'
 const TMDB_API_KEY = process.env.TMDB_API_KEY
 const TMDB_API_URL = 'https://api.themoviedb.org/3/'
 let client: KyInstance | null = null
@@ -42,7 +43,7 @@ async function fetch<T>(path: string, params?: SearchParamsOption, method: 'GET'
   return await response.json<T>()
 }
 
-export async function search<T extends MovieTv>(type: T, query: string, page: number = 1) {
+export async function search<T extends TypeSelection>(type: T, query: string, page: number = 1) {
   return await fetch<T extends 'movie' ? SearchMovieResponse : SearchTvResponse>(`search/${type}`, {
     query,
     page,
@@ -60,11 +61,11 @@ export async function availableWatchProviders<T extends 'regions' | 'movie' | 't
   >(`watch/providers/${type}`)
 }
 
-export async function details<T extends MovieTv>(type: T, id: string | number) {
+export async function details<T extends TypeSelection>(type: T, id: string | number) {
   return await fetch<T extends 'movie' ? MovieDetailsResponse : TvDetailsResponse>(`${type}/${id}`)
 }
 
-export async function watchProviders<T extends MovieTv>(
+export async function watchProviders<T extends TypeSelection>(
   type: T,
   options: T extends 'movie' ? { id: string | number } : { id: string | number; season: string | number },
 ) {
@@ -79,12 +80,12 @@ export async function watchProviders<T extends MovieTv>(
   }
 }
 
-export async function trending<T extends MovieTv>(type: T, timeWindow: 'day' | 'week', page: number = 1) {
+export async function trending<T extends TypeSelection>(type: T, timeWindow: TimeWindow, page: number = 1) {
   return await fetch<T extends 'movie' ? TrendingMovieResponse : TrendingTvResponse>(`trending/${type}/${timeWindow}`, {
     page,
   })
 }
 
-export async function genres<T extends MovieTv>(type: T) {
+export async function genres<T extends TypeSelection>(type: T) {
   return await fetch<T extends 'movie' ? MovieGenresResponse : TvGenresResponse>(`genre/${type}/list`)
 }
