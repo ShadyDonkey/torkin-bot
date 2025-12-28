@@ -59,13 +59,15 @@ export async function getTrending<T extends TypeSelection>(type: T, timeWindow: 
     logger.info(`Requesting trending ${type} from TMDB for ${timeWindow}.`)
 
     const pages = await Promise.all(
-      Array.from({ length: MAX_TRENDING_PAGES }, (_, i) => api.trending(type, timeWindow, i + 1)),
+      Array.from({ length: MAX_TRENDING_PAGES }, async (_, i) => (await api.trending(type, timeWindow, i + 1)).results),
     )
 
-    const allResults = pages.flatMap((page) => page.results || []).filter(Boolean)
-    const uniqueResults = Array.from(new Map(allResults.map((item) => [item.id, item])).values())
+    const allResults = pages.flatMap((page) => page?.flat()).filter(Boolean)
+    const uniqueResults = Array.from(
+      new Map(allResults.filter((item) => item !== undefined).map((item) => [item.id, item])).values(),
+    )
     const filtered = uniqueResults.filter((item) => item.poster_path !== null)
-    return filtered.sort((a, b) => b.popularity - a.popularity)
+    return filtered.toSorted((a, b) => b.popularity - a.popularity)
   })
 }
 
