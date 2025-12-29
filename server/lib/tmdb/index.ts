@@ -12,7 +12,7 @@ import { logger } from '@/server/utilities/logger'
 
 const MAX_TRENDING_PAGES = 5
 const CACHE_PREFIX = 'lib:tmdb'
-const CACHE_CONFIG = {
+export const CACHE_CONFIG = {
   watchProviders: {
     regions: cacheEntry(() => `${CACHE_PREFIX}:watch_providers:regions`, '1d'),
     tv: cacheEntry(() => `${CACHE_PREFIX}:watch_providers:tv`, '1d'),
