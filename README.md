@@ -1,15 +1,8 @@
-# torkin-bot
+# Torkin Project
 
-To install dependencies:
+![License: Source Available](https://img.shields.io/badge/License-Source%20Available-red)
 
-```bash
-bun install
-```
+## License
 
-To run:
-
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.3.3. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+This project is source-available for reference purposes only.
+See [LICENSE](LICENSE) for full details.
