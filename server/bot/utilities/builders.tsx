@@ -7,31 +7,31 @@ export function PaginationButtons({
   currentPage,
   prefix,
   totalPages,
-  disabled,
+  setPage,
 }: Readonly<{
   currentPage: number
   prefix: string
   totalPages?: number
-  disabled?: boolean
+  setPage?: React.Dispatch<React.SetStateAction<number>>
 }>) {
   const isFirstPage = currentPage === 1
   const isLastPage = currentPage === totalPages
 
   return (
     <ActionRow>
-      <Button custom_id={`${prefix}-goto-1-first`} label="⏮" disabled={isFirstPage || disabled} style="Secondary" />
-      <Button custom_id={`${prefix}-goto-${currentPage - 1}-prev`} label="◀" disabled={isFirstPage || disabled} />
+      <Button onClick={() => setPage?.(1)} label="⏮" disabled={isFirstPage || !setPage} style="Secondary" />
+      <Button onClick={() => setPage?.(currentPage - 1)} label="◀" disabled={isFirstPage || !setPage} />
       <Button
         custom_id={`${prefix}-activepage`}
         label={`${currentPage} / ${totalPages ?? '?'}`}
         style="Secondary"
         disabled
       />
-      <Button custom_id={`${prefix}-goto-${currentPage + 1}-next`} label="▶" disabled={isLastPage || disabled} />
+      <Button onClick={() => setPage?.(currentPage + 1)} label="▶" disabled={isLastPage || !setPage} />
       <Button
-        custom_id={`${prefix}-goto-${totalPages}-last`}
+        onClick={() => setPage?.(totalPages ?? 1)}
         label="⏭"
-        disabled={isLastPage || disabled}
+        disabled={isLastPage || !setPage}
         style="Secondary"
       />
     </ActionRow>

@@ -1,6 +1,7 @@
 import { Container, type MessageComponentInteraction, Separator } from '@dressed/react'
+import { useQuery } from '@tanstack/react-query'
 import { h2 } from 'discord-fmt'
-import { Suspense, use } from 'react'
+import { useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 import { ListingPreview, PaginationButtons } from '@/server/bot/utilities/builders'
 import { logger } from '@/server/bot/utilities/logger'
@@ -11,45 +12,47 @@ import { paginateArray, unwrap } from '@/server/utilities'
 
 const ITEMS_PER_PAGE = 4
 
-export function TrendingMovies({ window, page }: Readonly<{ window: 'day' | 'week'; page: number }>) {
+export function TrendingMovies({ window, initialPage }: Readonly<{ window: 'day' | 'week'; initialPage: number }>) {
   return (
     <>
       {h2(`Trending Movies ${window === 'day' ? 'Today' : 'this Week'}`)}
-      <Suspense
-        fallback={
-          <>
-            <Container>Fetching trending movies...</Container>
-            <PaginationButtons currentPage={page} prefix="LOADING" disabled />
-          </>
-        }
-      >
-        <TrendingListings page={page} promise={getTrending('movie', window)} />
-      </Suspense>
+      <TrendingListings type="movie" window={window} initialPage={initialPage} />
     </>
   )
 }
 
-export function TrendingTv({ window, page }: Readonly<{ window: 'day' | 'week'; page: number }>) {
+export function TrendingTv({ window, initialPage }: Readonly<{ window: 'day' | 'week'; initialPage: number }>) {
   return (
     <>
       {h2(`Trending TV Shows ${window === 'day' ? 'Today' : 'this Week'}`)}
-      <Suspense
-        fallback={
-          <>
-            <Container>Fetching trending shows...</Container>
-            <PaginationButtons currentPage={page} prefix="LOADING" disabled />
-          </>
-        }
-      >
-        <TrendingListings page={page} promise={getTrending('tv', window)} />
-      </Suspense>
+      <TrendingListings type="tv" window={window} initialPage={initialPage} />
     </>
   )
 }
 
-function TrendingListings({ page, promise }: Readonly<{ page: number; promise: Promise<StandardTrendingListing[]> }>) {
-  const trending = use(promise)
-  const { results, totalPages } = paginateArray(trending, page, ITEMS_PER_PAGE)
+function TrendingListings({
+  type,
+  window,
+  initialPage,
+}: Readonly<{
+  type: 'movie' | 'tv'
+  window: 'day' | 'week'
+  initialPage: number
+}>) {
+  const query = useQuery({ queryKey: ['trending', type, window], queryFn: () => getTrending(type, window) })
+  const [page, setPage] = useState(initialPage)
+  if (!query.data) {
+    return (
+      <>
+        <Container>
+          {query.isLoading && 'Fetching listings...'}
+          {query.isError && 'There was an error fetching listings!'}
+        </Container>
+        <PaginationButtons currentPage={initialPage} prefix="LOADING" />
+      </>
+    )
+  }
+  const { results, totalPages } = paginateArray(query.data, page, ITEMS_PER_PAGE)
   return (
     <>
       <Container>
@@ -66,7 +69,7 @@ function TrendingListings({ page, promise }: Readonly<{ page: number; promise: P
         })}
         {results.length === 0 && 'No trending listings found!'}
       </Container>
-      <PaginationButtons currentPage={page} prefix="trending" totalPages={totalPages} />
+      <PaginationButtons currentPage={page} prefix="trending" totalPages={totalPages} setPage={setPage} />
     </>
   )
 }
@@ -89,9 +92,9 @@ export async function handlePagination(interaction: MessageComponentInteraction,
 
   await interaction.updateResponse(
     cached.type === 'movie' ? (
-      <TrendingMovies window={cached.timeWindow} page={page} />
+      <TrendingMovies window={cached.timeWindow} initialPage={page} />
     ) : (
-      <TrendingTv window={cached.timeWindow} page={page} />
+      <TrendingTv window={cached.timeWindow} initialPage={page} />
     ),
   )
 }

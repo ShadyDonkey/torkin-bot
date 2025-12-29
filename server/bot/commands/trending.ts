@@ -53,7 +53,7 @@ export default async function (interaction: CommandInteraction<typeof config>) {
   const type = subcommand?.name
 
   try {
-    await interaction.editReply((type === 'movie' ? TrendingMovies : TrendingTv)({ window, page: 1 }))
+    await interaction.editReply((type === 'movie' ? TrendingMovies : TrendingTv)({ window, initialPage: 1 }))
   } catch (err) {
     logger.error(err)
     return await interaction.editReply('Something went wrong when fetching trending content...')
