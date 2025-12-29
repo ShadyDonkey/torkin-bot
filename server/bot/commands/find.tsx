@@ -5,7 +5,7 @@ import { logger } from '@/server/bot/utilities/logger'
 import { buildSelectionDetails } from '@/server/bot/utilities/tmdb'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
-import { searchMovie, searchTv } from '@/server/lib/tmdb'
+import { search } from '@/server/lib/tmdb'
 import { unwrap } from '@/server/utilities'
 
 export const config = {
@@ -79,7 +79,7 @@ export default async function (interaction: CommandInteraction<typeof config>) {
 }
 
 async function handleMovie(query: string) {
-  const [searchErr, results] = await unwrap(searchMovie(query))
+  const [searchErr, results] = await unwrap(search('movie', query))
   if (searchErr) {
     throw new Error('Failed to search for movie')
   }
@@ -109,7 +109,7 @@ async function handleMovie(query: string) {
 }
 
 async function handleTv(query: string) {
-  const [searchErr, results] = await unwrap(searchTv(query))
+  const [searchErr, results] = await unwrap(search('tv', query))
 
   if (searchErr) {
     return 'Failed to search for TV show'

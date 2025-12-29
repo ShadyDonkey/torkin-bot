@@ -2,15 +2,8 @@ import { Container, Section, TextDisplay, Thumbnail } from '@dressed/react'
 import { format, getUnixTime } from 'date-fns'
 import { h3, subtext, TimestampStyle, timestamp } from 'discord-fmt'
 import { logger } from '@/server/bot/utilities/logger'
-import {
-  getImageUrl,
-  getMovieDetails,
-  getMovieWatchProviders,
-  getTvDetails,
-  getTvWatchProviders,
-  type MovieDetailsResponse,
-  type TvDetailsResponse,
-} from '@/server/lib/tmdb'
+import { getDetails, getImageUrl, getItemWatchProviders } from '@/server/lib/tmdb'
+import type { MovieDetailsResponse, TvDetailsResponse } from '@/server/lib/tmdb/types'
 import { unwrap } from '@/server/utilities'
 
 const REQUIRED_ATTRIBUTES_MOVIE = ['title', 'overview']
@@ -23,10 +16,10 @@ export async function buildSelectionDetails(id: string, type: 'movie' | 'tv') {
   const missingAttributes: string[] = []
 
   if (type === 'movie') {
-    ;[detailsErr, details] = await unwrap<MovieDetailsResponse>(getMovieDetails(id))
+    ;[detailsErr, details] = await unwrap<MovieDetailsResponse>(getDetails('movie', id))
     requiredAttributes = REQUIRED_ATTRIBUTES_MOVIE
   } else if (type === 'tv') {
-    ;[detailsErr, details] = await unwrap<TvDetailsResponse>(getTvDetails(id))
+    ;[detailsErr, details] = await unwrap<TvDetailsResponse>(getDetails('tv', id))
     requiredAttributes = REQUIRED_ATTRIBUTES_TV
   }
 
@@ -173,20 +166,27 @@ async function buildMovieBody(details: MovieDetailsResponse, id: string) {
 }
 
 async function buildAvailability(id: string | number, type: 'movie' | 'tv') {
-  const [watchProvidersErr, watchProviders] = await unwrap(
-    (type === 'movie' ? getMovieWatchProviders : getTvWatchProviders)(id, 1),
+  const [watchProvidersErr, response] = await unwrap(
+    type === 'movie'
+      ? getItemWatchProviders('movie', {
+          id,
+        })
+      : getItemWatchProviders('tv', {
+          id,
+          season: 1,
+        }),
   )
 
   if (watchProvidersErr) {
     throw new Error('Failed to get watch providers')
   }
 
-  if (watchProviders?.results) {
+  if (response?.results) {
     return (
       <TextDisplay>
         Watch Now (US):
-        {watchProviders.results.US?.flatrate?.length && watchProviders.results.US.flatrate.length > 0
-          ? watchProviders.results.US?.flatrate?.map((p) => p.provider_name).join(', ')
+        {response.results.US?.flatrate?.length && response.results.US.flatrate.length > 0
+          ? response.results.US?.flatrate?.map((p) => p.provider_name).join(', ')
           : 'Not Available'}
       </TextDisplay>
     )

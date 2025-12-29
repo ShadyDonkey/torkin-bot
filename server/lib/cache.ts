@@ -2,7 +2,6 @@ import KeyvRedis from '@keyv/redis'
 import { Cacheable } from 'cacheable'
 import { Keyv } from 'keyv'
 import { LRUCache } from 'lru-cache'
-import { slugify } from '@/server/utilities'
 
 const primary = new Keyv({
   store: new LRUCache({
@@ -20,51 +19,6 @@ export const cache = new Cacheable({
   ttl: '1h',
 })
 
-export const CACHE_CONFIG = {
-  lib: {
-    tmdb: {
-      availableWatchProviders: {
-        regions: {
-          key: () => 'lib:tmdb:available_watch_providers:regions',
-          ttl: '1d',
-        },
-        tv: {
-          key: () => 'lib:tmdb:available_watch_providers:tv',
-          ttl: '1d',
-        },
-        movie: {
-          key: () => 'lib:tmdb:available_watch_providers:movie',
-          ttl: '1d',
-        },
-      },
-      tv: {
-        details: {
-          key: (id: string) => `lib:tmdb:tv:${slugify(id)}:details`,
-          ttl: '1d',
-        },
-        watchProviders: {
-          key: (id: string) => `lib:tmdb:tv:${slugify(id)}:watch_providers`,
-          ttl: '1d',
-        },
-      },
-      movie: {
-        details: {
-          key: (id: string) => `lib:tmdb:movie:${slugify(id)}:details`,
-          ttl: '1d',
-        },
-        watchProviders: {
-          key: (id: string) => `lib:tmdb:movie:${slugify(id)}:watch_providers`,
-          ttl: '1d',
-        },
-      },
-      trending: {
-        key: (type: 'movie' | 'tv', timeWindow: 'day' | 'week') => `lib:tmdb:trending:${type}:${timeWindow}`,
-        ttl: '14d',
-      },
-      genres: {
-        key: () => `lib:tmdb:genres`,
-        ttl: '14d',
-      },
-    },
-  },
-} as const
+export function cacheEntry<T extends unknown[]>(key: (...args: T) => string, ttl: string) {
+  return { key, ttl } as { key: (...args: T) => string; ttl: string }
+}
