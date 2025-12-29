@@ -2,6 +2,14 @@ import type { paths } from './schema'
 
 export type TypeSelection = 'movie' | 'tv'
 export type TimeWindow = 'day' | 'week'
+export type StandardTrendingListing = {
+  id: number
+  title?: string
+  description?: string
+  releaseDate?: string
+  thumbnail?: string
+  adult: boolean
+}
 
 export type WatchProviderRegionsResponse =
   paths['/3/watch/providers/regions']['get']['responses']['200']['content']['application/json']

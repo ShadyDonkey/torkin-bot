@@ -1,6 +1,12 @@
 import { cache, cacheEntry } from '@/server/lib/cache'
 import * as api from '@/server/lib/tmdb/api'
-import type { TimeWindow, TypeSelection } from '@/server/lib/tmdb/types'
+import type {
+  StandardTrendingListing,
+  TimeWindow,
+  TrendingMovieResponse,
+  TrendingTvResponse,
+  TypeSelection,
+} from '@/server/lib/tmdb/types'
 import { slugify, unwrap } from '@/server/utilities'
 import { logger } from '@/server/utilities/logger'
 
@@ -54,8 +60,11 @@ export async function search<T extends TypeSelection>(type: T, query: string, pa
   return await api.search<T>(type, query, page)
 }
 
-export async function getTrending<T extends TypeSelection>(type: T, timeWindow: TimeWindow) {
-  return await getOrSet(CACHE_CONFIG.trending.key(type, timeWindow), CACHE_CONFIG.trending.ttl, async () => {
+export async function getTrending<T extends TypeSelection>(
+  type: T,
+  timeWindow: TimeWindow,
+): Promise<StandardTrendingListing[]> {
+  const cached = await getOrSet(CACHE_CONFIG.trending.key(type, timeWindow), CACHE_CONFIG.trending.ttl, async () => {
     logger.info(`Requesting trending ${type} from TMDB for ${timeWindow}.`)
 
     const pages = await Promise.all(
@@ -69,6 +78,30 @@ export async function getTrending<T extends TypeSelection>(type: T, timeWindow: 
     const filtered = uniqueResults.filter((item) => item.poster_path !== null)
     return filtered.toSorted((a, b) => b.popularity - a.popularity)
   })
+
+  if (type === 'movie') {
+    return (
+      (cached as TrendingMovieResponse['results'])?.map((e) => ({
+        id: e.id,
+        title: e.title ?? e.original_title,
+        description: e.overview,
+        releaseDate: e.release_date,
+        thumbnail: e.poster_path,
+        adult: e.adult,
+      })) ?? []
+    )
+  }
+
+  return (
+    (cached as TrendingTvResponse['results'])?.map((e) => ({
+      id: e.id,
+      title: e.name ?? e.original_name,
+      description: e.overview,
+      releaseDate: e.first_air_date,
+      thumbnail: e.poster_path,
+      adult: e.adult,
+    })) ?? []
+  )
 }
 
 export async function getGenres<T extends TypeSelection>(type: T) {
