@@ -21,17 +21,16 @@ const CACHE_CONFIG = {
   tv: {
     details: cacheEntry((id) => `${CACHE_PREFIX}:tv:${slugify(String(id))}:details`, '1d'),
     watchProviders: cacheEntry((id) => `${CACHE_PREFIX}:tv:${slugify(String(id))}:watch_providers`, '1d'),
-    genres: cacheEntry(() => `${CACHE_PREFIX}:tv:genres`, '14d'),
   },
   movie: {
     details: cacheEntry((id) => `${CACHE_PREFIX}:movie:${slugify(String(id))}:details`, '1d'),
     watchProviders: cacheEntry((id) => `${CACHE_PREFIX}:movie:${slugify(String(id))}:watch_providers`, '1d'),
-    genres: cacheEntry(() => `${CACHE_PREFIX}:movie:genres`, '14d'),
   },
   trending: cacheEntry(
     (type: TypeSelection, timeWindow: TimeWindow) => `${CACHE_PREFIX}:trending:${type}:${timeWindow}`,
     '14d',
   ),
+  genres: cacheEntry(() => `${CACHE_PREFIX}:genres`, '14d'),
 } as const
 
 async function getOrSet<T>(key: string, ttl: string, fetcher: () => Promise<T>) {
@@ -104,14 +103,6 @@ export async function getTrending<T extends TypeSelection>(
   )
 }
 
-export async function getGenres<T extends TypeSelection>(type: T) {
-  return await getOrSet(
-    CACHE_CONFIG[type].genres.key(),
-    CACHE_CONFIG[type].genres.ttl,
-    async () => await api.genres(type),
-  )
-}
-
 export async function getDetails<T extends TypeSelection>(type: T, id: string | number) {
   return await getOrSet(
     CACHE_CONFIG[type].details.key(id),
@@ -137,4 +128,40 @@ export async function getAvailableWatchProviders<T extends 'regions' | 'movie' |
     CACHE_CONFIG.watchProviders[type].ttl,
     async () => await api.availableWatchProviders(type),
   )
+}
+
+export async function getGenres() {
+  return await getOrSet(CACHE_CONFIG.genres.key(), CACHE_CONFIG.genres.ttl, async () => {
+    const genres: Record<number, string> = {}
+    const [movieErr, movieGenres] = await unwrap(api.genres('movie'))
+    const [tvErr, tvGenres] = await unwrap(api.genres('tv'))
+
+    if (movieErr) {
+      logger.error({ error: movieErr }, 'Error fetching movie genres:')
+    }
+
+    if (tvErr) {
+      logger.error({ error: tvErr }, 'Error fetching TV genres:')
+    }
+
+    movieGenres?.genres?.forEach((genre) => {
+      if (genre.id && genre.name) {
+        genres[genre.id] = genre.name
+      }
+    })
+
+    tvGenres?.genres?.forEach((genre) => {
+      if (genre.id && genre.name) {
+        genres[genre.id] = genre.name
+      }
+    })
+
+    return genres
+  })
+}
+
+export async function mapGenreIdsToRecord(ids: number[]) {
+  const genres = await getGenres()
+
+  return ids.map((id) => genres[id]).filter(Boolean)
 }
