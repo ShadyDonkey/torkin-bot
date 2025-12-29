@@ -15,7 +15,7 @@ import { Fragment } from 'react/jsx-runtime'
 import { PaginationButtons } from '@/server/bot/utilities/builders'
 import { logger } from '@/server/bot/utilities/logger'
 import { db } from '@/server/lib/db'
-import { getImageUrl, getMovieDetails, getTvDetails } from '@/server/lib/tmdb'
+import { getDetails, getImageUrl } from '@/server/lib/tmdb'
 import { unwrap } from '@/server/utilities'
 import { WatchlistItemType } from '@/server/zenstack/models'
 
@@ -67,7 +67,7 @@ export default async function (interaction: MessageComponentInteraction, args: P
 
   const providerResults = await Promise.all(
     results.map((e) =>
-      e.type === WatchlistItemType.MOVIE ? getMovieDetails(e.externalId) : getTvDetails(e.externalId),
+      e.type === WatchlistItemType.MOVIE ? getDetails('movie', e.externalId) : getDetails('tv', e.externalId),
     ),
   )
 

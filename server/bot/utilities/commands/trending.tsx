@@ -5,7 +5,9 @@ import { Fragment } from 'react/jsx-runtime'
 import { ListingPreview, PaginationButtons } from '@/server/bot/utilities/builders'
 import { logger } from '@/server/bot/utilities/logger'
 import { type CmdTrendingCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
-import { getTrendingMovies, getTrendingTv, type StandardTrendingListing } from '@/server/lib/tmdb/helpers'
+import { getTrending } from '@/server/lib/tmdb'
+import type { StandardTrendingListing } from '@/server/lib/tmdb/types'
+// import { getTrendingMovies, getTrendingTv, type StandardTrendingListing } from '@/server/lib/tmdb/helpers'
 import { paginateArray, unwrap } from '@/server/utilities'
 
 const ITEMS_PER_PAGE = 4
@@ -22,7 +24,7 @@ export function TrendingMovies({ window, page }: Readonly<{ window: 'day' | 'wee
           </>
         }
       >
-        <TrendingListings page={page} promise={getTrendingMovies(window)} />
+        <TrendingListings page={page} promise={getTrending('movie', window)} />
       </Suspense>
     </>
   )
@@ -40,7 +42,7 @@ export function TrendingTv({ window, page }: Readonly<{ window: 'day' | 'week'; 
           </>
         }
       >
-        <TrendingListings page={page} promise={getTrendingTv(window)} />
+        <TrendingListings page={page} promise={getTrending('tv', window)} />
       </Suspense>
     </>
   )
