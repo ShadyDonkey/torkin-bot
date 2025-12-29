@@ -7,7 +7,6 @@ import { logger } from '@/server/bot/utilities/logger'
 import { type CmdTrendingCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { getTrending } from '@/server/lib/tmdb'
 import type { StandardTrendingListing } from '@/server/lib/tmdb/types'
-// import { getTrendingMovies, getTrendingTv, type StandardTrendingListing } from '@/server/lib/tmdb/helpers'
 import { paginateArray, unwrap } from '@/server/utilities'
 
 const ITEMS_PER_PAGE = 4
