@@ -20,8 +20,6 @@ export default async function (interaction: CommandInteraction<typeof config>) {
         link('IMDB', 'https://www.imdb.com/'),
       )}
     </Container>,
-    {
-      ephemeral: true,
-    },
+    { ephemeral: true },
   )
 }

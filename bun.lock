@@ -20,7 +20,7 @@
       "version": "0.0.0",
       "dependencies": {
         "@dressed/matcher": "^1.4.0",
-        "@dressed/react": "^1.6.0",
+        "@dressed/react": "^1.7.1",
         "@keyv/redis": "^5.1.5",
         "@lukeed/ms": "^2.0.2",
         "@sindresorhus/slugify": "^3.0.0",
@@ -106,7 +106,7 @@
 
     "@dressed/matcher": ["@dressed/matcher@1.4.0", "", {}, "sha512-hAM5KaaGrhmMFr1Fd+KCQep6VnODcxInnIXATAbyJo64XN56pM20UvccWVhrIR6Hk2fFZUI69eJ0ehzK4rKxnw=="],
 
-    "@dressed/react": ["@dressed/react@1.6.0", "", { "dependencies": { "discord-api-types": "^0.38.31", "react-reconciler": "npm:@dressed/react-reconciler" }, "peerDependencies": { "dressed": "^1.10.0", "react": "^19.1.1" } }, "sha512-wEGtQn788staShoesiTawz72iDI/wwlhx5KOMN6XYNJt/eczyZU7BDo2crSWeJ9tGbRDpVsU+RivjPQWJkXB/g=="],
+    "@dressed/react": ["@dressed/react@1.7.1", "", { "dependencies": { "discord-api-types": "^0.38.37", "react-reconciler": "npm:@dressed/react-reconciler" }, "peerDependencies": { "dressed": "^1.10.1", "react": "^19.2.3" } }, "sha512-KfOwA5HIwunOgSFHewXtHGBIEe7KlD6EVVD87MfU+DpCwGuPgbrjE2PDfTxit453AKIeAHBwcus5Uq8CayU/QQ=="],
 
     "@esbuild/aix-ppc64": ["@esbuild/aix-ppc64@0.25.12", "", { "os": "aix", "cpu": "ppc64" }, "sha512-Hhmwd6CInZ3dwpuGTF8fJG6yoWmsToE+vYgD4nytZVxcu1ulHpUQRAB1UJ8+N1Am3Mz4+xOByoQoSZf4D+CpkA=="],
 
