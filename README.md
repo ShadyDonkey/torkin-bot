@@ -4,7 +4,30 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)
 ![Bun](https://img.shields.io/badge/Bun-Latest-black)
 
-A Discord bot for discovering movies and TV shows, powered by TMDB and TVDB APIs.
+## Overview
+
+A Discord bot for discovering movies and TV shows, powered by TMDB and TVDB APIs. Made for Buildathon 2025 because going to all the different sites to get show and movie info can be tedious.
+
+## Quick Start
+
+```bash
+# Clone and install
+git clone git@github.com:ShadyDonkey/torkin-bot.git && cd torkin-bot
+bun install
+
+# Start infrastructure
+docker-compose up -d
+
+# Configure environment
+cp server/.env.example server/.env
+# Edit .env with your API keys
+
+# Build and run
+cd server
+bun run bot:build && bun run main.ts
+```
+
+Visit `http://localhost:3000/install-commands` to register Discord commands.
 
 ## Tech Stack
 
@@ -100,6 +123,43 @@ A Discord bot for discovering movies and TV shows, powered by TMDB and TVDB APIs
 
 ZenStack handles database schema management. Models are defined in `server/zenstack/schemas/`.
 
+## Architecture
+
+### Request Flow
+
+1. Discord sends interaction events to `/discord/handle-interaction`
+2. Elysia routes to Dressed handler which matches commands/components
+3. Command handlers interact with TMDB/TVDB APIs for data
+4. Results are cached in Keyv/Dragonfly for performance
+5. Database operations use ZenStack ORM for persistence
+6. Rich UI components built with React syntax are returned
+
+### Environment Variables
+
+| Variable             | Description                          | Required |
+| -------------------- | ------------------------------------ | -------- |
+| `NODE_ENV`           | Environment (development/production) | Yes      |
+| `DATABASE_URL`       | PostgreSQL connection string         | Yes      |
+| `LOKI_HOST`          | Loki logging endpoint                | Yes      |
+| `LOKI_USERNAME`      | Loki auth username                   | Optional |
+| `LOKI_PASSWORD`      | Loki auth password                   | Optional |
+| `DISCORD_TOKEN`      | Bot authentication token             | Yes      |
+| `DISCORD_APP_ID`     | Discord application ID               | Yes      |
+| `DISCORD_PUBLIC_KEY` | Public key for verify                | Yes      |
+| `DEV_GUILD_ID`       | Development server ID                | Optional |
+| `TMDB_API_KEY`       | TheMovieDB API key                   | Yes      |
+| `TVDB_API_KEY`       | TheTVDB API key                      | Yes      |
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes following the project's code style
+4. Run `biome check --write` before committing
+5. Commit your changes following conventional commit guidelines (`git commit -m 'feat: amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
+
 ## Project Structure
 
 ```
@@ -118,6 +178,19 @@ torkin-bot/
 │   └── zenstack/           # Database schemas
 └── README.md
 ```
+
+## Infrastructure
+
+### Services
+
+The project uses Docker Compose to manage local infrastructure:
+
+- **PostgreSQL**: Primary database for persistent storage
+- **Dragonfly**: High-performance Redis-compatible cache
+- **Grafana**: Visualization for metrics and logs
+- **Loki**: Log aggregation and query system
+
+All services are configured with persistent volumes and appropriate networking.
 
 ## License
 
