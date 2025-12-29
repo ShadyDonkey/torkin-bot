@@ -26,7 +26,7 @@
     "elysia": "catalog:",
     "keyv": "^5.5.5",
     "ky": "^1.14.1",
-    "kysely": "0.28.8",
+    "kysely": "0.28.9",
     "lru-cache": "^11.2.4",
     "openapi-typescript": "^7.10.1",
     "pg": "^8.16.3",
