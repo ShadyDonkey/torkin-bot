@@ -19,7 +19,7 @@ export function TrendingMovies({ window, page }: Readonly<{ window: 'day' | 'wee
         fallback={
           <>
             <Container>Fetching trending movies...</Container>
-            <PaginationButtons currentPage={page} prefix="LOADING" />
+            <PaginationButtons currentPage={page} prefix="LOADING" disabled />
           </>
         }
       >
@@ -37,7 +37,7 @@ export function TrendingTv({ window, page }: Readonly<{ window: 'day' | 'week'; 
         fallback={
           <>
             <Container>Fetching trending shows...</Container>
-            <PaginationButtons currentPage={page} prefix="LOADING" />
+            <PaginationButtons currentPage={page} prefix="LOADING" disabled />
           </>
         }
       >
