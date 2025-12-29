@@ -1,7 +1,7 @@
 import { Cron } from 'croner'
 import { cache } from '@/server/lib/cache'
 import { CACHE_CONFIG as TMDB_CACHE_CONFIG } from '@/server/lib/tmdb'
-import { trending } from '@/server/lib/tmdb/api'
+import { availableWatchProviders, trending } from '@/server/lib/tmdb/api'
 import { unwrap } from '@/server/utilities'
 import { logger } from '@/server/utilities/logger'
 
@@ -160,6 +160,130 @@ export const trendingJobs = {
       },
     ),
   },
+}
+
+const PROVIDER_JOB_CRON_PATTERN = '0 0 * * 0-6/2'
+
+export const providerJobs = {
+  regions: new Cron(
+    PROVIDER_JOB_CRON_PATTERN,
+    {
+      name: 'fetch-available-watch-providers-regions',
+      protect,
+      catch: catchHandler,
+    },
+    async () => {
+      const [responseErr, response] = await unwrap(availableWatchProviders('regions'))
+
+      if (responseErr) {
+        logger.error({ error: responseErr }, 'Error fetching provider regions in fetch-provider-regions job')
+        return
+      }
+
+      if (!response?.results) {
+        logger.warn('No provider regions found in fetch-provider-regions job')
+        return
+      }
+
+      const [cacheErr, cached] = await unwrap(
+        cache.set(
+          TMDB_CACHE_CONFIG.watchProviders.regions.key(),
+          response.results,
+          TMDB_CACHE_CONFIG.watchProviders.regions.ttl,
+        ),
+      )
+
+      if (cacheErr) {
+        logger.error({ error: cacheErr }, 'Error caching provider regions in fetch-provider-regions job')
+        return
+      }
+
+      if (!cached) {
+        logger.warn('Failed to cache provider regions in fetch-provider-regions job')
+        return
+      }
+
+      logger.info(`Successfully updated provider regions cache with ${response.results.length} items`)
+    },
+  ),
+  movie: new Cron(
+    PROVIDER_JOB_CRON_PATTERN,
+    {
+      name: 'fetch-available-watch-providers-movie',
+      protect,
+      catch: catchHandler,
+    },
+    async () => {
+      const [responseErr, response] = await unwrap(availableWatchProviders('movie'))
+
+      if (responseErr) {
+        logger.error({ error: responseErr }, 'Error fetching provider movie in fetch-provider-movie job')
+        return
+      }
+
+      if (!response?.results) {
+        logger.warn('No provider movie found in fetch-provider-movie job')
+        return
+      }
+
+      const [cacheErr, cached] = await unwrap(
+        cache.set(
+          TMDB_CACHE_CONFIG.watchProviders.movie.key(),
+          response.results,
+          TMDB_CACHE_CONFIG.watchProviders.movie.ttl,
+        ),
+      )
+
+      if (cacheErr) {
+        logger.error({ error: cacheErr }, 'Error caching provider movie in fetch-provider-movie job')
+        return
+      }
+
+      if (!cached) {
+        logger.warn('Failed to cache provider movie in fetch-provider-movie job')
+        return
+      }
+
+      logger.info(`Successfully updated provider movie cache with ${response.results.length} items`)
+    },
+  ),
+  tv: new Cron(
+    PROVIDER_JOB_CRON_PATTERN,
+    {
+      name: 'fetch-available-watch-providers-tv',
+      protect,
+      catch: catchHandler,
+    },
+    async () => {
+      const [responseErr, response] = await unwrap(availableWatchProviders('tv'))
+
+      if (responseErr) {
+        logger.error({ error: responseErr }, 'Error fetching provider tv in fetch-provider-tv job')
+        return
+      }
+
+      if (!response?.results) {
+        logger.warn('No provider tv found in fetch-provider-tv job')
+        return
+      }
+
+      const [cacheErr, cached] = await unwrap(
+        cache.set(TMDB_CACHE_CONFIG.watchProviders.tv.key(), response.results, TMDB_CACHE_CONFIG.watchProviders.tv.ttl),
+      )
+
+      if (cacheErr) {
+        logger.error({ error: cacheErr }, 'Error caching provider tv in fetch-provider-tv job')
+        return
+      }
+
+      if (!cached) {
+        logger.warn('Failed to cache provider tv in fetch-provider-tv job')
+        return
+      }
+
+      logger.info(`Successfully updated provider tv cache with ${response.results.length} items`)
+    },
+  ),
 }
 
 function protect(job: Cron) {
