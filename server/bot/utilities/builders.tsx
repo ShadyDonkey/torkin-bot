@@ -50,7 +50,8 @@ export function ItemActions({
   return (
     <ActionRow>
       {children}
-      <Button custom_id={`action-watchlist-add-${id}-${type}-default`} label="Add to Watchlist" style="Secondary" />
+      {/* Removing because we're disabling watchlists for now */}
+      {/* <Button custom_id={`action-watchlist-add-${id}-${type}-default`} label="Add to Watchlist" style="Secondary" /> */}
     </ActionRow>
   )
 }
