@@ -1,4 +1,4 @@
-import './schemas/watchlist'
+// import './schemas/watchlist'
 
 datasource db {
     provider = 'postgresql'
