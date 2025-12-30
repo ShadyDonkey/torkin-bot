@@ -1,0 +1,31 @@
+Copyright (c) 2025 Shady Donkey & Contributors. All rights reserved.
+
+Torkin’s source code is provided as source-available only. The purpose of making
+this code available is to showcase and demonstrate the capabilities of the
+Dressed Discord library.
+
+Permission is granted to view and read the source code for evaluation, learning,
+inspiration, and high-level reference purposes only. “Reference” in this context
+means understanding concepts, techniques, and patterns, not copying or reuse of
+the code itself.
+
+You may NOT:
+
+- Use the source code, in whole or in part, in any production or non-production
+  system or application
+- Copy, modify, or create derivative works
+- Redistribute, publish, or host this code or any derivatives
+- Include this code, in whole or in part, in any commercial or non-commercial
+  project or application (though citing techniques and patterns is permitted)
+
+No other rights are granted.
+
+If you wish to do any of the above, please contact the copyright holder.
+Alternative licensing arrangements may be available.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT.
+
+This license applies to all source code, documentation, and associated materials
+contained in this repository or otherwise associated with the Torkin project.
