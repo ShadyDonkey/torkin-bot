@@ -1,3 +1,4 @@
+import type { MessageComponentInteraction } from '@dressed/react'
 import { ActionRow, Button, Section, Thumbnail } from '@dressed/react'
 import { format } from 'date-fns'
 import { bold, h3, subtext } from 'discord-fmt'
@@ -66,23 +67,33 @@ export function BackButton({
 }
 
 export function ListingPreview({
-  linkId,
   title,
   subtitle,
   description,
   releaseDate,
   thumbnail,
-}: Readonly<{
-  linkId: string
-  title?: string
-  subtitle?: string
-  description?: string
-  releaseDate?: string
-  thumbnail?: string
-}>) {
+  ...props
+}: Readonly<
+  {
+    title?: string
+    subtitle?: string
+    description?: string
+    releaseDate?: string
+    thumbnail?: string
+  } & ({ linkId: string } | { onClick: (interaction: MessageComponentInteraction<'Button'>) => void })
+>) {
   return (
     <>
-      <Section accessory={<Button custom_id={linkId} label="View Details" style="Secondary" />}>
+      <Section
+        accessory={
+          <Button
+            custom_id=""
+            {...('linkId' in props ? { custom_id: props.linkId } : { onClick: props.onClick })}
+            label="View Details"
+            style="Secondary"
+          />
+        }
+      >
         {(subtitle ? bold : h3)(
           `${title ?? 'Unknown'} (${releaseDate ? format(new Date(releaseDate), 'yyyy') : 'Not Released'})`,
         )}

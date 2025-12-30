@@ -1,7 +1,7 @@
 import { cache, cacheEntry } from '@/server/lib/cache'
 import * as api from '@/server/lib/tmdb/api'
 import type {
-  StandardTrendingListing,
+  StandardListing,
   TimeWindow,
   TrendingMovieResponse,
   TrendingTvResponse,
@@ -62,7 +62,7 @@ export async function search<T extends TypeSelection>(type: T, query: string, pa
 export async function getTrending<T extends TypeSelection>(
   type: T,
   timeWindow: TimeWindow,
-): Promise<StandardTrendingListing[]> {
+): Promise<StandardListing<T>[]> {
   const cached = await getOrSet(CACHE_CONFIG.trending.key(type, timeWindow), CACHE_CONFIG.trending.ttl, async () => {
     logger.info(`Requesting trending ${type} from TMDB for ${timeWindow}.`)
 
@@ -86,7 +86,10 @@ export async function getTrending<T extends TypeSelection>(
         description: e.overview,
         releaseDate: e.release_date,
         thumbnail: e.poster_path,
+        voteAverage: e.vote_average,
         adult: e.adult,
+        type: 'movie',
+        details: e,
       })) ?? []
     )
   }
@@ -98,7 +101,10 @@ export async function getTrending<T extends TypeSelection>(
       description: e.overview,
       releaseDate: e.first_air_date,
       thumbnail: e.poster_path,
+      voteAverage: e.vote_average,
       adult: e.adult,
+      type: 'tv',
+      details: e,
     })) ?? []
   )
 }

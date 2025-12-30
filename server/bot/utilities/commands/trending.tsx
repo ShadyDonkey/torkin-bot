@@ -1,14 +1,14 @@
-import { Container, type MessageComponentInteraction, Separator } from '@dressed/react'
+import { Button, Container, Section, Separator, Thumbnail } from '@dressed/react'
 import { useQuery } from '@tanstack/react-query'
+import { format } from 'date-fns'
 import { h2 } from 'discord-fmt'
 import { useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
-import { ListingPreview, PaginationButtons } from '@/server/bot/utilities/builders'
-import { logger } from '@/server/bot/utilities/logger'
-import { type CmdTrendingCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
-import { getTrending } from '@/server/lib/tmdb'
-import type { StandardTrendingListing } from '@/server/lib/tmdb/types'
-import { paginateArray, unwrap } from '@/server/utilities'
+import { ItemActions, ListingPreview, PaginationButtons } from '@/server/bot/utilities/builders'
+import { getImageUrl, getTrending } from '@/server/lib/tmdb'
+import type { StandardListing } from '@/server/lib/tmdb/types'
+import { paginateArray } from '@/server/utilities'
+import { Availability, TrendingMovieDetails, TrendingTvDetails, VoteSection } from '../tmdb'
 
 const ITEMS_PER_PAGE = 4
 
@@ -41,6 +41,8 @@ function TrendingListings({
 }>) {
   const query = useQuery({ queryKey: ['trending', type, window], queryFn: () => getTrending(type, window) })
   const [page, setPage] = useState(initialPage)
+  const [focused, setFocused] = useState<number>()
+
   if (!query.data) {
     return (
       <>
@@ -52,7 +54,17 @@ function TrendingListings({
       </>
     )
   }
+
   const { results, totalPages } = paginateArray(query.data, page, ITEMS_PER_PAGE)
+
+  if (focused) {
+    const focusedListing = results[focused]
+    if (!focusedListing) {
+      return null
+    }
+    return <ListingPage listing={focusedListing} onBack={() => setFocused(undefined)} />
+  }
+
   return (
     <>
       <Container>
@@ -62,7 +74,7 @@ function TrendingListings({
           }
           return (
             <Fragment key={item.id}>
-              <ListingPreview linkId={`trending-view-details-${item.id}-${page}`} {...item} />
+              <ListingPreview onClick={() => setFocused(index)} {...item} />
               {index < results.length - 1 && <Separator />}
             </Fragment>
           )
@@ -74,27 +86,27 @@ function TrendingListings({
   )
 }
 
-export async function handlePagination(interaction: MessageComponentInteraction, page: number) {
-  if (!interaction.message.interaction_metadata) {
-    return await interaction.reply('No interaction found on the original message.', { ephemeral: true })
-  }
-
-  await interaction.deferUpdate()
-
-  const [cacheErr, cached] = await unwrap(
-    keyv.get<CmdTrendingCacheEntry>(KEYV_CONFIG.cmd.trending.key(interaction.message.interaction_metadata.id)),
-  )
-
-  if (cacheErr || !cached) {
-    logger.error({ cacheErr, cached })
-    return await interaction.updateResponse('Could not retrieve cached search results, please try again later.')
-  }
-
-  await interaction.updateResponse(
-    cached.type === 'movie' ? (
-      <TrendingMovies window={cached.timeWindow} initialPage={page} />
-    ) : (
-      <TrendingTv window={cached.timeWindow} initialPage={page} />
-    ),
+export function ListingPage({ listing, onBack }: Readonly<{ listing: StandardListing; onBack: () => void }>) {
+  return (
+    <>
+      <Container>
+        <Section accessory={<Thumbnail media={getImageUrl(listing.thumbnail ?? '')} />}>
+          ## {listing.title} {listing.releaseDate && `(${format(new Date(listing.releaseDate), 'yyyy')})`}
+          {'\n'}
+          {listing.voteAverage > 0 && <VoteSection voteAverage={listing.voteAverage} />}
+          {listing.description}
+          {'\n'}
+          {listing.type === 'movie' ? (
+            <TrendingMovieDetails details={listing.details} />
+          ) : (
+            <TrendingTvDetails details={listing.details} />
+          )}
+          <Availability id={listing.id} type={listing.type} />
+        </Section>
+      </Container>
+      <ItemActions id={`${listing?.id}`} type={listing.type}>
+        <Button onClick={onBack} label="Back" />
+      </ItemActions>
+    </>
   )
 }
