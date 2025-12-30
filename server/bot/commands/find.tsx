@@ -48,22 +48,20 @@ export const config = {
 } satisfies CommandConfig
 
 export default async function (interaction: CommandInteraction<typeof config>) {
-  await interaction.deferReply()
-
   const subcommand = (interaction.getOption('movie') || interaction.getOption('tv'))?.subcommand()
   if (!subcommand) {
-    return await interaction.editReply('Unknown subcommand')
+    return await interaction.reply('Unknown subcommand')
   }
 
   const searchType = subcommand.name
   const query = subcommand.getOption('query', true).string()
 
   if (!query) {
-    return await interaction.editReply('You must provide a title')
+    return await interaction.reply('You must provide a title')
   }
 
   try {
-    await interaction.editReply(<ListingsWrapper searchType={searchType} queryString={query} />)
+    await interaction.reply(<ListingsWrapper searchType={searchType} queryString={query} />)
   } catch (err) {
     logger.error(err)
     return await interaction.editReply('Something went wrong when finding that...')
@@ -89,15 +87,16 @@ function ListingsWrapper({ searchType, queryString }: Readonly<{ searchType: Typ
 
   if (!query.data) {
     return (
-      <Container>
-        {query.isLoading && 'Fetching results...'}
-        {query.isError && 'There was an error searching!'}
-      </Container>
+      <>
+        <Container>
+          {query.isLoading && 'Fetching results...'}
+          {query.isError && 'There was an error searching!'}
+        </Container>
+        <ActionRow>
+          <Button onClick={() => setShowList(true)} label="See All Results" disabled />
+        </ActionRow>
+      </>
     )
-  }
-
-  if (!query.data?.[0]) {
-    return <Container>Couldn't find any results!</Container>
   }
 
   return showList ? (
@@ -107,9 +106,7 @@ function ListingsWrapper({ searchType, queryString }: Readonly<{ searchType: Typ
     </>
   ) : (
     <>
-      <Container>
-        <ListingPage listing={query.data[0]} />
-      </Container>
+      <Container>{query.data?.[0] ? <ListingPage listing={query.data[0]} /> : "Couldn't find any results!"}</Container>
       <ActionRow>
         <Button onClick={() => setShowList(true)} label="See All Results" />
       </ActionRow>
