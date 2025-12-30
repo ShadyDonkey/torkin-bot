@@ -1,10 +1,12 @@
 import type { CommandInteraction } from '@dressed/react'
+import { h2 } from 'discord-fmt'
 import { type CommandConfig, CommandOption } from 'dressed'
-import { TrendingMovies, TrendingTv } from '@/server/bot/utilities/commands/trending'
 import { logger } from '@/server/bot/utilities/logger'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 import { type CmdTrendingCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
+import { getTrending } from '@/server/lib/tmdb'
 import { unwrap } from '@/server/utilities'
+import { Listings } from '../utilities/commands/listings'
 
 function getPeriodChoices(description: string) {
   return [
@@ -42,18 +44,25 @@ export const config = {
 } satisfies CommandConfig
 
 export default async function (interaction: CommandInteraction<typeof config>) {
-  await interaction.deferReply()
   const subcommand = (interaction.getOption('movie') || interaction.getOption('tv'))?.subcommand()
 
   if (!subcommand) {
-    return await interaction.editReply('Unknown subcommand')
+    return await interaction.reply('Unknown subcommand')
   }
 
   const window = (subcommand?.getOption('period')?.string() || 'day') as 'day' | 'week'
   const type = subcommand?.name
 
   try {
-    await interaction.editReply((type === 'movie' ? TrendingMovies : TrendingTv)({ window, initialPage: 1 }))
+    await interaction.reply(
+      <>
+        {h2(`Trending ${type === 'movie' ? 'Movie' : 'TV Show'}s ${window === 'day' ? 'Today' : 'This Week'}`)}
+        <Listings
+          initialPage={1}
+          queryData={{ queryKey: ['trending', type, window], queryFn: () => getTrending(type, window) }}
+        />
+      </>,
+    )
   } catch (err) {
     logger.error(err)
     return await interaction.editReply('Something went wrong when fetching trending content...')

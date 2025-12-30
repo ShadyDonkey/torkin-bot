@@ -1,12 +1,16 @@
-import { Button, type CommandInteraction } from '@dressed/react'
+import { ActionRow, Button, type CommandInteraction, Container } from '@dressed/react'
+import { useQuery } from '@tanstack/react-query'
+import { h2 } from 'discord-fmt'
 import { type CommandConfig, CommandOption } from 'dressed'
-import { ItemActions } from '@/server/bot/utilities/builders'
+import { useState } from 'react'
 import { logger } from '@/server/bot/utilities/logger'
-import { buildSelectionDetails } from '@/server/bot/utilities/tmdb'
+import { ListingPage } from '@/server/bot/utilities/tmdb'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { search } from '@/server/lib/tmdb'
+import type { TypeSelection } from '@/server/lib/tmdb/types'
 import { unwrap } from '@/server/utilities'
+import { Listings } from '../utilities/commands/listings'
 
 export const config = {
   description: 'Find a show or movie by name',
@@ -59,7 +63,7 @@ export default async function (interaction: CommandInteraction<typeof config>) {
   }
 
   try {
-    await interaction.editReply(await (searchType === 'movie' ? handleMovie : handleTv)(query))
+    await interaction.editReply(<ListingsWrapper searchType={searchType} queryString={query} />)
   } catch (err) {
     logger.error(err)
     return await interaction.editReply('Something went wrong when finding that...')
@@ -78,59 +82,37 @@ export default async function (interaction: CommandInteraction<typeof config>) {
   }
 }
 
-async function handleMovie(query: string) {
-  const [searchErr, results] = await unwrap(search('movie', query))
-  if (searchErr) {
-    throw new Error('Failed to search for movie')
+function ListingsWrapper({ searchType, queryString }: Readonly<{ searchType: TypeSelection; queryString: string }>) {
+  const queryData = { queryKey: ['find', searchType, queryString], queryFn: () => search(searchType, queryString) }
+  const query = useQuery(queryData)
+  const [showList, setShowList] = useState(false)
+
+  if (!query.data) {
+    return (
+      <Container>
+        {query.isLoading && 'Fetching results...'}
+        {query.isError && 'There was an error searching!'}
+      </Container>
+    )
   }
 
-  if (!results?.results || results.results.length === 0) {
-    return 'No results found'
+  if (!query.data?.[0]) {
+    return <Container>Couldn't find any results!</Container>
   }
 
-  const first = results.results.at(0)
-
-  if (!first) {
-    return 'No results found'
-  }
-
-  if (first.adult) {
-    return 'This movie is for adults only'
-  }
-
-  return (
+  return showList ? (
     <>
-      {await buildSelectionDetails(first.id.toString(), 'movie')}
-      <ItemActions id={first.id.toString()} type="movie">
-        <Button custom_id="find-goto-1" label="See All Results" />
-      </ItemActions>
+      {h2(`${searchType === 'movie' ? 'Movie' : 'TV Show'} Results For \`${queryString}\``)}
+      <Listings initialPage={1} queryData={queryData} />
     </>
-  )
-}
-
-async function handleTv(query: string) {
-  const [searchErr, results] = await unwrap(search('tv', query))
-
-  if (searchErr) {
-    return 'Failed to search for TV show'
-  }
-
-  const first = results?.results?.at(0)
-
-  if (!first) {
-    return 'No results found'
-  }
-
-  if (first.adult) {
-    return 'This TV show is for adults only'
-  }
-
-  return (
+  ) : (
     <>
-      {await buildSelectionDetails(first.id.toString(), 'tv')}
-      <ItemActions id={first.id.toString()} type="tv">
-        <Button custom_id="find-goto-1" label="See All Results" />
-      </ItemActions>
+      <Container>
+        <ListingPage listing={query.data[0]} />
+      </Container>
+      <ActionRow>
+        <Button onClick={() => setShowList(true)} label="See All Results" />
+      </ActionRow>
     </>
   )
 }

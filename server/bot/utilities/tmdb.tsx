@@ -1,11 +1,50 @@
-import { TextDisplay } from '@dressed/react'
+import { Button, Section, TextDisplay, Thumbnail } from '@dressed/react'
 import { useQuery } from '@tanstack/react-query'
-import { getUnixTime } from 'date-fns'
+import { format, getUnixTime } from 'date-fns'
 import { h3, subtext, TimestampStyle, timestamp } from 'discord-fmt'
-import { getItemWatchProviders } from '@/server/lib/tmdb'
+import { Fragment, type ReactNode } from 'react'
+import { getImageUrl, getItemWatchProviders } from '@/server/lib/tmdb'
 import type { StandardListing } from '@/server/lib/tmdb/types'
 
-export async function buildSelectionDetails(id: string, type: 'movie' | 'tv') {}
+export function ListingPage({
+  listing,
+  onBack,
+  backText,
+}: Readonly<{ listing: StandardListing; onBack?: () => void; backText?: string }>) {
+  const SecondWrapper = onBack
+    ? ({ children }: Readonly<{ children: ReactNode }>) => (
+        <Section accessory={<Thumbnail media={getImageUrl(listing.thumbnail ?? '')} />}>{children}</Section>
+      )
+    : Fragment
+  return (
+    <>
+      <Section
+        accessory={
+          onBack ? (
+            <Button onClick={onBack} label={backText ?? 'Hide Details'} style="Secondary" />
+          ) : (
+            <Thumbnail media={getImageUrl(listing.thumbnail ?? '')} />
+          )
+        }
+      >
+        ## {listing.title} {listing.releaseDate && `(${format(new Date(listing.releaseDate), 'yyyy')})`}
+        {listing.voteAverage > 0 && <VoteSection voteAverage={listing.voteAverage} />}
+      </Section>
+      <SecondWrapper>
+        {listing.description}
+        {'\n'}
+        {listing.type === 'movie' ? (
+          <TrendingMovieDetails details={listing.details} />
+        ) : (
+          <TrendingTvDetails details={listing.details} />
+        )}
+        <TextDisplay>
+          Watch Now (US): <Availability id={listing.id} type={listing.type} />
+        </TextDisplay>
+      </SecondWrapper>
+    </>
+  )
+}
 
 export function TrendingTvDetails({ details }: { details: StandardListing<'tv'>['details'] }) {
   // TODO add genres, will need to cache and parse here.
@@ -91,7 +130,7 @@ export function TrendingMovieDetails({ details }: { details: StandardListing<'mo
   return `${h3('More Info')}\n${detailsList.join('\n')}`
 }
 
-export function Availability({ type, id }: Readonly<{ type: 'movie' | 'tv'; id: number }>) {
+function Availability({ type, id }: Readonly<{ type: 'movie' | 'tv'; id: number }>) {
   const query = useQuery({
     queryKey: ['availibility', type, id],
     queryFn: () => getItemWatchProviders(type, { id, season: 1 }),
@@ -100,7 +139,7 @@ export function Availability({ type, id }: Readonly<{ type: 'movie' | 'tv'; id: 
   if (!query.data?.results) {
     return (
       <TextDisplay>
-        Watch Now (US): {query.isLoading && '...'}
+        {query.isLoading && '...'}
         {query.isError && 'Error Loading'}
       </TextDisplay>
     )
@@ -117,10 +156,5 @@ export function Availability({ type, id }: Readonly<{ type: 'movie' | 'tv'; id: 
 
 export function VoteSection({ voteAverage }: Readonly<{ voteAverage: number }>) {
   const rating = Math.max(Math.round(voteAverage / 2), 0)
-  return (
-    <>
-      {subtext('⭐'.repeat(rating))}
-      {'\n'}
-    </>
-  )
+  return `\n${subtext('⭐'.repeat(rating))}`
 }

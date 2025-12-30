@@ -6,12 +6,10 @@ import { getImageUrl } from '@/server/lib/tmdb'
 
 export function PaginationButtons({
   currentPage,
-  prefix,
   totalPages,
   setPage,
 }: Readonly<{
   currentPage: number
-  prefix: string
   totalPages?: number
   setPage?: React.Dispatch<React.SetStateAction<number>>
 }>) {
@@ -22,12 +20,7 @@ export function PaginationButtons({
     <ActionRow>
       <Button onClick={() => setPage?.(1)} label="⏮" disabled={isFirstPage || !setPage} style="Secondary" />
       <Button onClick={() => setPage?.(currentPage - 1)} label="◀" disabled={isFirstPage || !setPage} />
-      <Button
-        custom_id={`${prefix}-activepage`}
-        label={`${currentPage} / ${totalPages ?? '?'}`}
-        style="Secondary"
-        disabled
-      />
+      <Button custom_id="activepage" label={`${currentPage} / ${totalPages ?? '?'}`} style="Secondary" disabled />
       <Button onClick={() => setPage?.(currentPage + 1)} label="▶" disabled={isLastPage || !setPage} />
       <Button
         onClick={() => setPage?.(totalPages ?? 1)}
@@ -89,7 +82,7 @@ export function ListingPreview({
           <Button
             custom_id=""
             {...('linkId' in props ? { custom_id: props.linkId } : { onClick: props.onClick })}
-            label="View Details"
+            label="Show Details"
             style="Secondary"
           />
         }
