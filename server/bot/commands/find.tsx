@@ -1,16 +1,14 @@
-import { ActionRow, Button, type CommandInteraction, Container } from '@dressed/react'
+import { ActionRow, Button, type CommandInteraction, Container, TextDisplay } from '@dressed/react'
 import { useQuery } from '@tanstack/react-query'
-import { h2 } from 'discord-fmt'
 import { type CommandConfig, CommandOption } from 'dressed'
 import { useState } from 'react'
 import { logger } from '@/server/bot/utilities/logger'
-import { ListingPage } from '@/server/bot/utilities/tmdb'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { search } from '@/server/lib/tmdb'
 import type { TypeSelection } from '@/server/lib/tmdb/types'
 import { unwrap } from '@/server/utilities'
-import { Listings } from '../utilities/commands/listings'
+import { ListingPage, Listings } from '../utilities/commands/listings'
 
 export const config = {
   description: 'Find a show or movie by name',
@@ -27,6 +25,7 @@ export const config = {
           name: 'query',
           description: 'The title of the movie',
           type: 'String',
+          max_length: 100,
           required: true,
         }),
       ],
@@ -40,6 +39,7 @@ export const config = {
           name: 'query',
           description: 'The title of the TV show',
           type: 'String',
+          max_length: 100,
           required: true,
         }),
       ],
@@ -89,7 +89,7 @@ function ListingsWrapper({ searchType, queryString }: Readonly<{ searchType: Typ
     return (
       <>
         <Container>
-          {query.isLoading && 'Fetching results...'}
+          {query.isLoading && <FallbackListingPage queryString={queryString} />}
           {query.isError && 'There was an error searching!'}
         </Container>
         <ActionRow>
@@ -100,16 +100,28 @@ function ListingsWrapper({ searchType, queryString }: Readonly<{ searchType: Typ
   }
 
   return showList ? (
-    <>
-      {h2(`${searchType === 'movie' ? 'Movie' : 'TV Show'} Results For \`${queryString}\``)}
-      <Listings initialPage={1} queryData={queryData} />
-    </>
+    <Listings
+      initialPage={1}
+      queryData={queryData}
+      listTitle={`${searchType === 'movie' ? 'Movie' : 'TV Show'} Results For \`${queryString}\``}
+    />
   ) : (
+    <Container>
+      {query.data?.[0] ? (
+        <ListingPage listing={query.data[0]} onBack={() => setShowList(true)} backText="See All Results" />
+      ) : (
+        "Couldn't find any results!"
+      )}
+    </Container>
+  )
+}
+
+function FallbackListingPage({ queryString }: Readonly<{ queryString: string }>) {
+  return (
     <>
-      <Container>{query.data?.[0] ? <ListingPage listing={query.data[0]} /> : "Couldn't find any results!"}</Container>
-      <ActionRow>
-        <Button onClick={() => setShowList(true)} label="See All Results" />
-      </ActionRow>
+      <TextDisplay>## Fetching results...</TextDisplay>
+      Fetching results for `{queryString}`...
+      <TextDisplay>Watch Now (US): ...</TextDisplay>
     </>
   )
 }

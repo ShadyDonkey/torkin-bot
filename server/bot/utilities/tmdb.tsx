@@ -1,50 +1,6 @@
-import { Button, Section, TextDisplay, Thumbnail } from '@dressed/react'
-import { useQuery } from '@tanstack/react-query'
-import { format, getUnixTime } from 'date-fns'
+import { getUnixTime } from 'date-fns'
 import { h3, subtext, TimestampStyle, timestamp } from 'discord-fmt'
-import { Fragment, type ReactNode } from 'react'
-import { getImageUrl, getItemWatchProviders } from '@/server/lib/tmdb'
 import type { StandardListing } from '@/server/lib/tmdb/types'
-
-export function ListingPage({
-  listing,
-  onBack,
-  backText,
-}: Readonly<{ listing: StandardListing; onBack?: () => void; backText?: string }>) {
-  const SecondWrapper = onBack
-    ? ({ children }: Readonly<{ children: ReactNode }>) => (
-        <Section accessory={<Thumbnail media={getImageUrl(listing.thumbnail ?? '')} />}>{children}</Section>
-      )
-    : Fragment
-  return (
-    <>
-      <Section
-        accessory={
-          onBack ? (
-            <Button onClick={onBack} label={backText ?? 'Hide Details'} style="Secondary" />
-          ) : (
-            <Thumbnail media={getImageUrl(listing.thumbnail ?? '')} />
-          )
-        }
-      >
-        ## {listing.title} {listing.releaseDate && `(${format(new Date(listing.releaseDate), 'yyyy')})`}
-        {listing.voteAverage > 0 && <VoteSection voteAverage={listing.voteAverage} />}
-      </Section>
-      <SecondWrapper>
-        {listing.description}
-        {'\n'}
-        {listing.type === 'movie' ? (
-          <TrendingMovieDetails details={listing.details} />
-        ) : (
-          <TrendingTvDetails details={listing.details} />
-        )}
-        <TextDisplay>
-          Watch Now (US): <Availability id={listing.id} type={listing.type} />
-        </TextDisplay>
-      </SecondWrapper>
-    </>
-  )
-}
 
 export function TrendingTvDetails({ details }: { details: StandardListing<'tv'>['details'] }) {
   // TODO add genres, will need to cache and parse here.
@@ -128,30 +84,6 @@ export function TrendingMovieDetails({ details }: { details: StandardListing<'mo
   }
 
   return `${h3('More Info')}\n${detailsList.join('\n')}`
-}
-
-function Availability({ type, id }: Readonly<{ type: 'movie' | 'tv'; id: number }>) {
-  const query = useQuery({
-    queryKey: ['availibility', type, id],
-    queryFn: () => getItemWatchProviders(type, { id, season: 1 }),
-  })
-
-  if (!query.data?.results) {
-    return (
-      <TextDisplay>
-        {query.isLoading && '...'}
-        {query.isError && 'Error Loading'}
-      </TextDisplay>
-    )
-  }
-
-  return (
-    <TextDisplay>
-      {query.data.results.US?.flatrate?.length && query.data.results.US.flatrate.length > 0
-        ? query.data.results.US?.flatrate?.map((p) => p.provider_name).join(', ')
-        : 'Not Available'}
-    </TextDisplay>
-  )
 }
 
 export function VoteSection({ voteAverage }: Readonly<{ voteAverage: number }>) {

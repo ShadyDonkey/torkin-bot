@@ -33,8 +33,8 @@ export function PaginationButtons({
 }
 
 export function ItemActions({
-  id,
-  type,
+  // id,
+  // type,
   children = [],
 }: Readonly<{
   id: string

@@ -5,10 +5,7 @@ import { BackButton } from '@/server/bot/utilities/builders'
 
 export const pattern = 'watchlist-:watchlistId-item-details-:id-:type(movie|tv){-:originPage}'
 
-export default async function (
-  interaction: MessageComponentInteraction,
-  { watchlistId, id, originPage, type }: Params<typeof pattern>,
-) {
+export default async function (interaction: MessageComponentInteraction, args: Params<typeof pattern>) {
   if (!interaction.message.interaction_metadata) {
     return await interaction.reply('No interaction found on the original message.', { ephemeral: true })
   }
@@ -19,7 +16,12 @@ export default async function (
     <>
       {/* {await buildSelectionDetails(id, type)} */}
       <ActionRow>
-        <BackButton prefix={`watchlist-${watchlistId}-items`} page={originPage} title="Items" style="Secondary" />
+        <BackButton
+          prefix={`watchlist-${args.watchlistId}-items`}
+          page={args.originPage}
+          title="Items"
+          style="Secondary"
+        />
       </ActionRow>
     </>,
   )

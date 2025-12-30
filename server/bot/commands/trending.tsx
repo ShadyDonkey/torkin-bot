@@ -1,5 +1,4 @@
 import type { CommandInteraction } from '@dressed/react'
-import { h2 } from 'discord-fmt'
 import { type CommandConfig, CommandOption } from 'dressed'
 import { logger } from '@/server/bot/utilities/logger'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
@@ -55,13 +54,11 @@ export default async function (interaction: CommandInteraction<typeof config>) {
 
   try {
     await interaction.reply(
-      <>
-        {h2(`Trending ${type === 'movie' ? 'Movie' : 'TV Show'}s ${window === 'day' ? 'Today' : 'This Week'}`)}
-        <Listings
-          initialPage={1}
-          queryData={{ queryKey: ['trending', type, window], queryFn: () => getTrending(type, window) }}
-        />
-      </>,
+      <Listings
+        initialPage={1}
+        queryData={{ queryKey: ['trending', type, window], queryFn: () => getTrending(type, window) }}
+        listTitle={`Trending ${type === 'movie' ? 'Movie' : 'TV Show'}s ${window === 'day' ? 'Today' : 'This Week'}`}
+      />,
     )
   } catch (err) {
     logger.error(err)
