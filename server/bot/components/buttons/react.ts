@@ -25,7 +25,7 @@ function trace(id: string, type: number, components: APIMessageComponent[]): API
   }
 }
 
-export default setupCallbackHandler({
+const callbackHandler = setupCallbackHandler({
   async default(i: Omit<MessageComponentInteraction, 'updateResponse'>) {
     const component = trace(i.data.custom_id, i.data.component_type, i.message?.components ?? [])
     if (component) {
@@ -38,3 +38,4 @@ export default setupCallbackHandler({
 })
 
 export { pattern } from '@dressed/react/callbacks'
+export default callbackHandler
