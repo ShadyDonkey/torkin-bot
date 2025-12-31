@@ -93,7 +93,7 @@ export function ListingPage({
 
 function Availability({ type, id }: Readonly<{ type: 'movie' | 'tv'; id: number }>) {
   const query = useQuery({
-    queryKey: ['availibility', type, id],
+    queryKey: ['availability', type, id],
     queryFn: () => getItemWatchProviders(type, { id, season: 1 }),
   })
 
