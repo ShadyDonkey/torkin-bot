@@ -9,6 +9,7 @@ import { getImageUrl, getItemWatchProviders } from '@/server/lib/tmdb'
 import type { StandardListing } from '@/server/lib/tmdb/types'
 import { paginateArray } from '@/server/utilities'
 import { TrendingMovieDetails, TrendingTvDetails, VoteSection } from '../tmdb'
+import ErrorPage from './error'
 
 const ITEMS_PER_PAGE = 4
 
@@ -24,11 +25,14 @@ export function Listings({
   if (!query.data) {
     return (
       <>
-        <Container>
-          {query.isLoading && 'Fetching listings...'}
-          {query.isError && 'There was an error fetching listings!'}
-        </Container>
-        <PaginationButtons currentPage={initialPage} />
+        {query.isLoading ? (
+          <>
+            <Container>Fetching listings...</Container>
+            <PaginationButtons currentPage={initialPage} />
+          </>
+        ) : (
+          <ErrorPage code={500}>There was an error fetching listings!</ErrorPage>
+        )}
       </>
     )
   }

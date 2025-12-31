@@ -8,6 +8,7 @@ import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { search } from '@/server/lib/tmdb'
 import type { TypeSelection } from '@/server/lib/tmdb/types'
 import { unwrap } from '@/server/utilities'
+import ErrorPage from '../utilities/commands/error'
 import { ListingPage, Listings } from '../utilities/commands/listings'
 
 export const config = {
@@ -85,16 +86,16 @@ function ListingsWrapper({ searchType, queryString }: Readonly<{ searchType: Typ
   const query = useQuery(queryData)
   const [showList, setShowList] = useState(false)
 
-  if (!query.data) {
+  if (!query.data?.[0]) {
     return (
       <>
-        <Container>
-          {query.isLoading && <FallbackListingPage queryString={queryString} />}
-          {query.isError && 'There was an error searching!'}
-        </Container>
-        <ActionRow>
-          <Button onClick={() => setShowList(true)} label="See All Results" disabled />
-        </ActionRow>
+        {query.isLoading ? (
+          <FallbackListingPage queryString={queryString} />
+        ) : (
+          <ErrorPage code={query.isError ? 500 : 404}>
+            {query.isError ? 'There was an error searching!' : "Couldn't find any results!"}
+          </ErrorPage>
+        )}
       </>
     )
   }
@@ -106,22 +107,21 @@ function ListingsWrapper({ searchType, queryString }: Readonly<{ searchType: Typ
       listTitle={`${searchType === 'movie' ? 'Movie' : 'TV Show'} Results For \`${queryString}\``}
     />
   ) : (
-    <Container>
-      {query.data?.[0] ? (
-        <ListingPage listing={query.data[0]} onBack={() => setShowList(true)} backText="See All Results" />
-      ) : (
-        "Couldn't find any results!"
-      )}
-    </Container>
+    <ListingPage listing={query.data[0]} onBack={() => setShowList(true)} backText="See All Results" />
   )
 }
 
 function FallbackListingPage({ queryString }: Readonly<{ queryString: string }>) {
   return (
     <>
-      <TextDisplay>## Fetching results...</TextDisplay>
-      Fetching results for `{queryString}`...
-      <TextDisplay>Watch Now (US): ...</TextDisplay>
+      <Container>
+        <TextDisplay>## Fetching results...</TextDisplay>
+        Fetching results for `{queryString}`...
+        <TextDisplay>Watch Now (US): ...</TextDisplay>
+      </Container>
+      <ActionRow>
+        <Button custom_id="fallback" label="See All Results" disabled />
+      </ActionRow>
     </>
   )
 }
