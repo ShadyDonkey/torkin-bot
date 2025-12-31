@@ -1,6 +1,5 @@
 import ky, { type KyInstance, type SearchParamsOption } from 'ky'
 import type {
-  MovieDetailsResponse,
   MovieGenresResponse,
   MovieWatchProvidersResponse,
   SearchMovieResponse,
@@ -8,7 +7,6 @@ import type {
   TimeWindow,
   TrendingMovieResponse,
   TrendingTvResponse,
-  TvDetailsResponse,
   TvGenresResponse,
   TvWatchProvidersResponse,
   TypeSelection,
@@ -61,8 +59,8 @@ export async function availableWatchProviders(type: 'regions' | 'movie' | 'tv') 
   >(`watch/providers/${type}`)
 }
 
-export async function details<T extends TypeSelection>(type: T, id: string | number, append = [] as string[]) {
-  return await fetch<T extends 'movie' ? MovieDetailsResponse : TvDetailsResponse>(`${type}/${id}`, {
+export async function details<T>(type: TypeSelection, id: string | number, append = [] as string[]) {
+  return await fetch<T>(`${type}/${id}`, {
     append_to_response: append.join(','),
   })
 }

@@ -5,8 +5,16 @@ import { h2 } from 'discord-fmt'
 import { useEffect, useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 import { ItemActions, ListingPreview, PaginationButtons } from '@/server/bot/utilities/builders'
-import { getImageUrl, getItemWatchProviders } from '@/server/lib/tmdb'
-import type { StandardListing } from '@/server/lib/tmdb/types'
+import { getDetails, getImageUrl, getItemWatchProviders } from '@/server/lib/tmdb'
+import type {
+  MovieDetailsResponse,
+  MovieExternalIdsResponse,
+  MovieVideosResponse,
+  StandardListing,
+  TvDetailsResponse,
+  TvExternalIdsResponse,
+  TvVideosResponse,
+} from '@/server/lib/tmdb/types'
 import { DUPLICATE_PROVIDER_ID_MAPPING } from '@/server/lib/tmdb/watch-providers'
 import { paginateArray } from '@/server/utilities'
 import { TrendingMovieDetails, TrendingTvDetails, VoteSection } from '../tmdb'
@@ -66,11 +74,38 @@ export function Listings({
   )
 }
 
+type MovieDetails = MovieDetailsResponse & {
+  videos: {
+    results: MovieVideosResponse['results']
+  }
+  external_ids: MovieExternalIdsResponse
+}
+
+type TvDetails = TvDetailsResponse & {
+  videos: {
+    results: TvVideosResponse['results']
+  }
+  external_ids: TvExternalIdsResponse
+}
+
 export function ListingPage({
   listing,
   onBack,
   backText,
 }: Readonly<{ listing: StandardListing; onBack: () => void; backText?: string }>) {
+  const query = useQuery({
+    queryKey: ['details', listing.type, listing.id],
+    queryFn: () =>
+      getDetails<typeof listing.type extends 'movie' ? MovieDetails : TvDetails>(listing.type, listing.id, [
+        'videos',
+        'external_ids',
+      ]),
+  })
+
+  if (query.isLoading) {
+    return <Container>Loading...</Container>
+  }
+
   return (
     <>
       <Container>
@@ -91,6 +126,14 @@ export function ListingPage({
       </Container>
       <ItemActions id={listing.id.toString()} type={listing.type}>
         <Button onClick={onBack} label={backText ?? 'Back'} />
+        {query.data?.external_ids.imdb_id ? (
+          <Button url={`https://www.imdb.com/title/${query.data.external_ids.imdb_id}`} label="View on IMDb" />
+        ) : null}
+        {query.data?.videos?.results && findTrailer(query.data.videos.results) ? (
+          // TODO: fix this later
+          // biome-ignore lint/style/noNonNullAssertion: known, need to fix
+          <Button url={findTrailer(query.data.videos.results)!} label="View Latest Trailer" />
+        ) : null}
       </ItemActions>
     </>
   )
@@ -139,4 +182,20 @@ async function dedupeProviders(
   const sorted = filtered.sort((a, b) => a.display_priority - b.display_priority)
 
   return sorted.map((p) => p.provider_name).join(', ')
+}
+
+function findTrailer(results: MovieVideosResponse['results'] | TvVideosResponse['results']) {
+  if (!results) {
+    return null
+  }
+
+  const filtered = results?.filter(
+    (r) => r.type === 'Trailer' && r.site === 'YouTube' && r.official && r.iso_3166_1 === 'US',
+  )
+
+  if (filtered.length === 0 || !filtered[0]?.key) {
+    return null
+  }
+
+  return `https://youtube.com/watch?v=${filtered[0].key}`
 }

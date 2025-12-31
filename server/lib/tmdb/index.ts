@@ -151,11 +151,11 @@ export async function getTrending(type: TypeSelection, timeWindow: TimeWindow) {
   )
 }
 
-export async function getDetails(type: TypeSelection, id: string | number, append = [] as string[]) {
+export async function getDetails<T>(type: TypeSelection, id: string | number, append = [] as string[]) {
   return await getOrSet(
     CACHE_CONFIG[type].details.key(id),
     CACHE_CONFIG[type].details.ttl,
-    async () => await api.details(type, id, append),
+    async () => await api.details<T>(type, id, append),
   )
 }
 

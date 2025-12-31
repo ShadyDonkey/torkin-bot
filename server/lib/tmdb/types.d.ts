@@ -25,9 +25,17 @@ export type MovieDetailsResponse =
   paths['/3/movie/{movie_id}']['get']['responses']['200']['content']['application/json']
 export type MovieWatchProvidersResponse =
   paths['/3/movie/{movie_id}/watch/providers']['get']['responses']['200']['content']['application/json']
+export type MovieExternalIdsResponse =
+  paths['/3/movie/{movie_id}/external_ids']['get']['responses']['200']['content']['application/json']
+export type MovieVideosResponse =
+  paths['/3/movie/{movie_id}/videos']['get']['responses']['200']['content']['application/json']
 export type TvDetailsResponse = paths['/3/tv/{series_id}']['get']['responses']['200']['content']['application/json']
 export type TvWatchProvidersResponse =
   paths['/3/tv/{series_id}/season/{season_number}/watch/providers']['get']['responses']['200']['content']['application/json']
+export type TvExternalIdsResponse =
+  paths['/3/tv/{series_id}/external_ids']['get']['responses']['200']['content']['application/json']
+export type TvVideosResponse =
+  paths['/3/tv/{series_id}/videos']['get']['responses']['200']['content']['application/json']
 export type TrendingMovieResponse =
   paths['/3/trending/movie/{time_window}']['get']['responses']['200']['content']['application/json']
 export type TrendingTvResponse =
