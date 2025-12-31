@@ -43,31 +43,33 @@ async function fetch<T>(path: string, params?: SearchParamsOption, method: 'GET'
   return await response.json<T>()
 }
 
-export async function search<T extends TypeSelection>(type: T, query: string, page: number = 1) {
-  return await fetch<T extends 'movie' ? SearchMovieResponse : SearchTvResponse>(`search/${type}`, {
+export async function search(type: TypeSelection, query: string, page: number = 1) {
+  return (await fetch)<typeof type extends 'movie' ? SearchMovieResponse : SearchTvResponse>(`search/${type}`, {
     query,
     page,
     include_adult: false,
   })
 }
 
-export async function availableWatchProviders<T extends 'regions' | 'movie' | 'tv'>(type: T) {
+export async function availableWatchProviders(type: 'regions' | 'movie' | 'tv') {
   return await fetch<
-    T extends 'regions'
+    TypeSelection extends 'regions'
       ? WatchProviderRegionsResponse
-      : T extends 'movie'
+      : TypeSelection extends 'movie'
         ? WatchProvidersMovieResponse
         : WatchProvidersTvResponse
   >(`watch/providers/${type}`)
 }
 
-export async function details<T extends TypeSelection>(type: T, id: string | number) {
-  return await fetch<T extends 'movie' ? MovieDetailsResponse : TvDetailsResponse>(`${type}/${id}`)
+export async function details<T extends TypeSelection>(type: T, id: string | number, append = [] as string[]) {
+  return await fetch<T extends 'movie' ? MovieDetailsResponse : TvDetailsResponse>(`${type}/${id}`, {
+    append_to_response: append.join(','),
+  })
 }
 
-export async function watchProviders<T extends TypeSelection>(
-  type: T,
-  options: T extends 'movie' ? { id: string | number } : { id: string | number; season: string | number },
+export async function watchProviders(
+  type: TypeSelection,
+  options: TypeSelection extends 'movie' ? { id: string | number } : { id: string | number; season: string | number },
 ) {
   if (type === 'movie') {
     const movieOptions = options as { id: string | number }
@@ -80,12 +82,15 @@ export async function watchProviders<T extends TypeSelection>(
   }
 }
 
-export async function trending<T extends TypeSelection>(type: T, timeWindow: TimeWindow, page: number = 1) {
-  return await fetch<T extends 'movie' ? TrendingMovieResponse : TrendingTvResponse>(`trending/${type}/${timeWindow}`, {
-    page,
-  })
+export async function trending(type: TypeSelection, timeWindow: TimeWindow, page: number = 1) {
+  return await fetch<typeof type extends 'movie' ? TrendingMovieResponse : TrendingTvResponse>(
+    `trending/${type}/${timeWindow}`,
+    {
+      page,
+    },
+  )
 }
 
-export async function genres<T extends TypeSelection>(type: T) {
-  return await fetch<T extends 'movie' ? MovieGenresResponse : TvGenresResponse>(`genre/${type}/list`)
+export async function genres(type: TypeSelection) {
+  return await fetch<typeof type extends 'movie' ? MovieGenresResponse : TvGenresResponse>(`genre/${type}/list`)
 }

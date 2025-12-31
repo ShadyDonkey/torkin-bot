@@ -57,8 +57,8 @@ export function getImageUrl(path: string, width?: number) {
   return `https://image.tmdb.org/t/p/${width ? `w${width}` : 'original'}${path.startsWith('/') ? path : `/${path}`}`
 }
 
-export async function search<T extends TypeSelection>(type: T, query: string, page: number = 1) {
-  const response = await api.search<T>(type, query, page)
+export async function search(type: TypeSelection, query: string, page: number = 1) {
+  const response = await api.search(type, query, page)
   if (type === 'movie') {
     return (
       (response as SearchMovieResponse).results?.map(
@@ -73,7 +73,7 @@ export async function search<T extends TypeSelection>(type: T, query: string, pa
             adult: r.adult,
             type: 'movie',
             details: r,
-          }) as StandardListing<T>,
+          }) as StandardListing<'movie'>,
       ) ?? []
     )
   }
@@ -91,17 +91,14 @@ export async function search<T extends TypeSelection>(type: T, query: string, pa
             adult: r.adult,
             type: 'tv',
             details: r,
-          }) as StandardListing<T>,
+          }) as StandardListing<'tv'>,
       ) ?? []
     )
   }
   return []
 }
 
-export async function getTrending<T extends TypeSelection>(
-  type: T,
-  timeWindow: TimeWindow,
-): Promise<StandardListing<T>[]> {
+export async function getTrending(type: TypeSelection, timeWindow: TimeWindow) {
   const cached = await getOrSet(CACHE_CONFIG.trending.key(type, timeWindow), CACHE_CONFIG.trending.ttl, async () => {
     logger.info(`Requesting trending ${type} from TMDB for ${timeWindow}.`)
 
@@ -131,7 +128,7 @@ export async function getTrending<T extends TypeSelection>(
             adult: r.adult,
             type: 'movie',
             details: r,
-          }) as StandardListing<T>,
+          }) as StandardListing<'movie'>,
       ) ?? []
     )
   }
@@ -149,22 +146,22 @@ export async function getTrending<T extends TypeSelection>(
           adult: r.adult,
           type: 'tv',
           details: r,
-        }) as StandardListing<T>,
+        }) as StandardListing<'tv'>,
     ) ?? []
   )
 }
 
-export async function getDetails<T extends TypeSelection>(type: T, id: string | number) {
+export async function getDetails(type: TypeSelection, id: string | number, append = [] as string[]) {
   return await getOrSet(
     CACHE_CONFIG[type].details.key(id),
     CACHE_CONFIG[type].details.ttl,
-    async () => await api.details(type, id),
+    async () => await api.details(type, id, append),
   )
 }
 
-export async function getItemWatchProviders<T extends TypeSelection>(
-  type: T,
-  options: T extends 'movie' ? { id: string | number } : { id: string | number; season: string | number },
+export async function getItemWatchProviders(
+  type: TypeSelection,
+  options: TypeSelection extends 'movie' ? { id: string | number } : { id: string | number; season: string | number },
 ) {
   return await getOrSet(
     CACHE_CONFIG[type].watchProviders.key(options.id),
@@ -173,7 +170,7 @@ export async function getItemWatchProviders<T extends TypeSelection>(
   )
 }
 
-export async function getAvailableWatchProviders<T extends 'regions' | 'movie' | 'tv'>(type: T) {
+export async function getAvailableWatchProviders(type: 'regions' | 'movie' | 'tv') {
   return await getOrSet(
     CACHE_CONFIG.watchProviders[type].key(),
     CACHE_CONFIG.watchProviders[type].ttl,
