@@ -153,12 +153,7 @@ function Availability({ type, id }: Readonly<{ type: 'movie' | 'tv'; id: number 
 }
 
 async function dedupeProviders(
-  providers: {
-    logo_path?: string | undefined
-    provider_id: number
-    provider_name?: string | undefined
-    display_priority: number
-  }[],
+  providers: { logo_path?: string; provider_id: number; provider_name?: string; display_priority: number }[],
 ) {
   const filtered = providers.filter((p) => !DUPLICATE_PROVIDER_ID_MAPPING[p.provider_id] && p.provider_name)
   const sorted = filtered.sort((a, b) => a.display_priority - b.display_priority)
