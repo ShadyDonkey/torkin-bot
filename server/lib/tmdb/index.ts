@@ -1,7 +1,9 @@
 import { cache, cacheEntry } from '@/server/lib/cache'
 import * as api from '@/server/lib/tmdb/api'
 import type {
-  StandardTrendingListing,
+  SearchMovieResponse,
+  SearchTvResponse,
+  StandardListing,
   TimeWindow,
   TrendingMovieResponse,
   TrendingTvResponse,
@@ -56,13 +58,50 @@ export function getImageUrl(path: string, width?: number) {
 }
 
 export async function search<T extends TypeSelection>(type: T, query: string, page: number = 1) {
-  return await api.search<T>(type, query, page)
+  const response = await api.search<T>(type, query, page)
+  if (type === 'movie') {
+    return (
+      (response as SearchMovieResponse).results?.map(
+        (r) =>
+          ({
+            id: r.id,
+            title: r.title ?? r.original_title,
+            description: r.overview,
+            releaseDate: r.release_date,
+            thumbnail: r.poster_path,
+            voteAverage: r.vote_average,
+            adult: r.adult,
+            type: 'movie',
+            details: r,
+          }) as StandardListing<T>,
+      ) ?? []
+    )
+  }
+  if (type === 'tv') {
+    return (
+      (response as SearchTvResponse).results?.map(
+        (r) =>
+          ({
+            id: r.id,
+            title: r.name ?? r.original_name,
+            description: r.overview,
+            releaseDate: r.first_air_date,
+            thumbnail: r.poster_path,
+            voteAverage: r.vote_average,
+            adult: r.adult,
+            type: 'tv',
+            details: r,
+          }) as StandardListing<T>,
+      ) ?? []
+    )
+  }
+  return []
 }
 
 export async function getTrending<T extends TypeSelection>(
   type: T,
   timeWindow: TimeWindow,
-): Promise<StandardTrendingListing[]> {
+): Promise<StandardListing<T>[]> {
   const cached = await getOrSet(CACHE_CONFIG.trending.key(type, timeWindow), CACHE_CONFIG.trending.ttl, async () => {
     logger.info(`Requesting trending ${type} from TMDB for ${timeWindow}.`)
 
@@ -80,26 +119,38 @@ export async function getTrending<T extends TypeSelection>(
 
   if (type === 'movie') {
     return (
-      (cached as TrendingMovieResponse['results'])?.map((e) => ({
-        id: e.id,
-        title: e.title ?? e.original_title,
-        description: e.overview,
-        releaseDate: e.release_date,
-        thumbnail: e.poster_path,
-        adult: e.adult,
-      })) ?? []
+      (cached as TrendingMovieResponse['results'])?.map(
+        (r) =>
+          ({
+            id: r.id,
+            title: r.title ?? r.original_title,
+            description: r.overview,
+            releaseDate: r.release_date,
+            thumbnail: r.poster_path,
+            voteAverage: r.vote_average,
+            adult: r.adult,
+            type: 'movie',
+            details: r,
+          }) as StandardListing<T>,
+      ) ?? []
     )
   }
 
   return (
-    (cached as TrendingTvResponse['results'])?.map((e) => ({
-      id: e.id,
-      title: e.name ?? e.original_name,
-      description: e.overview,
-      releaseDate: e.first_air_date,
-      thumbnail: e.poster_path,
-      adult: e.adult,
-    })) ?? []
+    (cached as TrendingTvResponse['results'])?.map(
+      (r) =>
+        ({
+          id: r.id,
+          title: r.name ?? r.original_name,
+          description: r.overview,
+          releaseDate: r.first_air_date,
+          thumbnail: r.poster_path,
+          voteAverage: r.vote_average,
+          adult: r.adult,
+          type: 'tv',
+          details: r,
+        }) as StandardListing<T>,
+    ) ?? []
   )
 }
 

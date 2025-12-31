@@ -1,3 +1,4 @@
+import type { MessageComponentInteraction } from '@dressed/react'
 import { ActionRow, Button, Section, Thumbnail } from '@dressed/react'
 import { format } from 'date-fns'
 import { bold, h3, subtext } from 'discord-fmt'
@@ -5,33 +6,26 @@ import { getImageUrl } from '@/server/lib/tmdb'
 
 export function PaginationButtons({
   currentPage,
-  prefix,
   totalPages,
-  disabled,
+  setPage,
 }: Readonly<{
   currentPage: number
-  prefix: string
   totalPages?: number
-  disabled?: boolean
+  setPage?: React.Dispatch<React.SetStateAction<number>>
 }>) {
   const isFirstPage = currentPage === 1
   const isLastPage = currentPage === totalPages
 
   return (
     <ActionRow>
-      <Button custom_id={`${prefix}-goto-1-first`} label="⏮" disabled={isFirstPage || disabled} style="Secondary" />
-      <Button custom_id={`${prefix}-goto-${currentPage - 1}-prev`} label="◀" disabled={isFirstPage || disabled} />
+      <Button onClick={() => setPage?.(1)} label="⏮" disabled={isFirstPage || !setPage} style="Secondary" />
+      <Button onClick={() => setPage?.(currentPage - 1)} label="◀" disabled={isFirstPage || !setPage} />
+      <Button custom_id="activepage" label={`${currentPage} / ${totalPages ?? '?'}`} style="Secondary" disabled />
+      <Button onClick={() => setPage?.(currentPage + 1)} label="▶" disabled={isLastPage || !setPage} />
       <Button
-        custom_id={`${prefix}-activepage`}
-        label={`${currentPage} / ${totalPages ?? '?'}`}
-        style="Secondary"
-        disabled
-      />
-      <Button custom_id={`${prefix}-goto-${currentPage + 1}-next`} label="▶" disabled={isLastPage || disabled} />
-      <Button
-        custom_id={`${prefix}-goto-${totalPages}-last`}
+        onClick={() => setPage?.(totalPages ?? 1)}
         label="⏭"
-        disabled={isLastPage || disabled}
+        disabled={isLastPage || !setPage}
         style="Secondary"
       />
     </ActionRow>
@@ -39,8 +33,8 @@ export function PaginationButtons({
 }
 
 export function ItemActions({
-  id,
-  type,
+  // id,
+  // type,
   children = [],
 }: Readonly<{
   id: string
@@ -66,23 +60,33 @@ export function BackButton({
 }
 
 export function ListingPreview({
-  linkId,
   title,
   subtitle,
   description,
   releaseDate,
   thumbnail,
-}: Readonly<{
-  linkId: string
-  title?: string
-  subtitle?: string
-  description?: string
-  releaseDate?: string
-  thumbnail?: string
-}>) {
+  ...props
+}: Readonly<
+  {
+    title?: string
+    subtitle?: string
+    description?: string
+    releaseDate?: string
+    thumbnail?: string
+  } & ({ linkId: string } | { onClick: (interaction: MessageComponentInteraction<'Button'>) => void })
+>) {
   return (
     <>
-      <Section accessory={<Button custom_id={linkId} label="View Details" style="Secondary" />}>
+      <Section
+        accessory={
+          <Button
+            custom_id=""
+            {...('linkId' in props ? { custom_id: props.linkId } : { onClick: props.onClick })}
+            label="Show Details"
+            style="Secondary"
+          />
+        }
+      >
         {(subtitle ? bold : h3)(
           `${title ?? 'Unknown'} (${releaseDate ? format(new Date(releaseDate), 'yyyy') : 'Not Released'})`,
         )}

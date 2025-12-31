@@ -2,14 +2,16 @@ import type { paths } from './schema'
 
 export type TypeSelection = 'movie' | 'tv'
 export type TimeWindow = 'day' | 'week'
-export type StandardTrendingListing = {
+export type StandardListing<T extends TypeSelection = TypeSelection> = {
   id: number
   title?: string
   description?: string
   releaseDate?: string
   thumbnail?: string
+  voteAverage: number
   adult: boolean
-}
+  type: T
+} & ({ type: 'movie'; details: MovieDetailsResponse } | { type: 'tv'; details: TvDetailsResponse })
 
 export type WatchProviderRegionsResponse =
   paths['/3/watch/providers/regions']['get']['responses']['200']['content']['application/json']
