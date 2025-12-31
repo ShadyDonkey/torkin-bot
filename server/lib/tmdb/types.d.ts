@@ -2,7 +2,7 @@ import type { paths } from './schema'
 
 export type TypeSelection = 'movie' | 'tv'
 export type TimeWindow = 'day' | 'week'
-export type StandardListing<T extends TypeSelection = TypeSelection> = {
+export type StandardListing<T extends TypeSelection = TypeSelection, MD = unknown, TVD = unknown> = {
   id: number
   title?: string
   description?: string
@@ -11,7 +11,7 @@ export type StandardListing<T extends TypeSelection = TypeSelection> = {
   voteAverage: number
   adult: boolean
   type: T
-} & ({ type: 'movie'; details: MovieDetailsResponse } | { type: 'tv'; details: TvDetailsResponse })
+} & ({ type: 'movie'; details: MovieDetailsResponse & MD } | { type: 'tv'; details: TvDetailsResponse & TVD })
 
 export type WatchProviderRegionsResponse =
   paths['/3/watch/providers/regions']['get']['responses']['200']['content']['application/json']

@@ -2,7 +2,6 @@ import { cache, cacheEntry } from '@/server/lib/cache'
 import * as api from '@/server/lib/tmdb/api'
 import type {
   SearchMovieResponse,
-  SearchTvResponse,
   StandardListing,
   TimeWindow,
   TrendingMovieResponse,
@@ -79,7 +78,7 @@ export async function search(type: TypeSelection, query: string, page: number = 
   }
   if (type === 'tv') {
     return (
-      (response as SearchTvResponse).results?.map(
+      response.results?.map(
         (r) =>
           ({
             id: r.id,
@@ -151,12 +150,45 @@ export async function getTrending(type: TypeSelection, timeWindow: TimeWindow) {
   )
 }
 
-export async function getDetails<T>(type: TypeSelection, id: string | number, append = [] as string[]) {
-  return await getOrSet(
+export async function getDetails<M, TV>(
+  type: TypeSelection,
+  id: string | number,
+  append = [] as string[],
+): Promise<StandardListing<TypeSelection, M, TV>> {
+  const details = await getOrSet(
     CACHE_CONFIG[type].details.key(id),
     CACHE_CONFIG[type].details.ttl,
-    async () => await api.details<T>(type, id, append),
+    async () => await api.details<StandardListing<TypeSelection, M, TV>['details']>(type, id, append),
   )
+
+  if (type === 'movie') {
+    const movie = details as StandardListing<'movie', M, TV>['details']
+    return {
+      id: movie.id,
+      title: movie.title ?? movie.original_title,
+      description: movie.overview,
+      releaseDate: movie.release_date,
+      thumbnail: movie.poster_path,
+      voteAverage: movie.vote_average,
+      adult: movie.adult,
+      type: 'movie',
+      details: movie,
+    }
+  }
+
+  const show = details as StandardListing<'tv', M, TV>['details']
+
+  return {
+    id: show.id,
+    title: show.name ?? show.original_name,
+    description: show.overview,
+    releaseDate: show.first_air_date,
+    thumbnail: show.poster_path,
+    voteAverage: show.vote_average,
+    adult: show.adult,
+    type: 'tv',
+    details: show,
+  }
 }
 
 export async function getItemWatchProviders(
