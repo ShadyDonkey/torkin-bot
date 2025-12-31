@@ -80,10 +80,9 @@ export function ListingPreview({
       <Section
         accessory={
           <Button
-            // @ts-expect-error
-            custom_id=""
+            custom_id="" // This is to make the overrides realize it's a button that has styles
             {...('linkId' in props ? { custom_id: props.linkId } : { onClick: props.onClick })}
-            label="Show Details"
+            label="View Details"
             style="Secondary"
           />
         }
