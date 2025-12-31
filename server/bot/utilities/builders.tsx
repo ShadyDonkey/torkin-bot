@@ -80,6 +80,7 @@ export function ListingPreview({
       <Section
         accessory={
           <Button
+            // @ts-expect-error
             custom_id=""
             {...('linkId' in props ? { custom_id: props.linkId } : { onClick: props.onClick })}
             label="Show Details"

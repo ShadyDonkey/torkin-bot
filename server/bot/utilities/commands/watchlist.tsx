@@ -135,7 +135,7 @@ export async function buildListComponents(
           </Fragment>
         ))}
       </Container>
-      <PaginationButtons currentPage={page} prefix="watchlist-results" totalPages={totalPages} />
+      <PaginationButtons currentPage={page} totalPages={totalPages} />
     </>
   )
 }

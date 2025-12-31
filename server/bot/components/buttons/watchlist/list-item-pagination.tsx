@@ -127,7 +127,7 @@ export default async function (interaction: MessageComponentInteraction, args: P
           )
         })}
       </Container>
-      <PaginationButtons currentPage={page} prefix={`watchlist-${watchlistId}-items`} totalPages={totalPages} />
+      <PaginationButtons currentPage={page} totalPages={totalPages} />
       <ActionRow>
         <Button custom_id={`watchlist-${watchlistId}-details`} label="Back" style="Secondary" />
       </ActionRow>
