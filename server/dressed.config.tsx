@@ -11,7 +11,7 @@ import type { ServerConfig } from 'dressed/server'
 export const queryClient = new QueryClient()
 
 export default {
-  build: { root: 'bot', extensions: ['tsx', 'ts'] },
+  build: { root: 'bot/dressed', extensions: ['tsx', 'ts'] },
   port: 3000,
   middleware: {
     commands: (i) => {

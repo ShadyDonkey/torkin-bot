@@ -4,7 +4,8 @@ import { format } from 'date-fns'
 import { h2 } from 'discord-fmt'
 import { useEffect, useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
-import { ItemActions, ListingPreview, PaginationButtons } from '@/server/bot/utilities/builders'
+import { ItemActions, ListingPreview, PaginationButtons } from '@/server/bot/components/builders'
+import { TrendingMovieDetails, TrendingTvDetails, VoteSection } from '@/server/bot/components/tmdb'
 import { getDetails, getImageUrl, getItemWatchProviders } from '@/server/lib/tmdb'
 import type {
   MovieExternalIdsResponse,
@@ -16,7 +17,6 @@ import type {
 } from '@/server/lib/tmdb/types'
 import { DUPLICATE_PROVIDER_ID_MAPPING } from '@/server/lib/tmdb/watch-providers'
 import { paginateArray } from '@/server/utilities'
-import { TrendingMovieDetails, TrendingTvDetails, VoteSection } from '../tmdb'
 import ErrorPage from './error'
 
 const ITEMS_PER_PAGE = 4

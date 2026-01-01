@@ -1,11 +1,11 @@
 import type { CommandInteraction } from '@dressed/react'
 import { type CommandConfig, CommandOption } from 'dressed'
+import { Listings } from '@/server/bot/components/commands/listings'
 import { logger } from '@/server/bot/utilities/logger'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 import { type CmdTrendingCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { getTrending } from '@/server/lib/tmdb'
 import { unwrap } from '@/server/utilities'
-import { Listings } from '../utilities/commands/listings'
 
 function getPeriodChoices(description: string) {
   return [
