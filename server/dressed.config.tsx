@@ -17,9 +17,9 @@ export default {
       return [
         {
           ...patched,
-          reply: (c, ...p) => patched.reply(<BotProviders>{c}</BotProviders>, ...p),
-          editReply: (c, ...p) => patched.editReply(<BotProviders>{c}</BotProviders>, ...p),
-          followUp: (c, ...p) => patched.followUp(<BotProviders>{c}</BotProviders>, ...p),
+          reply: (c, ...p) => patched.reply(<BotProviders userId={i.user.id}>{c}</BotProviders>, ...p),
+          editReply: (c, ...p) => patched.editReply(<BotProviders userId={i.user.id}>{c}</BotProviders>, ...p),
+          followUp: (c, ...p) => patched.followUp(<BotProviders userId={i.user.id}>{c}</BotProviders>, ...p),
         } as CommandInteraction,
       ]
     },
@@ -32,10 +32,10 @@ export default {
       return [
         {
           ...patched,
-          reply: (c, ...p) => patched.reply(<BotProviders>{c}</BotProviders>, ...p),
-          editReply: (c, ...p) => patched.editReply(<BotProviders>{c}</BotProviders>, ...p),
-          update: (c, ...p) => patched.update(<BotProviders>{c}</BotProviders>, ...p),
-          followUp: (c, ...p) => patched.followUp(<BotProviders>{c}</BotProviders>, ...p),
+          reply: (c, ...p) => patched.reply(<BotProviders userId={i.user.id}>{c}</BotProviders>, ...p),
+          editReply: (c, ...p) => patched.editReply(<BotProviders userId={i.user.id}>{c}</BotProviders>, ...p),
+          update: (c, ...p) => patched.update(<BotProviders userId={i.user.id}>{c}</BotProviders>, ...p),
+          followUp: (c, ...p) => patched.followUp(<BotProviders userId={i.user.id}>{c}</BotProviders>, ...p),
           updateResponse(data, ...p) {
             if (typeof data !== 'string' && Math.random() < 0.3) {
               data = (

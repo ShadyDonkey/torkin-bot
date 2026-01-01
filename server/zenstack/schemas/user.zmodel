@@ -1,11 +1,12 @@
 import './mixins'
 
-model UserSetting with TimestampMixin {
+model UserPreference with TimestampMixin {
   discordUserId String @id @map('discord_user_id')
-  // Timezone / Country
-  iso31661      String @default('US') @map('iso_3166_1')
   // Language
   iso6391       String @default('en') @map('iso_639_1')
+  //  Country
+  iso31661      String @default('US') @map('iso_3166_1')
+  timezone      String @default('America/New_York') @map('timezone')
 
-  @@map('user_setting')
+  @@map('user_preference')
 }
