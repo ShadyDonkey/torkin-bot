@@ -12,7 +12,7 @@ import {
 import { format } from 'date-fns'
 import { h2 } from 'discord-fmt'
 import { Fragment } from 'react/jsx-runtime'
-import { PaginationButtons } from '@/server/bot/utilities/builders'
+import { PaginationButtons } from '@/server/bot/components/builders'
 import { logger } from '@/server/bot/utilities/logger'
 import { db } from '@/server/lib/db'
 import { getDetails, getImageUrl } from '@/server/lib/tmdb'

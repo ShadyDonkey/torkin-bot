@@ -4,20 +4,19 @@ import { format } from 'date-fns'
 import { h2 } from 'discord-fmt'
 import { useEffect, useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
-import { ItemActions, ListingPreview, PaginationButtons } from '@/server/bot/utilities/builders'
+import { ItemActions, ListingPreview, PaginationButtons } from '@/server/bot/components/builders'
+import { TrendingMovieDetails, TrendingTvDetails, VoteSection } from '@/server/bot/components/tmdb'
 import { getDetails, getImageUrl, getItemWatchProviders } from '@/server/lib/tmdb'
 import type {
-  MovieDetailsResponse,
   MovieExternalIdsResponse,
   MovieVideosResponse,
   StandardListing,
-  TvDetailsResponse,
   TvExternalIdsResponse,
   TvVideosResponse,
+  TypeSelection,
 } from '@/server/lib/tmdb/types'
 import { DUPLICATE_PROVIDER_ID_MAPPING } from '@/server/lib/tmdb/watch-providers'
 import { paginateArray } from '@/server/utilities'
-import { TrendingMovieDetails, TrendingTvDetails, VoteSection } from '../tmdb'
 import ErrorPage from './error'
 
 const ITEMS_PER_PAGE = 4
@@ -74,19 +73,8 @@ export function Listings({
   )
 }
 
-type MovieDetails = MovieDetailsResponse & {
-  videos: {
-    results: MovieVideosResponse['results']
-  }
-  external_ids: MovieExternalIdsResponse
-}
-
-type TvDetails = TvDetailsResponse & {
-  videos: {
-    results: TvVideosResponse['results']
-  }
-  external_ids: TvExternalIdsResponse
-}
+type MDE = { videos: { results: MovieVideosResponse['results'] }; external_ids: MovieExternalIdsResponse }
+type TVDE = { videos: { results: TvVideosResponse['results'] }; external_ids: TvExternalIdsResponse }
 
 export function ListingPage({
   listing,
@@ -95,16 +83,10 @@ export function ListingPage({
 }: Readonly<{ listing: StandardListing; onBack: () => void; backText?: string }>) {
   const query = useQuery({
     queryKey: ['details', listing.type, listing.id],
-    queryFn: () =>
-      getDetails<typeof listing.type extends 'movie' ? MovieDetails : TvDetails>(listing.type, listing.id, [
-        'videos',
-        'external_ids',
-      ]),
+    queryFn: () => getDetails<MDE, TVDE>(listing.type, listing.id, ['videos', 'external_ids']),
   })
 
-  if (query.isLoading) {
-    return <Container>Loading...</Container>
-  }
+  const { type, details } = (query.data ?? listing) as StandardListing<TypeSelection, MDE, TVDE> | StandardListing
 
   return (
     <>
@@ -115,25 +97,25 @@ export function ListingPage({
         </Section>
         {listing.description}
         {'\n'}
-        {listing.type === 'movie' ? (
-          <TrendingMovieDetails details={listing.details} />
-        ) : (
-          <TrendingTvDetails details={listing.details} />
-        )}
+        {type === 'movie' ? <TrendingMovieDetails details={details} /> : <TrendingTvDetails details={details} />}
         <TextDisplay>
-          Watch Now (US): <Availability id={listing.id} type={listing.type} />
+          Watch Now (US): <Availability id={listing.id} type={type} />
         </TextDisplay>
       </Container>
-      <ItemActions id={listing.id.toString()} type={listing.type}>
+      <ItemActions id={listing.id.toString()} type={type}>
         <Button onClick={onBack} label={backText ?? 'Back'} />
-        {query.data?.external_ids.imdb_id ? (
-          <Button url={`https://www.imdb.com/title/${query.data.external_ids.imdb_id}`} label="View on IMDb" />
-        ) : null}
-        {query.data?.videos?.results && findTrailer(query.data.videos.results) ? (
-          // TODO: fix this later
-          // biome-ignore lint/style/noNonNullAssertion: known, need to fix
-          <Button url={findTrailer(query.data.videos.results)!} label="View Latest Trailer" />
-        ) : null}
+        {'videos' in details && (
+          <>
+            {details.external_ids.imdb_id && (
+              <Button url={`https://www.imdb.com/title/${details.external_ids.imdb_id}`} label="View on IMDb" />
+            )}
+            {details.videos.results && findTrailer(details.videos.results) && (
+              // TODO: fix this later
+              // biome-ignore lint/style/noNonNullAssertion: known, need to fix
+              <Button url={findTrailer(details.videos.results)!} label="View Latest Trailer" />
+            )}
+          </>
+        )}
       </ItemActions>
     </>
   )
@@ -171,12 +153,7 @@ function Availability({ type, id }: Readonly<{ type: 'movie' | 'tv'; id: number 
 }
 
 async function dedupeProviders(
-  providers: {
-    logo_path?: string | undefined
-    provider_id: number
-    provider_name?: string | undefined
-    display_priority: number
-  }[],
+  providers: { logo_path?: string; provider_id: number; provider_name?: string; display_priority: number }[],
 ) {
   const filtered = providers.filter((p) => !DUPLICATE_PROVIDER_ID_MAPPING[p.provider_id] && p.provider_name)
   const sorted = filtered.sort((a, b) => a.display_priority - b.display_priority)

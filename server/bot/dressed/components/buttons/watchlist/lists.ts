@@ -1,6 +1,6 @@
 import type { Params } from '@dressed/matcher'
 import type { MessageComponentInteraction } from '@dressed/react'
-import { buildListComponents } from '@/server/bot/utilities/commands/watchlist'
+import { buildListComponents } from '@/server/bot/components/commands/watchlist'
 
 export const pattern = 'watchlist-results-goto-:page(\\d+)-:throwaway'
 

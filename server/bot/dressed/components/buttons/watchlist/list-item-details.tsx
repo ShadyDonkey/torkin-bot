@@ -1,6 +1,6 @@
 import type { Params } from '@dressed/matcher'
 import { ActionRow, type MessageComponentInteraction } from '@dressed/react'
-import { BackButton } from '@/server/bot/utilities/builders'
+import { BackButton } from '@/server/bot/components/builders'
 // import { buildSelectionDetails } from '@/server/bot/utilities/tmdb'
 
 export const pattern = 'watchlist-:watchlistId-item-details-:id-:type(movie|tv){-:originPage}'

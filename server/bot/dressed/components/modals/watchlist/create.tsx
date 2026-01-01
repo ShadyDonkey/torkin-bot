@@ -1,6 +1,6 @@
 import { ActionRow, Button, type ModalSubmitInteraction } from '@dressed/react'
 import { emoji } from 'discord-fmt'
-import { convertToState } from '@/server/bot/utilities/commands/watchlist'
+import { convertToState } from '@/server/bot/components/commands/watchlist'
 import { logger } from '@/server/bot/utilities/logger'
 import { unwrap } from '@/server/utilities'
 import { createWatchlist } from '@/server/utilities/db/watchlist'

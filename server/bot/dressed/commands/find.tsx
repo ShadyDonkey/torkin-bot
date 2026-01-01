@@ -2,14 +2,14 @@ import { ActionRow, Button, type CommandInteraction, Container, TextDisplay } fr
 import { useQuery } from '@tanstack/react-query'
 import { type CommandConfig, CommandOption } from 'dressed'
 import { useState } from 'react'
+import ErrorPage from '@/server/bot/components/commands/error'
+import { ListingPage, Listings } from '@/server/bot/components/commands/listings'
 import { logger } from '@/server/bot/utilities/logger'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
 import { search } from '@/server/lib/tmdb'
 import type { TypeSelection } from '@/server/lib/tmdb/types'
 import { unwrap } from '@/server/utilities'
-import ErrorPage from '../utilities/commands/error'
-import { ListingPage, Listings } from '../utilities/commands/listings'
 
 export const config = {
   description: 'Find a show or movie by name',

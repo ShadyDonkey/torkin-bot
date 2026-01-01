@@ -11,7 +11,7 @@ import {
 } from '@dressed/react'
 import { bold, link, subtext } from 'discord-fmt'
 import { Fragment } from 'react/jsx-runtime'
-import { PaginationButtons } from '@/server/bot/utilities/builders'
+import { PaginationButtons } from '@/server/bot/components/builders'
 import { logger } from '@/server/bot/utilities/logger'
 import { watchlistIdToUrl } from '@/server/bot/utilities/website'
 import { db } from '@/server/lib/db'
