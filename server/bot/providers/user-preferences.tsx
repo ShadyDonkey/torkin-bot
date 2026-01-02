@@ -53,6 +53,10 @@ export function UserPreferencesProvider({ children, userId }: PropsWithChildren 
     return 'Loading...'
   }
 
+  if (error) {
+    return 'Error fetching user preferences'
+  }
+
   if (!dbPreferences) {
     return 'No user preferences found, please set them up in settings command first.'
   }
