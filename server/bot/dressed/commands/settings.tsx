@@ -21,47 +21,13 @@ export default async function (interaction: CommandInteraction<typeof config>) {
 function Settings() {
   const preferences = useUserPreferences()
 
+  console.log('Settings component - preferences:', inspect(preferences))
+
   const savePreferences = () => {
     console.log(inspect(preferences))
     console.log('Saving preferences')
 
     console.log('new preferences', inspect(preferences))
-
-    // db.userPreference
-    //   .update({
-    //     where: {
-    //       discordUserId: preferences.userId,
-    //     },
-    //     data: {
-    //       country: preferences.country,
-    //       language: preferences.language,
-    //       timezone: preferences.timezone,
-    //     },
-    //   })
-    //   .then((r) => {
-    //     console.log('Preferences saved')
-    //     preferences.country = r.country
-    //     preferences.language = r.language
-    //     preferences.timezone = r.timezone
-    //     setSaving(false)
-    //   })
-    //   .catch((error) => {
-    //     console.error('Error saving preferences', inspect(error))
-    //     setSaving(false)
-    //   })
-
-    // setSaving(false)
-    // preferences
-    //   .save()
-    //   .then(() => {
-    //     console.log('Preferences saved')
-    //   })
-    //   .catch((error) => {
-    //     console.error('Error saving preferences', inspect(error))
-    //   })
-    //   .finally(() => {
-    //     setSaving(false)
-    //   })
   }
 
   return (
@@ -72,7 +38,7 @@ function Settings() {
             <Button
               onClick={() => {
                 preferences.country = preferences.country === 'US' ? 'CA' : 'US'
-                console.log(inspect(preferences))
+                console.log('Button click - preferences:', inspect(preferences))
               }}
               label={preferences.country}
             />

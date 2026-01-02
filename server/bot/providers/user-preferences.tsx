@@ -8,7 +8,6 @@ type UserPreferences = {
   country: string
   timezone: string
   userId: string | null
-  // save: () => Promise<void>
 }
 
 const UserPreferencesContext = createContext<UserPreferences>({
@@ -16,7 +15,6 @@ const UserPreferencesContext = createContext<UserPreferences>({
   country: 'US',
   timezone: 'America/New_York',
   userId: null,
-  // save: async () => {},
 })
 
 export function useUserPreferences() {
@@ -30,12 +28,13 @@ export function useUserPreferences() {
 }
 
 export function UserPreferencesProvider({ children, userId }: PropsWithChildren & { userId: string }) {
+  console.log('UserPreferencesProvider - received userId:', userId)
   const [dbPreferences, setDbPreferences] = useState<UserPreference | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    console.log(userId)
+    console.log('UserPreferencesProvider - userId prop:', userId)
     db.userPreference
       .findUniqueOrThrow({
         where: {
@@ -43,7 +42,7 @@ export function UserPreferencesProvider({ children, userId }: PropsWithChildren 
         },
       })
       .then((preferences) => {
-        console.log('UserPreferencesProvider', inspect(preferences))
+        console.log('UserPreferencesProvider - db preferences:', inspect(preferences))
         setDbPreferences(preferences)
         setLoading(false)
       })
@@ -53,6 +52,13 @@ export function UserPreferencesProvider({ children, userId }: PropsWithChildren 
         console.error('Error fetching user preferences', inspect(error))
       })
   }, [userId])
+
+  const contextValue = {
+    country: dbPreferences?.country ?? 'default',
+    language: dbPreferences?.language ?? 'default',
+    timezone: dbPreferences?.timezone ?? 'default',
+    userId: userId,
+  }
 
   if (loading) {
     return 'Loading...'
@@ -72,7 +78,7 @@ export function UserPreferencesProvider({ children, userId }: PropsWithChildren 
         country: dbPreferences.country,
         language: dbPreferences.language,
         timezone: dbPreferences.timezone,
-        userId: dbPreferences.discordUserId,
+        userId: userId,
       }}
     >
       {children}
