@@ -12,18 +12,6 @@ import ErrorPage from './error'
 
 const ITEMS_PER_PAGE = 4
 
-type RecommendationResult = {
-  id: number
-  title?: string
-  name?: string
-  overview?: string
-  release_date?: string
-  first_air_date?: string
-  poster_path?: string | null
-  vote_average: number
-  adult: boolean
-}
-
 export function RecommendationsPage({ listing, onBack }: Readonly<{ listing: StandardListing; onBack: () => void }>) {
   const queryData = {
     queryKey: ['recommendations', listing.type, listing.id],
@@ -54,29 +42,18 @@ export function RecommendationsPage({ listing, onBack }: Readonly<{ listing: Sta
       <Container>
         {h2(`Recommendations for ${listing.title}`)}
         {results.map((item, index) => {
-          const typedItem = item as unknown as RecommendationResult
-          const title = typedItem.title ?? typedItem.name
-          const overview = typedItem.overview
-
-          if (!title || !overview || typedItem.adult) {
+          if (!item.title || !item.description || item.adult) {
             return null
           }
 
-          const releaseDate = typedItem.release_date ?? typedItem.first_air_date
-          const voteAverage = typedItem.vote_average
-
           return (
-            <Fragment key={typedItem.id}>
+            <Fragment key={item.id}>
               <ListingPreview
-                title={title}
-                subtitle={
-                  releaseDate
-                    ? `${format(new Date(releaseDate), 'yyyy')} • ${voteAverage.toFixed(1)} ★`
-                    : `${voteAverage.toFixed(1)} ★`
-                }
-                description={overview}
-                releaseDate={releaseDate}
-                thumbnail={typedItem.poster_path ?? undefined}
+                title={item.title}
+                subtitle={`${item.releaseDate ? format(new Date(item.releaseDate), 'yyyy') : 'N/A'} • ${item.voteAverage.toFixed(1)} ★`}
+                description={item.description}
+                releaseDate={item.releaseDate}
+                thumbnail={item.thumbnail ?? undefined}
                 onClick={() => {}}
               />
               {index < results.length - 1 && <Separator />}

@@ -22,10 +22,12 @@ export const CACHE_CONFIG = {
   tv: {
     details: cacheEntry((id) => `${CACHE_PREFIX}:tv:${slugify(String(id))}:details`, '1d'),
     watchProviders: cacheEntry((id) => `${CACHE_PREFIX}:tv:${slugify(String(id))}:watch_providers`, '1d'),
+    recommendations: cacheEntry((id) => `${CACHE_PREFIX}:tv:${slugify(String(id))}:recommendations`, '1d'),
   },
   movie: {
     details: cacheEntry((id) => `${CACHE_PREFIX}:movie:${slugify(String(id))}:details`, '1d'),
     watchProviders: cacheEntry((id) => `${CACHE_PREFIX}:movie:${slugify(String(id))}:watch_providers`, '1d'),
+    recommendations: cacheEntry((id) => `${CACHE_PREFIX}:movie:${slugify(String(id))}:recommendations`, '1d'),
   },
   trending: cacheEntry(
     (type: TypeSelection, timeWindow: TimeWindow) => `${CACHE_PREFIX}:trending:${type}:${timeWindow}`,
@@ -273,4 +275,66 @@ export async function getTimezones() {
     CACHE_CONFIG.config.timezones.ttl,
     async () => await api.timezones(),
   )
+}
+
+export async function getRecommendations(type: TypeSelection, id: string | number) {
+  const cached = await getOrSet(
+    CACHE_CONFIG[type].recommendations.key(id),
+    CACHE_CONFIG[type].recommendations.ttl,
+    async () => {
+      logger.info(`Requesting ${type} recommendations from TMDB for id ${id}.`)
+
+      const [err, firstPage] = await unwrap(api.recommendations(type, id, 1))
+
+      if (err || !firstPage) {
+        return []
+      }
+
+      const totalPages = firstPage.total_pages ?? 1
+      const pagesToFetch = Math.min(totalPages, MAX_TRENDING_PAGES)
+
+      const pages = await Promise.all(
+        Array.from({ length: pagesToFetch }, async (_, i) => (await api.recommendations(type, id, i + 1)).results),
+      )
+
+      const allResults = pages.flatMap((page) => page?.flat()).filter(Boolean)
+      const uniqueResults = Array.from(
+        new Map(allResults.filter((item) => item !== undefined).map((item) => [item.id, item])).values(),
+      )
+      const filtered = uniqueResults.filter((item) => item.poster_path !== null)
+      return filtered.toSorted((a, b) => b.popularity - a.popularity)
+    },
+  )
+
+  if (type === 'movie') {
+    return ((cached as unknown as TrendingMovieResponse['results'])?.map(
+      (r) =>
+        ({
+          id: r.id,
+          title: r.title ?? r.original_title,
+          description: r.overview,
+          releaseDate: r.release_date,
+          thumbnail: r.poster_path,
+          voteAverage: r.vote_average,
+          adult: r.adult,
+          type: 'movie',
+          details: r,
+        }) as StandardListing,
+    ) ?? []) as StandardListing[]
+  }
+
+  return ((cached as unknown as TrendingTvResponse['results'])?.map(
+    (r) =>
+      ({
+        id: r.id,
+        title: r.name ?? r.original_name,
+        description: r.overview,
+        releaseDate: r.first_air_date,
+        thumbnail: r.poster_path,
+        voteAverage: r.vote_average,
+        adult: r.adult,
+        type: 'tv',
+        details: r,
+      }) as StandardListing,
+  ) ?? []) as StandardListing[]
 }

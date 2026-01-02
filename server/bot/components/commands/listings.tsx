@@ -18,6 +18,7 @@ import type {
 import { DUPLICATE_PROVIDER_ID_MAPPING } from '@/server/lib/tmdb/watch-providers'
 import { paginateArray } from '@/server/utilities'
 import ErrorPage from './error'
+import { RecommendationsPage } from './recommendations'
 
 const ITEMS_PER_PAGE = 4
 
@@ -29,6 +30,7 @@ export function Listings({
   const query = useQuery(queryData)
   const [page, setPage] = useState(initialPage)
   const [focused, setFocused] = useState<number>()
+  const [recommendationsFor, setRecommendationsFor] = useState<{ id: number; type: TypeSelection } | null>(null)
 
   if (!query.data) {
     return (
@@ -45,8 +47,21 @@ export function Listings({
     )
   }
 
+  if (focused !== undefined && query.data[focused] && recommendationsFor) {
+    const listing = query.data[focused]
+    return <RecommendationsPage listing={listing} onBack={() => setRecommendationsFor(null)} />
+  }
+
   if (focused !== undefined && query.data[focused]) {
-    return <ListingPage listing={query.data[focused]} onBack={() => setFocused(undefined)} />
+    return (
+      <ListingPage
+        listing={query.data[focused]}
+        onBack={() => setFocused(undefined)}
+        onShowRecommendations={(id, type) => {
+          setRecommendationsFor({ id, type })
+        }}
+      />
+    )
   }
 
   const { results, totalPages } = paginateArray(query.data, page, ITEMS_PER_PAGE)
@@ -80,7 +95,13 @@ export function ListingPage({
   listing,
   onBack,
   backText,
-}: Readonly<{ listing: StandardListing; onBack: () => void; backText?: string }>) {
+  onShowRecommendations,
+}: Readonly<{
+  listing: StandardListing
+  onBack: () => void
+  backText?: string
+  onShowRecommendations?: (id: number, type: TypeSelection) => void
+}>) {
   const query = useQuery({
     queryKey: ['details', listing.type, listing.id],
     queryFn: () => getDetails<MDE, TVDE>(listing.type, listing.id, ['videos', 'external_ids']),
@@ -104,6 +125,7 @@ export function ListingPage({
       </Container>
       <ItemActions id={listing.id.toString()} type={type}>
         <Button onClick={onBack} label={backText ?? 'Back'} />
+
         {'videos' in details && (
           <>
             {details.external_ids.imdb_id && (
@@ -115,6 +137,14 @@ export function ListingPage({
               <Button url={findTrailer(details.videos.results)!} label="View Latest Trailer" />
             )}
           </>
+        )}
+
+        {onShowRecommendations && (
+          <Button
+            onClick={() => onShowRecommendations(listing.id, listing.type)}
+            label={`Similar ${type === 'movie' ? 'Movies' : 'TV Shows'}`}
+            style="Secondary"
+          />
         )}
       </ItemActions>
     </>
