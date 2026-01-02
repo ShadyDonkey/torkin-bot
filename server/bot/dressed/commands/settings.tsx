@@ -113,29 +113,29 @@ export async function autocomplete(interaction: CommandAutocompleteInteraction) 
   const limitedMatches = <T extends { name: string; value: string }>(items: T[], predicate: (item: T) => boolean) =>
     items.filter(predicate).slice(0, limit)
 
-  switch (type.name) {
-    case 'country': {
-      const countries = (await getCountries())
-        .filter((e): e is { iso_3166_1: string; english_name: string } => Boolean(e.iso_3166_1 && e.english_name))
-        .map((e) => ({ name: e.english_name, value: e.iso_3166_1 }))
-
-      return await interaction.sendChoices(limitedMatches(countries, (c) => c.name.toLowerCase().includes(searchInput)))
-    }
-    case 'language': {
-      const languages = (await getLanguages())
-        .filter((e): e is { iso_639_1: string; english_name: string } => Boolean(e.iso_639_1 && e.english_name))
-        .map((e) => ({ name: e.english_name, value: e.iso_639_1 }))
-
-      return await interaction.sendChoices(limitedMatches(languages, (l) => l.name.toLowerCase().includes(searchInput)))
-    }
-    case 'timezone': {
-      const timezones = (await getTimezones())
-        .flatMap((country) => country.zones?.map((zone) => ({ name: zone, value: zone })) ?? [])
-        .filter((tz): tz is { name: string; value: string } => Boolean(tz.name && tz.value))
-
-      return await interaction.sendChoices(
-        limitedMatches(timezones, (tz) => tz.name.toLowerCase().includes(searchInput)),
-      )
+  const fetchData = async () => {
+    switch (type.name) {
+      case 'country': {
+        const countries = (await getCountries())
+          .filter((e): e is { iso_3166_1: string; english_name: string } => Boolean(e.iso_3166_1 && e.english_name))
+          .map((e) => ({ name: e.english_name, value: e.iso_3166_1 }))
+        return limitedMatches(countries, (c) => c.name.toLowerCase().includes(searchInput))
+      }
+      case 'language': {
+        const languages = (await getLanguages())
+          .filter((e): e is { iso_639_1: string; english_name: string } => Boolean(e.iso_639_1 && e.english_name))
+          .map((e) => ({ name: e.english_name, value: e.iso_639_1 }))
+        return limitedMatches(languages, (l) => l.name.toLowerCase().includes(searchInput))
+      }
+      case 'timezone': {
+        const timezones = (await getTimezones())
+          .flatMap((country) => country.zones?.map((zone) => ({ name: zone, value: zone })) ?? [])
+          .filter((tz): tz is { name: string; value: string } => Boolean(tz.name && tz.value))
+        return limitedMatches(timezones, (tz) => tz.name.toLowerCase().includes(searchInput))
+      }
     }
   }
+
+  const choices = await fetchData()
+  return await interaction.sendChoices(choices)
 }
