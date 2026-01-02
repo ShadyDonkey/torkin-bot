@@ -1,6 +1,5 @@
 import { ActionRow, Button, Container, Separator } from '@dressed/react'
 import { useQuery } from '@tanstack/react-query'
-import { format } from 'date-fns'
 import { h2 } from 'discord-fmt'
 import { useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
@@ -69,7 +68,6 @@ export function RecommendationsPage({ listing, onBack }: Readonly<{ listing: Sta
             <Fragment key={item.id}>
               <ListingPreview
                 title={item.title}
-                subtitle={`${item.releaseDate ? format(new Date(item.releaseDate), 'yyyy') : 'N/A'} • ${item.voteAverage.toFixed(1)} ★`}
                 description={item.description}
                 releaseDate={item.releaseDate}
                 thumbnail={item.thumbnail ?? undefined}
