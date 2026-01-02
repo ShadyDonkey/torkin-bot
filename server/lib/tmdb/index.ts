@@ -22,10 +22,12 @@ export const CACHE_CONFIG = {
   tv: {
     details: cacheEntry((id) => `${CACHE_PREFIX}:tv:${slugify(String(id))}:details`, '1d'),
     watchProviders: cacheEntry((id) => `${CACHE_PREFIX}:tv:${slugify(String(id))}:watch_providers`, '1d'),
+    translations: cacheEntry((id) => `${CACHE_PREFIX}:tv:${slugify(String(id))}:translations`, '1d'),
   },
   movie: {
     details: cacheEntry((id) => `${CACHE_PREFIX}:movie:${slugify(String(id))}:details`, '1d'),
     watchProviders: cacheEntry((id) => `${CACHE_PREFIX}:movie:${slugify(String(id))}:watch_providers`, '1d'),
+    translations: cacheEntry((id) => `${CACHE_PREFIX}:movie:${slugify(String(id))}:translations`, '1d'),
   },
   trending: cacheEntry(
     (type: TypeSelection, timeWindow: TimeWindow) => `${CACHE_PREFIX}:trending:${type}:${timeWindow}`,
@@ -194,6 +196,14 @@ export async function getDetails<M, TV>(
     type: 'tv',
     details: show,
   }
+}
+
+export async function getTranslations(type: TypeSelection, id: string) {
+  return await getOrSet(
+    CACHE_CONFIG[type].translations.key(id),
+    CACHE_CONFIG[type].translations.ttl,
+    async () => await api.translations(type, id),
+  )
 }
 
 export async function getItemWatchProviders(
