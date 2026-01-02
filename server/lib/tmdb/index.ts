@@ -198,7 +198,7 @@ export async function getDetails<M, TV>(
   }
 }
 
-export async function getTranslations(type: TypeSelection, id: string) {
+export async function getTranslations(type: TypeSelection, id: string | number) {
   return await getOrSet(
     CACHE_CONFIG[type].translations.key(id),
     CACHE_CONFIG[type].translations.ttl,

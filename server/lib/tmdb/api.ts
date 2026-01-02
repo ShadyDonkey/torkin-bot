@@ -98,7 +98,7 @@ export async function genres(type: TypeSelection) {
   return await fetch<typeof type extends 'movie' ? MovieGenresResponse : TvGenresResponse>(`genre/${type}/list`)
 }
 
-export async function translations(type: TypeSelection, id: string) {
+export async function translations(type: TypeSelection, id: string | number) {
   return await fetch<typeof type extends 'movie' ? MovieTranslationsResponse : TvTranslationsResponse>(
     `${type}/${id}/translations`,
   )
