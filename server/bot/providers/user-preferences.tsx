@@ -7,12 +7,14 @@ type UserPreferences = {
   language: string
   country: string
   timezone: string
+  save: () => Promise<void>
 }
 
 const UserPreferencesContext = createContext<UserPreferences>({
   language: 'en',
   country: 'US',
   timezone: 'America/New_York',
+  save: async () => {},
 })
 
 export function useUserPreferences() {
@@ -38,7 +40,7 @@ export function UserPreferencesProvider({ children, userId }: PropsWithChildren 
         },
       })
       .then((preferences) => {
-        console.log('UserPreferencesProvider', inspect(preferences))
+        // console.log('UserPreferencesProvider', inspect(preferences))
         setDbPreferences(preferences)
         setLoading(false)
       })
@@ -48,6 +50,42 @@ export function UserPreferencesProvider({ children, userId }: PropsWithChildren 
         console.error('Error fetching user preferences', inspect(error))
       })
   }, [userId])
+
+  const save = async () => {
+    if (!dbPreferences) {
+      return Promise.reject('No user preferences found, please set them up in settings command first.')
+    }
+
+    console.log('Saving user preferences', inspect(dbPreferences))
+    return Promise.resolve()
+
+    // db.userPreference.update({})
+
+    // if (!dbPreferences) {
+    //   console.log('No user preferences found, please set them up in settings command first.')
+    //   return Promise.resolve(false)
+    // }
+
+    // console.log('Saving user preferences', dbPreferences)
+
+    // const result = await db.userPreference.update({
+    //   where: {
+    //     discordUserId: userId,
+    //   },
+    //   data: {
+    //     country: dbPreferences.country,
+    //     language: dbPreferences.language,
+    //     timezone: dbPreferences.timezone,
+    //   },
+    // })
+
+    // if (result) {
+    //   setDbPreferences(result)
+    //   return Promise.resolve(true)
+    // }
+
+    // return Promise.resolve(false)
+  }
 
   if (loading) {
     return 'Loading...'
@@ -67,6 +105,7 @@ export function UserPreferencesProvider({ children, userId }: PropsWithChildren 
         country: dbPreferences.country,
         language: dbPreferences.language,
         timezone: dbPreferences.timezone,
+        save,
       }}
     >
       {children}

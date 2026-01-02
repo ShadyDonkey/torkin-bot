@@ -1,6 +1,9 @@
-import { type CommandInteraction, Container } from '@dressed/react'
+import { inspect } from 'node:util'
+import { ActionRow, Button, type CommandInteraction, Container, Section } from '@dressed/react'
+import { subtext } from 'discord-fmt'
 import type { CommandConfig } from 'dressed'
-
+import { useState } from 'react'
+import { useUserPreferences } from '@/server/bot/providers/user-preferences'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 
 export const config = {
@@ -11,5 +14,52 @@ export const config = {
 } satisfies CommandConfig
 
 export default async function (interaction: CommandInteraction<typeof config>) {
-  return await interaction.reply(<Container>Settings</Container>, { ephemeral: true })
+  return await interaction.reply(<Settings />, { ephemeral: true })
+}
+
+function Settings() {
+  const preferences = useUserPreferences()
+
+  const [saving, setSaving] = useState(false)
+  const savePreferences = () => {
+    console.log('Saving preferences')
+    setSaving(true)
+
+    preferences
+      .save()
+      .then(() => {
+        console.log('Preferences saved')
+      })
+      .catch((error) => {
+        console.error('Error saving preferences', inspect(error))
+      })
+      .finally(() => {
+        setSaving(false)
+      })
+  }
+
+  return (
+    <>
+      <Container>
+        <Section
+          accessory={
+            <Button
+              onClick={() => {
+                preferences.country = preferences.country === 'US' ? 'CA' : 'US'
+                console.log(inspect(preferences))
+              }}
+              label={preferences.country}
+            />
+          }
+        >
+          Country
+          {'\n'}
+          {subtext('Select your country')}
+        </Section>
+      </Container>
+      <ActionRow>
+        <Button onClick={savePreferences} label="Save" disabled={saving} />
+      </ActionRow>
+    </>
+  )
 }
