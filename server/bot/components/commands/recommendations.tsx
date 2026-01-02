@@ -5,6 +5,7 @@ import { h2 } from 'discord-fmt'
 import { useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 import { ListingPreview, PaginationButtons } from '@/server/bot/components/builders'
+import { ListingPage } from '@/server/bot/components/commands/listings'
 import { getRecommendations } from '@/server/lib/tmdb'
 import type { StandardListing } from '@/server/lib/tmdb/types'
 import { paginateArray } from '@/server/utilities'
@@ -19,6 +20,7 @@ export function RecommendationsPage({ listing, onBack }: Readonly<{ listing: Sta
   }
   const query = useQuery(queryData)
   const [page, setPage] = useState(1)
+  const [focused, setFocused] = useState<StandardListing | null>(null)
 
   if (!query.data) {
     return (
@@ -35,12 +37,29 @@ export function RecommendationsPage({ listing, onBack }: Readonly<{ listing: Sta
     )
   }
 
+  if (focused) {
+    return (
+      <ListingPage
+        listing={focused}
+        onBack={() => setFocused(null)}
+        backText="Back to Recommendations"
+        disableRecommendations
+        onShowRecommendations={(id, type) => {
+          const rec = query.data.find((r) => r.id === id && r.type === type)
+          if (rec) {
+            setFocused(rec)
+          }
+        }}
+      />
+    )
+  }
+
   const { results, totalPages } = paginateArray(query.data, page, ITEMS_PER_PAGE)
 
   return (
     <>
       <Container>
-        {h2(`Recommendations for ${listing.title}`)}
+        {h2(`Similar to ${listing.title}`)}
         {results.map((item, index) => {
           if (!item.title || !item.description || item.adult) {
             return null
@@ -54,7 +73,7 @@ export function RecommendationsPage({ listing, onBack }: Readonly<{ listing: Sta
                 description={item.description}
                 releaseDate={item.releaseDate}
                 thumbnail={item.thumbnail ?? undefined}
-                onClick={() => {}}
+                onClick={() => setFocused(item)}
               />
               {index < results.length - 1 && <Separator />}
             </Fragment>

@@ -120,13 +120,15 @@ export function ListingPage({
   onBack,
   backText,
   onShowRecommendations,
-  userId
+  disableRecommendations,
+  userId,
 }: Readonly<{
   listing: StandardListing
   onBack: () => void
   backText?: string
   userId: string
   onShowRecommendations?: (id: number, type: TypeSelection) => void
+  disableRecommendations?: boolean
 }>) {
   const userPreferences = useUserPreferences(userId)
   const [mergedListing, setMergedListing] = useState(structuredClone(listing))
@@ -198,7 +200,7 @@ export function ListingPage({
           </>
         )}
 
-        {onShowRecommendations && (
+        {onShowRecommendations && !disableRecommendations && (
           <Button
             onClick={() => onShowRecommendations(listing.id, listing.type)}
             label={`Similar ${type === 'movie' ? 'Movies' : 'TV Shows'}`}
