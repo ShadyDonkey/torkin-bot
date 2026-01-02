@@ -1,21 +1,7 @@
-import { inspect } from 'node:util'
-import {
-  ActionRow,
-  Button,
-  type CommandInteraction,
-  Container,
-  Section,
-  SelectMenu,
-  SelectMenuOption,
-} from '@dressed/react'
-import type { APIUser } from 'discord-api-types/v10'
-import { h1, h3 } from 'discord-fmt'
+import type { CommandInteraction } from '@dressed/react'
 import { type CommandAutocompleteInteraction, type CommandConfig, CommandOption } from 'dressed'
-import { useEffect, useState } from 'react'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
-import { db } from '@/server/lib/db'
-import { getCountries } from '@/server/lib/tmdb'
-import type { UserPreference } from '@/server/zenstack/models'
+import { getCountries, getLanguages, getTimezones } from '@/server/lib/tmdb'
 
 export const config = {
   description: 'Manage your settings for the bot',
@@ -72,7 +58,7 @@ export async function autocomplete(interaction: CommandAutocompleteInteraction) 
         .flatMap(
           (e) =>
             ({
-              name: e.native_name || e.english_name,
+              name: e.english_name,
               value: e.iso_3166_1,
             }) as { name: string; value: string },
         )
@@ -84,9 +70,45 @@ export async function autocomplete(interaction: CommandAutocompleteInteraction) 
         limitedMatches.map((country) => ({ name: country.name, value: country.value })),
       )
     }
-    case 'language':
-      return await interaction.sendChoices([])
-    case 'timezone':
-      return await interaction.sendChoices([])
+    case 'language': {
+      const languages = (await getLanguages())
+        .filter((e: { iso_639_1?: string; english_name?: string }) => e.iso_639_1 && e.english_name)
+        .flatMap(
+          (e: { iso_639_1?: string; english_name?: string }) =>
+            ({
+              name: e.english_name,
+              value: e.iso_639_1,
+            }) as { name: string; value: string },
+        )
+
+      const matches = languages.filter((lang: { name: string; value: string }) =>
+        lang.name.toLowerCase().includes(input?.toLowerCase() || ''),
+      )
+      const limitedMatches = matches.slice(0, 25)
+
+      return await interaction.sendChoices(
+        limitedMatches.map((lang: { name: string; value: string }) => ({ name: lang.name, value: lang.value })),
+      )
+    }
+    case 'timezone': {
+      const timezones = (await getTimezones())
+        .flatMap(
+          (country: { zones?: string[] }) =>
+            country.zones?.map((zone: string) => ({
+              name: zone,
+              value: zone,
+            })) || [],
+        )
+        .filter((tz): tz is { name: string; value: string } => Boolean(tz.name && tz.value))
+
+      const matches = timezones.filter((tz: { name: string; value: string }) =>
+        tz.name.toLowerCase().includes(input?.toLowerCase() || ''),
+      )
+      const limitedMatches = matches.slice(0, 25)
+
+      return await interaction.sendChoices(
+        limitedMatches.map((tz: { name: string; value: string }) => ({ name: tz.name, value: tz.value })),
+      )
+    }
   }
 }
