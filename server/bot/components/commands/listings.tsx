@@ -1,4 +1,3 @@
-import { inspect } from 'node:util'
 import { Button, Container, Section, Separator, TextDisplay, Thumbnail } from '@dressed/react'
 import { type UndefinedInitialDataOptions, useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
@@ -8,7 +7,7 @@ import { Fragment } from 'react/jsx-runtime'
 import { ItemActions, ListingPreview, PaginationButtons } from '@/server/bot/components/builders'
 import { TrendingMovieDetails, TrendingTvDetails, VoteSection } from '@/server/bot/components/tmdb'
 import { useUserPreferences } from '@/server/bot/utilities/user'
-import { getDetails, getImageUrl, getItemWatchProviders, getTranslations } from '@/server/lib/tmdb'
+import { getDetails, getImageUrl, getItemWatchProviders } from '@/server/lib/tmdb'
 import type {
   MovieExternalIdsResponse,
   MovieTranslationsResponse,
