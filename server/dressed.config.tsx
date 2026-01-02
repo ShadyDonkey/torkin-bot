@@ -4,11 +4,9 @@ import {
   patchInteraction,
   TextDisplay,
 } from '@dressed/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { link, subtext } from 'discord-fmt'
 import type { ServerConfig } from 'dressed/server'
-
-export const queryClient = new QueryClient()
+import { BotProviders } from '@/server/bot/providers'
 
 export default {
   build: { root: 'bot/dressed', extensions: ['tsx', 'ts'] },
@@ -19,11 +17,9 @@ export default {
       return [
         {
           ...patched,
-          reply: (c, ...p) => patched.reply(<QueryClientProvider client={queryClient}>{c}</QueryClientProvider>, ...p),
-          editReply: (c, ...p) =>
-            patched.editReply(<QueryClientProvider client={queryClient}>{c}</QueryClientProvider>, ...p),
-          followUp: (c, ...p) =>
-            patched.followUp(<QueryClientProvider client={queryClient}>{c}</QueryClientProvider>, ...p),
+          reply: (c, ...p) => patched.reply(<BotProviders>{c}</BotProviders>, ...p),
+          editReply: (c, ...p) => patched.editReply(<BotProviders>{c}</BotProviders>, ...p),
+          followUp: (c, ...p) => patched.followUp(<BotProviders>{c}</BotProviders>, ...p),
         } as CommandInteraction,
       ]
     },
@@ -36,13 +32,10 @@ export default {
       return [
         {
           ...patched,
-          reply: (c, ...p) => patched.reply(<QueryClientProvider client={queryClient}>{c}</QueryClientProvider>, ...p),
-          editReply: (c, ...p) =>
-            patched.editReply(<QueryClientProvider client={queryClient}>{c}</QueryClientProvider>, ...p),
-          update: (c, ...p) =>
-            patched.update(<QueryClientProvider client={queryClient}>{c}</QueryClientProvider>, ...p),
-          followUp: (c, ...p) =>
-            patched.followUp(<QueryClientProvider client={queryClient}>{c}</QueryClientProvider>, ...p),
+          reply: (c, ...p) => patched.reply(<BotProviders>{c}</BotProviders>, ...p),
+          editReply: (c, ...p) => patched.editReply(<BotProviders>{c}</BotProviders>, ...p),
+          update: (c, ...p) => patched.update(<BotProviders>{c}</BotProviders>, ...p),
+          followUp: (c, ...p) => patched.followUp(<BotProviders>{c}</BotProviders>, ...p),
           updateResponse(data, ...p) {
             if (typeof data !== 'string' && Math.random() < 0.3) {
               data = (
