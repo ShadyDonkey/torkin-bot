@@ -1,6 +1,7 @@
 import { handleRequest, installCommands } from 'dressed/server'
 import { Elysia } from 'elysia'
 import { commands, components, config, events } from '@/server/.dressed'
+import { cache } from '@/server/lib/cache'
 import { logger } from '@/server/utilities/logger'
 import { overrideConsole } from '@/server/utilities/overrides'
 
@@ -14,6 +15,10 @@ const app = new Elysia()
     await installCommands(commands)
 
     return 'Commands installed'
+  })
+  .get('/clear-cache', () => {
+    cache.clear()
+    return 'Cache cleared'
   })
   .post('/discord/handle-interaction', ({ request }) => handleRequest(request, commands, components, events, config), {
     parse: 'none',

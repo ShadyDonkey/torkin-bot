@@ -1,3 +1,4 @@
+import { inspect } from 'node:util'
 import { Button, Container, Section, Separator, TextDisplay, Thumbnail } from '@dressed/react'
 import { type UndefinedInitialDataOptions, useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
@@ -6,12 +7,15 @@ import { useEffect, useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 import { ItemActions, ListingPreview, PaginationButtons } from '@/server/bot/components/builders'
 import { TrendingMovieDetails, TrendingTvDetails, VoteSection } from '@/server/bot/components/tmdb'
-import { getDetails, getImageUrl, getItemWatchProviders } from '@/server/lib/tmdb'
+import { useUserPreferences } from '@/server/bot/utilities/user'
+import { getDetails, getImageUrl, getItemWatchProviders, getTranslations } from '@/server/lib/tmdb'
 import type {
   MovieExternalIdsResponse,
+  MovieTranslationsResponse,
   MovieVideosResponse,
   StandardListing,
   TvExternalIdsResponse,
+  TvTranslationsResponse,
   TvVideosResponse,
   TypeSelection,
 } from '@/server/lib/tmdb/types'
@@ -26,7 +30,13 @@ export function Listings({
   initialPage,
   queryData,
   listTitle,
-}: Readonly<{ initialPage: number; queryData: UndefinedInitialDataOptions<StandardListing[]>; listTitle?: string }>) {
+  userId,
+}: Readonly<{
+  initialPage: number
+  queryData: UndefinedInitialDataOptions<StandardListing[]>
+  listTitle?: string
+  userId: string
+}>) {
   const query = useQuery(queryData)
   const [page, setPage] = useState(initialPage)
   const [focused, setFocused] = useState<number>()
@@ -56,6 +66,7 @@ export function Listings({
     return (
       <ListingPage
         listing={query.data[focused]}
+        userId={userId}
         onBack={() => setFocused(undefined)}
         onShowRecommendations={(id, type) => {
           setRecommendationsFor({ id, type })
@@ -88,42 +99,90 @@ export function Listings({
   )
 }
 
-type MDE = { videos: { results: MovieVideosResponse['results'] }; external_ids: MovieExternalIdsResponse }
-type TVDE = { videos: { results: TvVideosResponse['results'] }; external_ids: TvExternalIdsResponse }
+type MDE = {
+  videos: { results: MovieVideosResponse['results'] }
+  external_ids: MovieExternalIdsResponse
+  translations: {
+    translations: MovieTranslationsResponse['translations']
+  }
+}
+
+type TVDE = {
+  videos: { results: TvVideosResponse['results'] }
+  external_ids: TvExternalIdsResponse
+  translations: {
+    translations: TvTranslationsResponse['translations']
+  }
+}
 
 export function ListingPage({
   listing,
   onBack,
   backText,
   onShowRecommendations,
+  userId
 }: Readonly<{
   listing: StandardListing
   onBack: () => void
   backText?: string
+  userId: string
   onShowRecommendations?: (id: number, type: TypeSelection) => void
 }>) {
+  const userPreferences = useUserPreferences(userId)
+  const [mergedListing, setMergedListing] = useState(structuredClone(listing))
   const query = useQuery({
     queryKey: ['details', listing.type, listing.id],
-    queryFn: () => getDetails<MDE, TVDE>(listing.type, listing.id, ['videos', 'external_ids']),
+    queryFn: () => getDetails<MDE, TVDE>(listing.type, listing.id, ['videos', 'external_ids', 'translations']),
   })
 
   const { type, details } = (query.data ?? listing) as StandardListing<TypeSelection, MDE, TVDE> | StandardListing
 
+  useEffect(() => {
+    if (query.isLoading || !details) {
+      return
+    }
+
+    if ('translations' in details && details.translations.translations) {
+      const translation = details.translations.translations.find((t) => t.iso_639_1 === userPreferences.language)
+
+      if (translation?.data) {
+        const obj: Pick<StandardListing, 'title' | 'description'> = {}
+        if ('title' in translation.data && 'runtime' in translation.data) {
+          const data = translation.data as NonNullable<MovieTranslationsResponse['translations']>[number]['data']
+          if (data?.title && data.title.length > 0) {
+            obj.title = data.title
+          }
+        }
+        if ('name' in translation.data) {
+          const data = translation.data as NonNullable<TvTranslationsResponse['translations']>[number]['data']
+          if (data?.name && data.name.length > 0) {
+            obj.title = data.name
+          }
+          if (data?.overview && data.overview.length > 0) {
+            obj.description = data.overview
+          }
+        }
+        setMergedListing((prev) => ({ ...prev, ...obj }))
+      }
+    }
+  }, [userPreferences.language, query.isLoading, details])
+
   return (
     <>
       <Container>
-        <Section accessory={<Thumbnail media={getImageUrl(listing.thumbnail ?? '')} />}>
-          ## {listing.title} {listing.releaseDate && `(${format(new Date(listing.releaseDate), 'yyyy')})`}
-          {listing.voteAverage > 0 && <VoteSection voteAverage={listing.voteAverage} />}
+        <Section accessory={<Thumbnail media={getImageUrl(mergedListing.thumbnail ?? '')} />}>
+          ## {mergedListing.title}{' '}
+          {mergedListing.releaseDate && `(${format(new Date(mergedListing.releaseDate), 'yyyy')})`}
+          {mergedListing.voteAverage > 0 && <VoteSection voteAverage={mergedListing.voteAverage} />}
         </Section>
-        {listing.description}
+        {mergedListing.description}
         {'\n'}
         {type === 'movie' ? <TrendingMovieDetails details={details} /> : <TrendingTvDetails details={details} />}
         <TextDisplay>
-          Watch Now (US): <Availability id={listing.id} type={type} />
+          Watch Now (US): <Availability id={mergedListing.id} type={type} />
         </TextDisplay>
       </Container>
-      <ItemActions id={listing.id.toString()} type={type}>
+      <ItemActions id={mergedListing.id.toString()} type={type}>
         <Button onClick={onBack} label={backText ?? 'Back'} />
 
         {'videos' in details && (
