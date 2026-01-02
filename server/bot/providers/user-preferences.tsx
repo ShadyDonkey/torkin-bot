@@ -60,8 +60,8 @@ export function UserPreferencesProvider({ children, userId }: PropsWithChildren 
   return (
     <UserPreferencesContext.Provider
       value={{
-        country: dbPreferences.iso31661,
-        language: dbPreferences.iso6391,
+        country: dbPreferences.country,
+        language: dbPreferences.language,
         timezone: dbPreferences.timezone,
       }}
     >
