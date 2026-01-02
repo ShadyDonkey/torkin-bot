@@ -307,7 +307,7 @@ export async function getRecommendations(type: TypeSelection, id: string | numbe
   )
 
   if (type === 'movie') {
-    return ((cached as unknown as TrendingMovieResponse['results'])?.map(
+    return ((cached as TrendingMovieResponse['results'])?.map(
       (r) =>
         ({
           id: r.id,
@@ -323,7 +323,7 @@ export async function getRecommendations(type: TypeSelection, id: string | numbe
     ) ?? []) as StandardListing[]
   }
 
-  return ((cached as unknown as TrendingTvResponse['results'])?.map(
+  return ((cached as TrendingTvResponse['results'])?.map(
     (r) =>
       ({
         id: r.id,
