@@ -84,9 +84,10 @@ export function Listings({
           if (!item.title || !item.description || item.adult) {
             return null
           }
+          const globalIndex = (page - 1) * ITEMS_PER_PAGE + index
           return (
             <Fragment key={item.id}>
-              <ListingPreview onClick={() => setFocused(index)} {...item} />
+              <ListingPreview onClick={() => setFocused(globalIndex)} {...item} />
               {index < results.length - 1 && <Separator />}
             </Fragment>
           )
