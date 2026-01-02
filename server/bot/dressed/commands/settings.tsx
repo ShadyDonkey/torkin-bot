@@ -5,17 +5,17 @@ import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 import { db } from '@/server/lib/db'
 import { getCountries, getLanguages, getTimezones } from '@/server/lib/tmdb'
 
+type MappedOption<N extends string> = ReturnType<
+  typeof CommandOption<'Subcommand', N, false, [ReturnType<typeof CommandOption<'String', 'value', true, never>>]>
+>
+
 export const config = {
   description: 'Manage your settings for the bot',
   default_member_permissions: IS_IN_DEV ? ['Administrator'] : undefined,
   integration_type: IS_IN_DEV ? 'Guild' : 'User',
   guilds: IS_IN_DEV ? [DEV_GUILD_ID] : undefined,
   options: [
-    CommandOption({
-      type: 'Subcommand',
-      name: 'view',
-      description: 'View your current settings',
-    }),
+    CommandOption({ type: 'Subcommand', name: 'view', description: 'View your current settings' }),
     CommandOption({
       type: 'SubcommandGroup',
       name: 'set',
@@ -39,7 +39,7 @@ export const config = {
             }),
           ],
         }),
-      ),
+      ) as [MappedOption<'country'>, MappedOption<'language'>, MappedOption<'timezone'>],
     }),
   ],
 } satisfies CommandConfig
@@ -79,7 +79,6 @@ export default async function (interaction: CommandInteraction<typeof config>) {
     setGroup?.getSubcommand('country') || setGroup?.getSubcommand('language') || setGroup?.getSubcommand('timezone')
 
   if (setSubcommand) {
-    // @ts-expect-error There's a typing issue here, it works but I need to see if this is on my side or not.
     const value = setSubcommand.getOption('value', true)?.string()
 
     await db.userPreference.upsert({
