@@ -1,13 +1,14 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import type { APIUser } from 'discord-api-types/v10'
 import type { PropsWithChildren } from 'react'
-import { UserPreferencesProvider } from '@/server/bot/providers/user-preferences'
 
 const queryClient = new QueryClient()
 
-export function BotProviders({ children, userId }: PropsWithChildren & { userId: string }) {
+export function BotProviders({ children, user }: PropsWithChildren & { user: APIUser }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <UserPreferencesProvider userId={userId}>{children}</UserPreferencesProvider>
+      {/* <UserPreferencesProvider userId={userId}>{children}</UserPreferencesProvider> */}
+      {children}
     </QueryClientProvider>
   )
 }

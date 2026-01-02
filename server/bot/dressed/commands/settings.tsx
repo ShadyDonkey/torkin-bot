@@ -3,7 +3,6 @@ import { ActionRow, Button, type CommandInteraction, Container, Section } from '
 import { subtext } from 'discord-fmt'
 import type { CommandConfig } from 'dressed'
 import { useState } from 'react'
-import { useUserPreferences } from '@/server/bot/providers/user-preferences'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 import { db } from '@/server/lib/db'
 
@@ -19,34 +18,11 @@ export default async function (interaction: CommandInteraction<typeof config>) {
 }
 
 function Settings() {
-  const preferences = useUserPreferences()
-
-  console.log('Settings component - preferences:', inspect(preferences))
-
-  const savePreferences = () => {
-    console.log(inspect(preferences))
-    console.log('Saving preferences')
-
-    console.log('new preferences', inspect(preferences))
-  }
-
   return (
     <>
-      <Container>
-        <Section
-          accessory={
-            <Button
-              onClick={() => {
-                preferences.set({
-                  ...preferences,
-                  country: preferences.country === 'US' ? 'CA' : 'US',
-                })
-                console.log('Button click - preferences:', inspect(preferences))
-              }}
-              label={preferences.country}
-            />
-          }
-        >
+      settings
+      {/* <Container>
+        <Section accessory={<Button />}>
           Country
           {'\n'}
           {subtext('Select your country')}
@@ -54,7 +30,7 @@ function Settings() {
       </Container>
       <ActionRow>
         <Button onClick={savePreferences} label="Save" />
-      </ActionRow>
+      </ActionRow> */}
     </>
   )
 }
