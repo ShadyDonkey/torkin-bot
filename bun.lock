@@ -53,11 +53,6 @@
       },
     },
   },
-  "catalog": {
-    "await-to-js": "^3.0.0",
-    "better-auth": "^1.4.10",
-    "elysia": "^1.4.18",
-  },
   "packages": {
     "@babel/code-frame": ["@babel/code-frame@7.27.1", "", { "dependencies": { "@babel/helper-validator-identifier": "^7.27.1", "js-tokens": "^4.0.0", "picocolors": "^1.1.1" } }, "sha512-cjQ7ZlQ0Mv3b47hABuTevyTuYN4i+loJKGeV9flcCgIK37cCXRh+L1bd3iBHlynerhQ7BhCkn2BPbQUL+rGqFg=="],
 

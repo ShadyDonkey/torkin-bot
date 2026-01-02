@@ -4,6 +4,7 @@ import type {
   ConfigLanguagesResponse,
   ConfigTimezonesResponse,
   MovieGenresResponse,
+  MovieRecommendationsResponse,
   MovieTranslationsResponse,
   MovieWatchProvidersResponse,
   SearchMovieResponse,
@@ -12,6 +13,7 @@ import type {
   TrendingMovieResponse,
   TrendingTvResponse,
   TvGenresResponse,
+  TvRecommendationsResponse,
   TvTranslationsResponse,
   TvWatchProvidersResponse,
   TypeSelection,
@@ -114,4 +116,11 @@ export async function countries() {
 
 export async function languages() {
   return await fetch<ConfigLanguagesResponse>('configuration/languages')
+}
+
+export async function recommendations(type: TypeSelection, id: string | number, page: number = 1) {
+  return await fetch<typeof type extends 'movie' ? MovieRecommendationsResponse : TvRecommendationsResponse>(
+    `${type}/${id}/recommendations`,
+    { page },
+  )
 }

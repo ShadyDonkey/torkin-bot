@@ -53,3 +53,7 @@ export type ConfigCountriesResponse =
   paths['/3/configuration/countries']['get']['responses']['200']['content']['application/json']
 export type ConfigLanguagesResponse =
   paths['/3/configuration/languages']['get']['responses']['200']['content']['application/json']
+export type MovieRecommendationsResponse =
+  paths['/3/movie/{movie_id}/recommendations']['get']['responses']['200']['content']['application/json']
+export type TvRecommendationsResponse =
+  paths['/3/tv/{series_id}/recommendations']['get']['responses']['200']['content']['application/json']

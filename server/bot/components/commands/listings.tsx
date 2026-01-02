@@ -1,4 +1,3 @@
-import { inspect } from 'node:util'
 import { Button, Container, Section, Separator, TextDisplay, Thumbnail } from '@dressed/react'
 import { type UndefinedInitialDataOptions, useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
@@ -8,7 +7,7 @@ import { Fragment } from 'react/jsx-runtime'
 import { ItemActions, ListingPreview, PaginationButtons } from '@/server/bot/components/builders'
 import { TrendingMovieDetails, TrendingTvDetails, VoteSection } from '@/server/bot/components/tmdb'
 import { useUserPreferences } from '@/server/bot/utilities/user'
-import { getDetails, getImageUrl, getItemWatchProviders, getTranslations } from '@/server/lib/tmdb'
+import { getDetails, getImageUrl, getItemWatchProviders } from '@/server/lib/tmdb'
 import type {
   MovieExternalIdsResponse,
   MovieTranslationsResponse,
@@ -22,6 +21,7 @@ import type {
 import { DUPLICATE_PROVIDER_ID_MAPPING } from '@/server/lib/tmdb/watch-providers'
 import { paginateArray } from '@/server/utilities'
 import ErrorPage from './error'
+import { RecommendationsPage } from './recommendations'
 
 const ITEMS_PER_PAGE = 4
 
@@ -39,6 +39,7 @@ export function Listings({
   const query = useQuery(queryData)
   const [page, setPage] = useState(initialPage)
   const [focused, setFocused] = useState<number>()
+  const [recommendationsFor, setRecommendationsFor] = useState<{ id: number; type: TypeSelection } | null>(null)
 
   if (!query.data) {
     return (
@@ -55,8 +56,22 @@ export function Listings({
     )
   }
 
+  if (focused !== undefined && query.data[focused] && recommendationsFor) {
+    const listing = query.data[focused]
+    return <RecommendationsPage listing={listing} onBack={() => setRecommendationsFor(null)} userId={userId} />
+  }
+
   if (focused !== undefined && query.data[focused]) {
-    return <ListingPage listing={query.data[focused]} onBack={() => setFocused(undefined)} userId={userId} />
+    return (
+      <ListingPage
+        listing={query.data[focused]}
+        userId={userId}
+        onBack={() => setFocused(undefined)}
+        onShowRecommendations={(id, type) => {
+          setRecommendationsFor({ id, type })
+        }}
+      />
+    )
   }
 
   const { results, totalPages } = paginateArray(query.data, page, ITEMS_PER_PAGE)
@@ -103,8 +118,17 @@ export function ListingPage({
   listing,
   onBack,
   backText,
+  onShowRecommendations,
+  disableRecommendations,
   userId,
-}: Readonly<{ listing: StandardListing; onBack: () => void; backText?: string; userId: string }>) {
+}: Readonly<{
+  listing: StandardListing
+  onBack: () => void
+  backText?: string
+  userId: string
+  onShowRecommendations?: (id: number, type: TypeSelection) => void
+  disableRecommendations?: boolean
+}>) {
   const userPreferences = useUserPreferences(userId)
   const [mergedListing, setMergedListing] = useState(structuredClone(listing))
   const query = useQuery({
@@ -161,6 +185,7 @@ export function ListingPage({
       </Container>
       <ItemActions id={mergedListing.id.toString()} type={type}>
         <Button onClick={onBack} label={backText ?? 'Back'} />
+
         {'videos' in details && (
           <>
             {details.external_ids.imdb_id && (
@@ -172,6 +197,14 @@ export function ListingPage({
               <Button url={findTrailer(details.videos.results)!} label="View Latest Trailer" />
             )}
           </>
+        )}
+
+        {onShowRecommendations && !disableRecommendations && (
+          <Button
+            onClick={() => onShowRecommendations(listing.id, listing.type)}
+            label={`Similar ${type === 'movie' ? 'Movies' : 'TV Shows'}`}
+            style="Secondary"
+          />
         )}
       </ItemActions>
     </>
