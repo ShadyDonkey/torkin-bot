@@ -62,7 +62,9 @@ export default async function (interaction: CommandInteraction<typeof config>) {
   }
 
   try {
-    await interaction.reply(<ListingsWrapper searchType={searchType} queryString={query} />)
+    await interaction.reply(
+      <ListingsWrapper searchType={searchType} queryString={query} userId={interaction.user.id} />,
+    )
   } catch (err) {
     logger.error(err)
     return await interaction.editReply('Something went wrong when finding that...')
@@ -81,7 +83,11 @@ export default async function (interaction: CommandInteraction<typeof config>) {
   }
 }
 
-function ListingsWrapper({ searchType, queryString }: Readonly<{ searchType: TypeSelection; queryString: string }>) {
+function ListingsWrapper({
+  searchType,
+  queryString,
+  userId,
+}: Readonly<{ searchType: TypeSelection; queryString: string; userId: string }>) {
   const queryData = { queryKey: ['find', searchType, queryString], queryFn: () => search(searchType, queryString) }
   const query = useQuery(queryData)
   const [showList, setShowList] = useState(false)
@@ -105,9 +111,10 @@ function ListingsWrapper({ searchType, queryString }: Readonly<{ searchType: Typ
       initialPage={1}
       queryData={queryData}
       listTitle={`${searchType === 'movie' ? 'Movie' : 'TV Show'} Results For \`${queryString}\``}
+      userId={userId}
     />
   ) : (
-    <ListingPage listing={query.data[0]} onBack={() => setShowList(true)} backText="See All Results" />
+    <ListingPage listing={query.data[0]} onBack={() => setShowList(true)} backText="See All Results" userId={userId} />
   )
 }
 

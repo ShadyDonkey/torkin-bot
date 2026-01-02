@@ -58,6 +58,7 @@ export default async function (interaction: CommandInteraction<typeof config>) {
         initialPage={1}
         queryData={{ queryKey: ['trending', type, window], queryFn: () => getTrending(type, window) }}
         listTitle={`Trending ${type === 'movie' ? 'Movie' : 'TV Show'}s ${window === 'day' ? 'Today' : 'This Week'}`}
+        userId={interaction.user.id}
       />,
     )
   } catch (err) {

@@ -4,6 +4,7 @@ import type {
   ConfigLanguagesResponse,
   ConfigTimezonesResponse,
   MovieGenresResponse,
+  MovieTranslationsResponse,
   MovieWatchProvidersResponse,
   SearchMovieResponse,
   SearchTvResponse,
@@ -11,6 +12,7 @@ import type {
   TrendingMovieResponse,
   TrendingTvResponse,
   TvGenresResponse,
+  TvTranslationsResponse,
   TvWatchProvidersResponse,
   TypeSelection,
   WatchProviderRegionsResponse,
@@ -94,6 +96,12 @@ export async function trending(type: TypeSelection, timeWindow: TimeWindow, page
 
 export async function genres(type: TypeSelection) {
   return await fetch<typeof type extends 'movie' ? MovieGenresResponse : TvGenresResponse>(`genre/${type}/list`)
+}
+
+export async function translations(type: TypeSelection, id: string | number) {
+  return await fetch<typeof type extends 'movie' ? MovieTranslationsResponse : TvTranslationsResponse>(
+    `${type}/${id}/translations`,
+  )
 }
 
 export async function timezones() {
