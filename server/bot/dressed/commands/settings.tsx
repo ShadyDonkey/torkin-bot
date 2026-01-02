@@ -1,6 +1,8 @@
-import type { CommandInteraction } from '@dressed/react'
+import { type CommandInteraction, Container } from '@dressed/react'
+import { h3, subtext } from 'discord-fmt'
 import { type CommandAutocompleteInteraction, type CommandConfig, CommandOption } from 'dressed'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
+import { db } from '@/server/lib/db'
 import { getCountries, getLanguages, getTimezones } from '@/server/lib/tmdb'
 
 export const config = {
@@ -43,7 +45,56 @@ export const config = {
 } satisfies CommandConfig
 
 export default async function (interaction: CommandInteraction<typeof config>) {
-  return await interaction.reply('settings', { ephemeral: true })
+  const viewSubcommand = interaction.getOption('view')?.subcommand()
+
+  if (viewSubcommand) {
+    const preferences = await db.userPreference.findUnique({
+      where: { discordUserId: interaction.user.id },
+    })
+
+    const availableCountries = await getCountries()
+    const availableLanguages = await getLanguages()
+
+    const country = availableCountries.find((e) => e.iso_3166_1 === preferences?.country)
+    const language = availableLanguages.find((e) => e.iso_639_1 === preferences?.language)
+
+    return await interaction.reply(
+      <Container>
+        {h3('Settings')}
+        {'\n'}
+        **Country:** {country?.english_name ? `${country.english_name} (${country.iso_3166_1})` : 'Not set'}
+        {'\n'}
+        **Language:** {language?.english_name ? `${language.english_name} (${language.iso_639_1})` : 'Not set'}
+        {'\n'}
+        **Timezone:** {preferences?.timezone ?? 'Not set'}
+        {'\n\n'}
+        {subtext('To change your settings, use the `/settings set` command')}
+      </Container>,
+      { ephemeral: true },
+    )
+  }
+
+  const setGroup = interaction.getOption('set')?.subcommandGroup()
+  const setSubcommand =
+    setGroup?.getSubcommand('country') || setGroup?.getSubcommand('language') || setGroup?.getSubcommand('timezone')
+
+  if (setSubcommand) {
+    const value = setSubcommand.getOption('value', true)?.string()
+
+    await db.userPreference.upsert({
+      where: { discordUserId: interaction.user.id },
+      update: { [setSubcommand.name]: value, updatedBy: interaction.user.id },
+      create: {
+        discordUserId: interaction.user.id,
+        createdBy: interaction.user.id,
+        [setSubcommand.name]: value,
+      },
+    })
+
+    return await interaction.reply(`Your ${setSubcommand.name} has been set to \`${value}\``, { ephemeral: true })
+  }
+
+  return await interaction.reply('Unknown subcommand', { ephemeral: true })
 }
 
 export async function autocomplete(interaction: CommandAutocompleteInteraction) {
