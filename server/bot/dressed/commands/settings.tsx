@@ -79,6 +79,7 @@ export default async function (interaction: CommandInteraction<typeof config>) {
     setGroup?.getSubcommand('country') || setGroup?.getSubcommand('language') || setGroup?.getSubcommand('timezone')
 
   if (setSubcommand) {
+    // @ts-expect-error There's a typing issue here, it works but I need to see if this is on my side or not.
     const value = setSubcommand.getOption('value', true)?.string()
 
     await db.userPreference.upsert({
