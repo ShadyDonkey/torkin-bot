@@ -110,7 +110,7 @@ function ListingsWrapper({
 
   if (recommendationsFor) {
     if (query.data[0]) {
-      return <RecommendationsPage listing={query.data[0]} onBack={() => setRecommendationsFor(null)} />
+      return <RecommendationsPage listing={query.data[0]} onBack={() => setRecommendationsFor(null)} userId={userId} />
     }
   }
 

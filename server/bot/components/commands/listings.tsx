@@ -59,7 +59,7 @@ export function Listings({
 
   if (focused !== undefined && query.data[focused] && recommendationsFor) {
     const listing = query.data[focused]
-    return <RecommendationsPage listing={listing} onBack={() => setRecommendationsFor(null)} />
+    return <RecommendationsPage listing={listing} onBack={() => setRecommendationsFor(null)} userId={userId} />
   }
 
   if (focused !== undefined && query.data[focused]) {

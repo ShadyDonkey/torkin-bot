@@ -12,7 +12,11 @@ import ErrorPage from './error'
 
 const ITEMS_PER_PAGE = 4
 
-export function RecommendationsPage({ listing, onBack }: Readonly<{ listing: StandardListing; onBack: () => void }>) {
+export function RecommendationsPage({
+  listing,
+  onBack,
+  userId,
+}: Readonly<{ listing: StandardListing; onBack: () => void; userId: string }>) {
   const queryData = {
     queryKey: ['recommendations', listing.type, listing.id],
     queryFn: () => getRecommendations(listing.type, listing.id),
@@ -43,6 +47,7 @@ export function RecommendationsPage({ listing, onBack }: Readonly<{ listing: Sta
         onBack={() => setFocused(null)}
         backText="Back to Recommendations"
         disableRecommendations
+        userId={userId}
         onShowRecommendations={(id, type) => {
           const rec = query.data.find((r) => r.id === id && r.type === type)
           if (rec) {
