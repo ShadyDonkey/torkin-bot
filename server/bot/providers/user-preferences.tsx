@@ -8,6 +8,7 @@ type UserPreferences = {
   country: string
   timezone: string
   userId: string | null
+  set: (preferences: UserPreferences) => void
 }
 
 const UserPreferencesContext = createContext<UserPreferences>({
@@ -15,6 +16,7 @@ const UserPreferencesContext = createContext<UserPreferences>({
   country: 'US',
   timezone: 'America/New_York',
   userId: null,
+  set: () => {},
 })
 
 export function useUserPreferences() {
@@ -30,11 +32,20 @@ export function useUserPreferences() {
 export function UserPreferencesProvider({ children, userId }: PropsWithChildren & { userId: string }) {
   console.log('UserPreferencesProvider - received userId:', userId)
   const [dbPreferences, setDbPreferences] = useState<UserPreference | null>(null)
+  const [id, setId] = useState<string | null>('state default')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [preferences, setPreferences] = useState<Omit<UserPreferences, 'set'>>({
+    language: 'en',
+    country: 'US',
+    timezone: 'America/New_York',
+    userId: null,
+  })
 
   useEffect(() => {
     console.log('UserPreferencesProvider - userId prop:', userId)
+    setId(userId)
+
     db.userPreference
       .findUniqueOrThrow({
         where: {
@@ -53,13 +64,6 @@ export function UserPreferencesProvider({ children, userId }: PropsWithChildren 
       })
   }, [userId])
 
-  const contextValue = {
-    country: dbPreferences?.country ?? 'default',
-    language: dbPreferences?.language ?? 'default',
-    timezone: dbPreferences?.timezone ?? 'default',
-    userId: userId,
-  }
-
   if (loading) {
     return 'Loading...'
   }
@@ -75,10 +79,10 @@ export function UserPreferencesProvider({ children, userId }: PropsWithChildren 
   return (
     <UserPreferencesContext.Provider
       value={{
-        country: dbPreferences.country,
-        language: dbPreferences.language,
-        timezone: dbPreferences.timezone,
-        userId: userId,
+        ...preferences,
+        set: (value: Omit<UserPreferences, 'set'>) => {
+          setPreferences(value)
+        },
       }}
     >
       {children}

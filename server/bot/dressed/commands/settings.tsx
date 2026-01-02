@@ -37,7 +37,10 @@ function Settings() {
           accessory={
             <Button
               onClick={() => {
-                preferences.country = preferences.country === 'US' ? 'CA' : 'US'
+                preferences.set({
+                  ...preferences,
+                  country: preferences.country === 'US' ? 'CA' : 'US',
+                })
                 console.log('Button click - preferences:', inspect(preferences))
               }}
               label={preferences.country}
