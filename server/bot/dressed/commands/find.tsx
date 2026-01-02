@@ -4,6 +4,7 @@ import { type CommandConfig, CommandOption } from 'dressed'
 import { useState } from 'react'
 import ErrorPage from '@/server/bot/components/commands/error'
 import { ListingPage, Listings } from '@/server/bot/components/commands/listings'
+import { RecommendationsPage } from '@/server/bot/components/commands/recommendations'
 import { logger } from '@/server/bot/utilities/logger'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '@/server/lib/keyv'
@@ -91,6 +92,7 @@ function ListingsWrapper({
   const queryData = { queryKey: ['find', searchType, queryString], queryFn: () => search(searchType, queryString) }
   const query = useQuery(queryData)
   const [showList, setShowList] = useState(false)
+  const [recommendationsFor, setRecommendationsFor] = useState<{ id: number; type: TypeSelection } | null>(null)
 
   if (!query.data?.[0]) {
     return (
@@ -106,6 +108,12 @@ function ListingsWrapper({
     )
   }
 
+  if (recommendationsFor) {
+    if (query.data[0]) {
+      return <RecommendationsPage listing={query.data[0]} onBack={() => setRecommendationsFor(null)} />
+    }
+  }
+
   return showList ? (
     <Listings
       initialPage={1}
@@ -114,7 +122,15 @@ function ListingsWrapper({
       userId={userId}
     />
   ) : (
-    <ListingPage listing={query.data[0]} onBack={() => setShowList(true)} backText="See All Results" userId={userId} />
+    <ListingPage
+      listing={query.data[0]}
+      onBack={() => setShowList(true)}
+      backText="See All Results"
+      userId={userId}
+      onShowRecommendations={(id, type) => {
+        setRecommendationsFor({ id, type })
+      }}
+    />
   )
 }
 
