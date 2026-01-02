@@ -26,6 +26,6 @@ jobs:
       - name: Run opencode
         uses: sst/opencode/github@latest
         env:
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
         with:
-          model: openrouter/mistralai/devstral-2512:free
+          model: opencode/minimax-m2.1-free
