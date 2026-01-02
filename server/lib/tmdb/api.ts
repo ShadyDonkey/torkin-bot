@@ -1,5 +1,8 @@
 import ky, { type KyInstance, type SearchParamsOption } from 'ky'
 import type {
+  ConfigCountriesResponse,
+  ConfigLanguagesResponse,
+  ConfigTimezonesResponse,
   MovieGenresResponse,
   MovieWatchProvidersResponse,
   SearchMovieResponse,
@@ -91,4 +94,16 @@ export async function trending(type: TypeSelection, timeWindow: TimeWindow, page
 
 export async function genres(type: TypeSelection) {
   return await fetch<typeof type extends 'movie' ? MovieGenresResponse : TvGenresResponse>(`genre/${type}/list`)
+}
+
+export async function timezones() {
+  return await fetch<ConfigTimezonesResponse>('configuration/timezones')
+}
+
+export async function countries() {
+  return await fetch<ConfigCountriesResponse>('configuration/countries')
+}
+
+export async function languages() {
+  return await fetch<ConfigLanguagesResponse>('configuration/languages')
 }

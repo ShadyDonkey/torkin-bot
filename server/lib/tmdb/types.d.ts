@@ -42,3 +42,10 @@ export type TrendingTvResponse =
   paths['/3/trending/tv/{time_window}']['get']['responses']['200']['content']['application/json']
 export type MovieGenresResponse = paths['/3/genre/movie/list']['get']['responses']['200']['content']['application/json']
 export type TvGenresResponse = paths['/3/genre/tv/list']['get']['responses']['200']['content']['application/json']
+
+export type ConfigTimezonesResponse =
+  paths['/3/configuration/timezones']['get']['responses']['200']['content']['application/json']
+export type ConfigCountriesResponse =
+  paths['/3/configuration/countries']['get']['responses']['200']['content']['application/json']
+export type ConfigLanguagesResponse =
+  paths['/3/configuration/languages']['get']['responses']['200']['content']['application/json']

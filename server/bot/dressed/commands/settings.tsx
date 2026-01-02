@@ -14,6 +14,7 @@ import { type CommandAutocompleteInteraction, type CommandConfig, CommandOption 
 import { useEffect, useState } from 'react'
 import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
 import { db } from '@/server/lib/db'
+import { getCountries } from '@/server/lib/tmdb'
 import type { UserPreference } from '@/server/zenstack/models'
 
 export const config = {
@@ -59,8 +60,33 @@ export default async function (interaction: CommandInteraction<typeof config>) {
   return await interaction.reply('settings', { ephemeral: true })
 }
 
-export function autocomplete(interaction: CommandAutocompleteInteraction) {
+export async function autocomplete(interaction: CommandAutocompleteInteraction) {
   const group = interaction.getOption('set')?.subcommandGroup()
   const type = group?.getSubcommand('country') || group?.getSubcommand('language') || group?.getSubcommand('timezone')
   const input = type?.getOption('value')?.string()
+
+  switch (type?.name) {
+    case 'country': {
+      const countries = (await getCountries())
+        .filter((e) => e.iso_3166_1 && (e.english_name || e.native_name))
+        .flatMap(
+          (e) =>
+            ({
+              name: e.native_name || e.english_name,
+              value: e.iso_3166_1,
+            }) as { name: string; value: string },
+        )
+
+      const matches = countries.filter((country) => country.name.toLowerCase().includes(input?.toLowerCase() || ''))
+      const limitedMatches = matches.slice(0, 25)
+
+      return await interaction.sendChoices(
+        limitedMatches.map((country) => ({ name: country.name, value: country.value })),
+      )
+    }
+    case 'language':
+      return await interaction.sendChoices([])
+    case 'timezone':
+      return await interaction.sendChoices([])
+  }
 }

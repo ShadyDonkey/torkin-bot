@@ -32,6 +32,11 @@ export const CACHE_CONFIG = {
     '14d',
   ),
   genres: cacheEntry(() => `${CACHE_PREFIX}:genres`, '14d'),
+  config: {
+    countries: cacheEntry(() => `${CACHE_PREFIX}:config:countries`, '7d'),
+    languages: cacheEntry(() => `${CACHE_PREFIX}:config:languages`, '7d'),
+    timezones: cacheEntry(() => `${CACHE_PREFIX}:config:timezones`, '7d'),
+  },
 } as const
 
 async function getOrSet<T>(key: string, ttl: string, fetcher: () => Promise<T>) {
@@ -244,4 +249,28 @@ export async function mapGenreIdsToRecord(ids: number[]) {
   const genres = await getGenres()
 
   return ids.map((id) => genres[id]).filter(Boolean)
+}
+
+export async function getCountries() {
+  return await getOrSet(
+    CACHE_CONFIG.config.countries.key(),
+    CACHE_CONFIG.config.countries.ttl,
+    async () => await api.countries(),
+  )
+}
+
+export async function getLanguages() {
+  return await getOrSet(
+    CACHE_CONFIG.config.languages.key(),
+    CACHE_CONFIG.config.languages.ttl,
+    async () => await api.languages(),
+  )
+}
+
+export async function getTimezones() {
+  return await getOrSet(
+    CACHE_CONFIG.config.timezones.key(),
+    CACHE_CONFIG.config.timezones.ttl,
+    async () => await api.timezones(),
+  )
 }
