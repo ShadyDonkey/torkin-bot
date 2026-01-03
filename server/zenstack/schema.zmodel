@@ -1,4 +1,3 @@
-// import './schemas/watchlist'
 import './schemas/user'
 
 datasource db {

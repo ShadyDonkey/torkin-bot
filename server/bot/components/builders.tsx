@@ -41,13 +41,7 @@ export function ItemActions({
   type: 'movie' | 'tv'
   children?: React.ReactNode
 }>) {
-  return (
-    <ActionRow>
-      {children}
-      {/* Removing because we're disabling watchlists for now */}
-      {/* <Button custom_id={`action-watchlist-add-${id}-${type}-default`} label="Add to Watchlist" style="Secondary" /> */}
-    </ActionRow>
-  )
+  return <ActionRow>{children}</ActionRow>
 }
 
 export function BackButton({
