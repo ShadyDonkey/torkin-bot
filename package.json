@@ -6,7 +6,7 @@
     "sherif:fix": "sherif -r root-package-manager-field --fix"
   },
   "workspaces": {
-    "packages": ["server"]
+    "packages": ["client", "server"]
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.10",

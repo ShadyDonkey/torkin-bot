@@ -5,6 +5,7 @@
     "ignoreUnknown": false,
     "includes": [
       "**",
+      "**/client/index.html",
       "!**/client/src/routeTree.gen.ts",
       "!**/client/src/styles.css",
       "!**/server/.dressed",
