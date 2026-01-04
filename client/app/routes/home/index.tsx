@@ -195,7 +195,7 @@ export default function Home() {
                   component="a"
                   href="/dashboard"
                   variant="subtle"
-                  color="red"
+                  c="dimmed"
                   size="xs"
                   leftSection={<LogIn size={14} />}
                 >
