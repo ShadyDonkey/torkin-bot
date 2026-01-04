@@ -19,7 +19,7 @@ import {
   Title,
 } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
-import { Bell, Compass, FileText, Globe, Tv, Zap } from 'lucide-react'
+import { Bell, Compass, FileText, Globe, LogIn, Tv, Zap } from 'lucide-react'
 import { motion } from 'motion/react'
 import type { Route } from '../../+types/root'
 import './index.css'
@@ -422,12 +422,22 @@ export default function Home() {
           <Container size="lg">
             <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="xl">
               <Box>
-                <Title order={3} mb="sm" style={{ color: 'var(--marquee-red-solid)' }}>
+                <Title order={3} mb="xs" style={{ color: 'var(--marquee-red-solid)' }}>
                   TORKIN
                 </Title>
-                <Text c="dimmed" size="sm">
+                <Text c="dimmed" size="sm" mb="md">
                   Movie and TV assistant for Discord.
                 </Text>
+                <Button
+                  component="a"
+                  href="/dashboard"
+                  variant="subtle"
+                  color="red"
+                  size="xs"
+                  leftSection={<LogIn size={14} />}
+                >
+                  Admin Login
+                </Button>
               </Box>
 
               <Box>
