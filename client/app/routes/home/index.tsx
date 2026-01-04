@@ -86,7 +86,7 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.25 }}
               >
                 <Text size="lg" ta="center" lh={1.6} style={{ fontSize: 'clamp(1rem, 8vw, 1.4rem)', opacity: 0.8 }}>
-                  A straight-forward bot to discover, read about, and track TV.
+                  A straight-forward bot to discover, read about, and track TV and movies.
                 </Text>
               </motion.div>
 
