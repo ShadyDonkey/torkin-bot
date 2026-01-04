@@ -1,0 +1,50 @@
+.shell {
+  background: var(--mantine-color-dark-9);
+}
+
+.header {
+  backdrop-filter: blur(10px);
+  background: rgba(10, 10, 10, 0.8);
+  border-bottom: 1px solid rgba(220, 38, 38, 0.1);
+}
+
+.name {
+  font-size: rem(28);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.marquee-box {
+  border-top: 1px solid rgba(220, 38, 38, 0.1);
+  border-bottom: 1px solid rgba(220, 38, 38, 0.1);
+  background: var(--mantine-color-dark-8);
+  overflow: hidden;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-content {
+  animation: marquee 40s linear infinite;
+}
+
+
+@keyframes expandLine {
+  to {
+    width: 100%;
+  }
+}
+
+.red-line {
+  width: 0;
+  height: 2px;
+  background: var(--mantine-color-red-6);
+  animation: expandLine 1.25s ease forwards;
+  animation-delay: 1.25s;
+}
