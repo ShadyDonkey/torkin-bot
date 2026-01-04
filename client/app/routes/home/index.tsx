@@ -462,10 +462,10 @@ export default function Home() {
                   LEGAL
                 </Title>
                 <Stack gap="xs">
-                  <Anchor href="#" c="dimmed" size="sm">
+                  <Anchor href="/legal/privacy" c="dimmed" size="sm">
                     Privacy Policy
                   </Anchor>
-                  <Anchor href="#" c="dimmed" size="sm">
+                  <Anchor href="/legal/terms" c="dimmed" size="sm">
                     Terms of Service
                   </Anchor>
                 </Stack>
