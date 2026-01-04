@@ -17,7 +17,7 @@ import {
   Title,
 } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
-import { PlaneIcon } from 'lucide-react'
+import { Bell, Compass, FileText, Globe, Tv, Zap } from 'lucide-react'
 import { motion } from 'motion/react'
 import type { Route } from '../../+types/root'
 import './index.css'
@@ -34,32 +34,32 @@ export function meta(_: Route.MetaArgs) {
 
 const FEATURES = [
   {
-    icon: PlaneIcon,
+    icon: Tv,
     title: 'Where to Watch',
     description: 'Is it on Netflix? Hulu? Prime? Wonder no more.',
   },
   {
-    icon: PlaneIcon,
+    icon: Compass,
     title: 'Similar & Related',
     description: 'Just finished Shutter Island? Find out what else is like it.',
   },
   {
-    icon: PlaneIcon,
+    icon: Zap,
     title: 'Trending',
     description: 'See what people are talking about and watching right now.',
   },
   {
-    icon: PlaneIcon,
+    icon: Bell,
     title: 'Track & Get Alerts',
     description: 'Track your favorite shows and movies and get alerts.',
   },
   {
-    icon: PlaneIcon,
+    icon: FileText,
     title: 'In-depth details',
     description: 'Get in-depth details about your favorite shows and movies',
   },
   {
-    icon: PlaneIcon,
+    icon: Globe,
     title: 'Multi-language support',
     description: 'If there are translations available, you can switch between them',
   },
@@ -75,7 +75,7 @@ export default function Home() {
             <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
 
             <Anchor href="#" underline="never">
-              <Title order={1} className="name">
+              <Title order={1} className="name" style={{ color: 'var(--marquee-red-solid)' }}>
                 TORKIN
               </Title>
             </Anchor>
@@ -90,7 +90,7 @@ export default function Home() {
             </Group>
 
             <Anchor href="https://discord.com/oauth2/authorize?client_id=1447864612577083514" target="_blank">
-              <Button variant="filled" size="sm" radius="sm" fw={600} style={{ letterSpacing: '0.05em' }}>
+              <Button variant="filled" size="sm" radius="sm" fw={600} color="red" style={{ letterSpacing: '0.05em' }}>
                 ADD TO DISCORD
               </Button>
             </Anchor>
@@ -116,7 +116,7 @@ export default function Home() {
           </Anchor>
           <Divider />
           <Anchor href="https://discord.com/oauth2/authorize?client_id=1447864612577083514" target="_blank">
-            <Button variant="filled" fullWidth>
+            <Button variant="filled" fullWidth color="red">
               ADD TO DISCORD
             </Button>
           </Anchor>
@@ -181,12 +181,12 @@ export default function Home() {
               >
                 <Group gap="md">
                   <Anchor href="https://discord.com/oauth2/authorize?client_id=1447864612577083514" target="_blank">
-                    <Button variant="filled" size="lg" radius="sm" fw={600} px="xl">
+                    <Button variant="filled" size="lg" radius="sm" fw={600} px="xl" color="red">
                       GET STARTED
                     </Button>
                   </Anchor>
                   <Anchor href="https://discord.gg/RP36fV6MNe" target="_blank">
-                    <Button variant="outline" size="lg" radius="sm" fw={600} px="xl">
+                    <Button variant="outline" size="lg" radius="sm" fw={600} px="xl" color="red">
                       GET HELP
                     </Button>
                   </Anchor>
@@ -227,7 +227,7 @@ export default function Home() {
                 style={{
                   width: rem(128),
                   height: rem(4),
-                  background: 'var(--mantine-color-red-6)',
+                  background: 'var(--marquee-red-solid)',
                   borderRadius: rem(2),
                 }}
               />
@@ -247,7 +247,7 @@ export default function Home() {
                     radius="md"
                     style={{
                       background: 'var(--mantine-color-dark-7)',
-                      border: '1px solid rgba(220, 38, 38, 0.1)',
+                      border: '1px solid var(--marquee-red)',
                       transition: 'all 0.3s ease',
                       cursor: 'default',
                     }}
@@ -261,7 +261,7 @@ export default function Home() {
                           backgroundColor: 'rgba(0, 0, 0, 0)',
                         }}
                       >
-                        <feature.icon size={rem(24)} />
+                        <feature.icon size={rem(24)} style={{ color: 'var(--marquee-red-solid)' }} />
                       </ThemeIcon>
                       <Title order={3} size="xl">
                         {feature.title}
@@ -282,7 +282,7 @@ export default function Home() {
           py="xl"
           style={{
             background: 'var(--mantine-color-dark-8)',
-            borderTop: '1px solid rgba(220, 38, 38, 0.1)',
+            borderTop: '1px solid var(--marquee-red)',
           }}
         >
           <Container size="lg">

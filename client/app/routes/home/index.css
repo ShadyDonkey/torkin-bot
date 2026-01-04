@@ -1,3 +1,8 @@
+:root {
+  --marquee-red: rgba(195, 35, 35, 0.2);
+  --marquee-red-solid: rgba(195, 35, 35, 0.5);
+}
+
 .shell {
   background: var(--mantine-color-dark-9);
 }
@@ -5,7 +10,7 @@
 .header {
   backdrop-filter: blur(10px);
   background: rgba(10, 10, 10, 0.8);
-  border-bottom: 1px solid rgba(220, 38, 38, 0.1);
+  border-bottom: 1px solid var(--marquee-red);
 }
 
 .name {
@@ -15,8 +20,8 @@
 }
 
 .marquee-box {
-  border-top: 1px solid rgba(220, 38, 38, 0.1);
-  border-bottom: 1px solid rgba(220, 38, 38, 0.1);
+  border-top: 1px solid var(--marquee-red);
+  border-bottom: 1px solid var(--marquee-red);
   background: var(--mantine-color-dark-8);
   overflow: hidden;
 }
@@ -34,7 +39,6 @@
   animation: marquee 40s linear infinite;
 }
 
-
 @keyframes expandLine {
   to {
     width: 100%;
@@ -44,7 +48,7 @@
 .red-line {
   width: 0;
   height: 2px;
-  background: var(--mantine-color-red-6);
+  background: var(--marquee-red-solid);
   animation: expandLine 1.25s ease forwards;
   animation-delay: 1.25s;
 }
