@@ -69,32 +69,11 @@ const FEATURES = [
 
 const REVIEWS = [
   {
-    name: 'Alex M.',
-    avatar: 'AM',
-    rating: 5,
-    quote: 'This bot saved me so much time. Finding where to watch movies is now instant.',
+    name: 'Zencep',
+    avatar: 'Z',
+    quote:
+      'I used to have to go to multiple websites to find where to watch movies. Now I can do it all in one place. Plus I can find similar shows and movies easily.',
     color: '#e74c3c',
-  },
-  {
-    name: 'Sarah K.',
-    avatar: 'SK',
-    rating: 5,
-    quote: 'The tracking feature is a game changer. Never miss a new episode again.',
-    color: '#9b59b6',
-  },
-  {
-    name: 'Jordan T.',
-    avatar: 'JT',
-    rating: 5,
-    quote: 'Clean, fast, and actually useful. My server loves using it every day.',
-    color: '#3498db',
-  },
-  {
-    name: 'Riley P.',
-    avatar: 'RP',
-    rating: 5,
-    quote: 'The recommendations are surprisingly accurate. Found so many new shows!',
-    color: '#2ecc71',
   },
 ]
 
