@@ -1,16 +1,12 @@
 import {
   Anchor,
   AppShell,
-  Avatar,
   Box,
-  Burger,
   Button,
   Card,
   Container,
-  Divider,
-  Drawer,
   Group,
-  Paper,
+  Image,
   rem,
   SimpleGrid,
   Stack,
@@ -18,8 +14,7 @@ import {
   ThemeIcon,
   Title,
 } from '@mantine/core'
-import { useDisclosure } from '@mantine/hooks'
-import { Bell, Compass, FileText, Globe, LogIn, Tv, Zap } from 'lucide-react'
+import { Bell, Compass, FileText, Globe, Headset, LogIn, Tv, Zap } from 'lucide-react'
 import { motion } from 'motion/react'
 import type { Route } from '../../+types/root'
 import './index.css'
@@ -67,238 +62,61 @@ const FEATURES = [
   },
 ]
 
-const REVIEWS = [
-  {
-    name: 'Zencep',
-    avatar: 'Z',
-    quote:
-      'I used to have to go to multiple websites to find where to watch movies. Now I can do it all in one place. Plus I can find similar shows and movies easily.',
-    color: '#e74c3c',
-  },
-]
-
-function ReviewCard({ review }: Readonly<{ review: (typeof REVIEWS)[0] }>) {
-  return (
-    <Paper className="review-card" p="lg" radius="md">
-      <Stack gap="sm">
-        <Group gap="sm">
-          <Avatar size="md" radius="xl" style={{ backgroundColor: review.color }}>
-            <Text size="sm" fw={600} c="white">
-              {review.avatar}
-            </Text>
-          </Avatar>
-          <Text size="sm" fw={600}>
-            {review.name}
-          </Text>
-        </Group>
-        <Text size="sm" c="dimmed" lh={1.6} style={{ fontStyle: 'italic' }}>
-          "{review.quote}"
-        </Text>
-      </Stack>
-    </Paper>
-  )
-}
-
 export default function Home() {
-  const [opened, { toggle, close }] = useDisclosure(false)
   return (
-    <AppShell className="shell" header={{ height: 80 }}>
-      <AppShell.Header className="header">
-        <Box h="100%" px="xl">
-          <Group h="100%" justify="space-between">
-            <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-
-            <Anchor href="#" underline="never">
-              <Box className="name">TORKIN</Box>
-            </Anchor>
-
-            <Group gap="xl" visibleFrom="sm">
-              <Anchor href="#features" underline="never" c="dimmed" fw={500}>
-                FEATURES
-              </Anchor>
-              <Anchor href="#reviews" underline="never" c="dimmed" fw={500}>
-                REVIEWS
-              </Anchor>
-              <Anchor href="https://discord.gg/RP36fV6MNe" underline="never" c="dimmed" fw={500} target="_blank">
-                SUPPORT
-              </Anchor>
-            </Group>
-
-            <Anchor href="https://discord.com/oauth2/authorize?client_id=1447864612577083514" target="_blank">
-              <Button
-                variant="filled"
-                size="sm"
-                radius="sm"
-                fw={600}
-                color="red"
-                className="button-filled"
-                style={{ letterSpacing: '0.05em' }}
-              >
-                ADD TO DISCORD
-              </Button>
-            </Anchor>
-          </Group>
-        </Box>
-      </AppShell.Header>
-
-      <Drawer
-        opened={opened}
-        onClose={close}
-        size="xs"
-        padding="md"
-        title={<Title order={3}>TORKIN</Title>}
-        hiddenFrom="sm"
-        zIndex={200}
-      >
-        <Stack gap="md">
-          <Anchor href="#features" c="dimmed" fw={500} onClick={close}>
-            FEATURES
-          </Anchor>
-          <Anchor href="#reviews" c="dimmed" fw={500} onClick={close}>
-            REVIEWS
-          </Anchor>
-          <Anchor href="https://discord.gg/RP36fV6MNe" target="_blank" c="dimmed" fw={500} onClick={close}>
-            SUPPORT
-          </Anchor>
-          <Divider />
-          <Anchor href="https://discord.com/oauth2/authorize?client_id=1447864612577083514" target="_blank">
-            <Button variant="filled" fullWidth color="red" className="button-filled">
-              ADD TO DISCORD
-            </Button>
-          </Anchor>
-        </Stack>
-      </Drawer>
-
+    <AppShell className="shell">
       <AppShell.Main>
-        <Box style={{ position: 'relative', overflow: 'hidden' }}>
+        <Box style={{ minHeight: '100vh', position: 'relative', display: 'flex', alignItems: 'center' }}>
           <Box className="hero-ambient" />
           <Container size="lg" py="xl" className="hero-content">
             <Stack gap="lg" align="center">
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.2 }}>
-                <Text size="xl" fw={600} style={{ letterSpacing: '0.3em' }}>
-                  PRESENTING
-                </Text>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.5 }}
-              >
-                <Title
-                  order={1}
-                  ta="center"
-                  className="gradient-text"
-                  style={{
-                    fontSize: 'clamp(2rem, 15vw, 4rem)',
-                    lineHeight: 0.9,
-                    letterSpacing: '-0.02em',
-                  }}
-                >
-                  YOUR PERSONAL
-                  <br />
-                  MOVIE & TV ASSISTANT
-                </Title>
-              </motion.div>
-
-              <motion.div
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 0.6, delay: 0.9, ease: 'circOut' }}
-                style={{ marginTop: rem(32), marginBottom: rem(32), transformOrigin: 'center' }}
-              >
-                <Box
-                  style={{
-                    width: rem(80),
-                    height: rem(2),
-                    background: 'var(--marquee-red-solid)',
-                    borderRadius: rem(2),
-                  }}
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '2rem', gap: '0.5rem' }}>
+                <Image
+                  style={{ width: '6rem', height: '6rem', rotate: '6deg' }}
+                  src="https://cdn.discordapp.com/app-icons/1447864612577083514/942deffe7aad1e505a73d778d1ce26c1.png?size=256"
                 />
-              </motion.div>
+                <Title order={1} ta="center" className="gradient-text" size={rem(48)}>
+                  TORKIN
+                </Title>
+              </div>
 
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 1.1 }}
-                style={{ maxWidth: rem(600) }}
+                transition={{ duration: 0.6, delay: 0.25 }}
               >
-                <Text
-                  size="lg"
-                  ta="center"
-                  c="dimmed"
-                  lh={1.6}
-                  style={{
-                    fontSize: 'clamp(1rem, 8vw, 1.4rem)',
-                  }}
-                >
-                  A straight-forward Discord bot that makes it easy to find, discover, and track TV shows and movies.
+                <Text size="lg" ta="center" lh={1.6} style={{ fontSize: 'clamp(1rem, 8vw, 1.4rem)', opacity: 0.8 }}>
+                  A straight-forward bot to discover, read about, and track TV.
                 </Text>
               </motion.div>
 
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 1.3 }}
+                style={{ marginTop: '0.5rem' }}
+                transition={{ duration: 0.6, delay: 0.5 }}
               >
                 <Group gap="md">
                   <Anchor href="https://discord.com/oauth2/authorize?client_id=1447864612577083514" target="_blank">
-                    <Button
-                      variant="filled"
-                      size="lg"
-                      radius="sm"
-                      fw={600}
-                      px="xl"
-                      color="red"
-                      className="button-filled"
-                    >
+                    <Button variant="filled" size="lg" radius="sm" fw={600} color="dark" className="button-filled">
                       GET STARTED
                     </Button>
                   </Anchor>
                   <Anchor href="https://discord.gg/RP36fV6MNe" target="_blank">
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      radius="sm"
-                      fw={600}
-                      px="xl"
-                      color="red"
-                      className="button-outline"
-                    >
-                      GET HELP
+                    <Button variant="default" size="lg" radius="sm" color="dark">
+                      <Headset />
                     </Button>
                   </Anchor>
                 </Group>
-              </motion.div>
-
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 1.5 }}>
-                <Text size="xs" c="dimmed" style={{ letterSpacing: '0.2em', marginTop: rem(40) }}>
-                  TOTALLY FREE • NO CREDIT CARD • NO BS • EASY TO USE
-                </Text>
               </motion.div>
             </Stack>
           </Container>
         </Box>
 
-        <Box py="xl" className="marquee-box">
-          <Box
-            className="marquee-content"
-            style={{
-              whiteSpace: 'nowrap',
-              fontSize: rem(140),
-              fontWeight: 700,
-              color: 'var(--marquee-red)',
-              fontFamily: 'inherit',
-            }}
-          >
-            DISCOVER • TRACK • FIND • AVAILABILITY • DISCOVER • TRACK • FIND •
-          </Box>
-        </Box>
-
-        <Box id="features" py={rem(120)}>
+        <Box id="features" pb={rem(120)}>
           <Container size="lg">
             <Stack gap="xl" align="center" mb={rem(60)}>
-              <Title order={2} ta="center" size={rem(56)} className="gradient-text">
+              <Title order={2} ta="center" size={rem(32)} className="gradient-text">
                 WHAT IT DOES
               </Title>
               <Box
@@ -334,14 +152,12 @@ export default function Home() {
                         size={rem(48)}
                         radius="md"
                         variant="light"
-                        style={{
-                          backgroundColor: 'rgba(0, 0, 0, 0)',
-                        }}
+                        style={{ backgroundColor: 'rgba(0, 0, 0, 0)' }}
                       >
                         <feature.icon
                           size={rem(24)}
                           className="feature-icon"
-                          style={{ color: 'var(--marquee-red-solid)' }}
+                          style={{ color: 'var(--mantine-color-dark-3)' }}
                         />
                       </ThemeIcon>
                       <Title order={3} size="xl">
@@ -352,38 +168,6 @@ export default function Home() {
                       </Text>
                     </Stack>
                   </Card>
-                </motion.div>
-              ))}
-            </SimpleGrid>
-          </Container>
-        </Box>
-
-        <Box id="reviews" py={rem(100)} style={{ background: 'var(--mantine-color-dark-8)' }}>
-          <Container size="lg">
-            <Stack gap="xl" align="center" mb={rem(60)}>
-              <Title order={2} ta="center" size={rem(56)} className="gradient-text">
-                WHAT PEOPLE SAY
-              </Title>
-              <Box
-                style={{
-                  width: rem(128),
-                  height: rem(4),
-                  background: 'var(--marquee-red-solid)',
-                  borderRadius: rem(2),
-                }}
-              />
-            </Stack>
-
-            <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="lg">
-              {REVIEWS.map((review, index) => (
-                <motion.div
-                  key={review.name}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <ReviewCard review={review} />
                 </motion.div>
               ))}
             </SimpleGrid>
@@ -401,7 +185,7 @@ export default function Home() {
           <Container size="lg">
             <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="xl">
               <Box>
-                <Title order={3} mb="xs" style={{ color: 'var(--marquee-red-solid)' }}>
+                <Title order={3} mb="xs">
                   TORKIN
                 </Title>
                 <Text c="dimmed" size="sm" mb="md">
@@ -450,12 +234,6 @@ export default function Home() {
                 </Stack>
               </Box>
             </SimpleGrid>
-
-            <Divider my="lg" color="dark.4" />
-
-            <Text ta="center" size="xs" c="dimmed" style={{ letterSpacing: '0.1em' }}>
-              © 2025-{new Date().getFullYear()} SHADY DONKEY • ALL RIGHTS RESERVED
-            </Text>
           </Container>
         </Box>
       </AppShell.Main>
