@@ -1,6 +1,6 @@
 import { createApplicationEmoji, listApplicationEmojis } from 'dressed'
-import { getAvailableWatchProviders, getImageUrl } from '@/server/lib/tmdb'
-import { DUPLICATE_PROVIDER_ID_MAPPING } from '@/server/lib/tmdb/watch-providers'
+import { getAvailableWatchProviders, getImageUrl } from '../lib/tmdb'
+import { DUPLICATE_PROVIDER_ID_MAPPING } from '../lib/tmdb/watch-providers'
 
 const movieProviders = await getAvailableWatchProviders('movie')
 const tvProviders = await getAvailableWatchProviders('tv')

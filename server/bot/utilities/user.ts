@@ -1,6 +1,6 @@
 import { inspect } from 'node:util'
 import { useEffect, useState } from 'react'
-import { db } from '@/server/lib/db'
+import { db } from '../../lib/db'
 
 export function useUserPreferences(userId: string) {
   const [preferences, setPreferences] = useState<{

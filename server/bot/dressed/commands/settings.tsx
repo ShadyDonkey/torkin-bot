@@ -1,9 +1,9 @@
 import { type CommandInteraction, Container } from '@dressed/react'
 import { h3, subtext } from 'discord-fmt'
 import { type CommandAutocompleteInteraction, type CommandConfig, CommandOption } from 'dressed'
-import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
-import { db } from '@/server/lib/db'
-import { getCountries, getLanguages, getTimezones } from '@/server/lib/tmdb'
+import { DEV_GUILD_ID, IS_IN_DEV } from '../../../lib/config'
+import { db } from '../../../lib/db'
+import { getCountries, getLanguages, getTimezones } from '../../../lib/tmdb'
 
 type MappedOption<N extends string> = ReturnType<
   typeof CommandOption<'Subcommand', N, false, [ReturnType<typeof CommandOption<'String', 'value', true, never>>]>

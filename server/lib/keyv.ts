@@ -1,6 +1,6 @@
 import KeyvRedis from '@keyv/redis'
 import Keyv from 'keyv'
-import { toMs } from '@/server/utilities'
+import { toMs } from '../utilities'
 
 export const keyv = new Keyv({
   store: new KeyvRedis(process.env.DRAGONFLY_URL || 'redis://localhost:6379'),

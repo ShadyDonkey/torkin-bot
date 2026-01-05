@@ -20,7 +20,7 @@ import type {
   WatchProviderRegionsResponse,
   WatchProvidersMovieResponse,
   WatchProvidersTvResponse,
-} from '@/server/lib/tmdb/types'
+} from '../tmdb/types'
 
 const TMDB_API_KEY = process.env.TMDB_API_KEY
 const TMDB_API_URL = 'https://api.themoviedb.org/3/'

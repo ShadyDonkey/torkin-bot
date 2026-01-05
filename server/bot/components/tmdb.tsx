@@ -1,6 +1,6 @@
 import { getUnixTime } from 'date-fns'
 import { h3, subtext, TimestampStyle, timestamp } from 'discord-fmt'
-import type { StandardListing } from '@/server/lib/tmdb/types'
+import type { StandardListing } from '../../lib/tmdb/types'
 
 export function TrendingTvDetails({ details }: { details: StandardListing<'tv'>['details'] }) {
   // TODO add genres, will need to cache and parse here.

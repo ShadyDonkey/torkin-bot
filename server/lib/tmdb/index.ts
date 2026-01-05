@@ -1,5 +1,7 @@
-import { cache, cacheEntry } from '@/server/lib/cache'
-import * as api from '@/server/lib/tmdb/api'
+import { cache, cacheEntry } from '../../lib/cache'
+import { slugify, unwrap } from '../../utilities'
+import { logger } from '../../utilities/logger'
+import * as api from '../tmdb/api'
 import type {
   SearchMovieResponse,
   StandardListing,
@@ -7,9 +9,7 @@ import type {
   TrendingMovieResponse,
   TrendingTvResponse,
   TypeSelection,
-} from '@/server/lib/tmdb/types'
-import { slugify, unwrap } from '@/server/utilities'
-import { logger } from '@/server/utilities/logger'
+} from '../tmdb/types'
 
 const MAX_TRENDING_PAGES = 5
 const CACHE_PREFIX = 'lib:tmdb'

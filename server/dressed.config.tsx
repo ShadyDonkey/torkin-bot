@@ -6,7 +6,7 @@ import {
 } from '@dressed/react'
 import { link, subtext } from 'discord-fmt'
 import type { ServerConfig } from 'dressed/server'
-import { BotProviders } from '@/server/bot/providers'
+import { BotProviders } from './bot/providers'
 
 export default {
   build: { root: 'bot/dressed', extensions: ['tsx', 'ts'] },

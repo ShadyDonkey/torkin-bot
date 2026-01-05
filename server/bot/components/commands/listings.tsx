@@ -4,10 +4,10 @@ import { format } from 'date-fns'
 import { h2 } from 'discord-fmt'
 import { useEffect, useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
-import { ItemActions, ListingPreview, PaginationButtons } from '@/server/bot/components/builders'
-import { TrendingMovieDetails, TrendingTvDetails, VoteSection } from '@/server/bot/components/tmdb'
-import { useUserPreferences } from '@/server/bot/utilities/user'
-import { getDetails, getImageUrl, getItemWatchProviders } from '@/server/lib/tmdb'
+import { ItemActions, ListingPreview, PaginationButtons } from '../../../bot/components/builders'
+import { TrendingMovieDetails, TrendingTvDetails, VoteSection } from '../../../bot/components/tmdb'
+import { useUserPreferences } from '../../../bot/utilities/user'
+import { getDetails, getImageUrl, getItemWatchProviders } from '../../../lib/tmdb'
 import type {
   MovieExternalIdsResponse,
   MovieTranslationsResponse,
@@ -17,9 +17,9 @@ import type {
   TvTranslationsResponse,
   TvVideosResponse,
   TypeSelection,
-} from '@/server/lib/tmdb/types'
-import { DUPLICATE_PROVIDER_ID_MAPPING } from '@/server/lib/tmdb/watch-providers'
-import { paginateArray } from '@/server/utilities'
+} from '../../../lib/tmdb/types'
+import { DUPLICATE_PROVIDER_ID_MAPPING } from '../../../lib/tmdb/watch-providers'
+import { paginateArray } from '../../../utilities'
 import ErrorPage from './error'
 import { RecommendationsPage } from './recommendations'
 

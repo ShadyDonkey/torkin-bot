@@ -2,10 +2,10 @@ import { join } from 'node:path'
 import { staticPlugin } from '@elysiajs/static'
 import { handleRequest, installCommands } from 'dressed/server'
 import { Elysia } from 'elysia'
-import { commands, components, config, events } from '@/server/.dressed'
-import { cache } from '@/server/lib/cache'
-import { logger } from '@/server/utilities/logger'
-import { overrideConsole } from '@/server/utilities/overrides'
+import { commands, components, config, events } from './.dressed'
+import { cache } from './lib/cache'
+import { logger } from './utilities/logger'
+import { overrideConsole } from './utilities/overrides'
 
 const app = new Elysia()
   .onError((err) => {
@@ -26,7 +26,7 @@ const app = new Elysia()
   })
   .use(
     staticPlugin({
-      assets: join(import.meta.dir, '../client/build/client'),
+      assets: join(import.meta.dir, '../public'),
       prefix: '/',
       indexHTML: true,
     }),
