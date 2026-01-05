@@ -99,7 +99,7 @@ export default function Terms() {
             <Section id={SECTIONS[0].id} title="1. Acceptance">
               <Text c="dimmed" lh={1.8}>
                 By using Torkin, our Discord bot, you agree to be bound by these terms of service, all applicable laws
-                and regulations, and Discord;s Terms of Service. If you do not agree with any of these terms, you should
+                and regulations, and Discord's Terms of Service. If you do not agree with any of these terms, you should
                 not use Torkin.
               </Text>
             </Section>
@@ -107,7 +107,7 @@ export default function Terms() {
             <Section id={SECTIONS[1].id} title="2. Description">
               <Text c="dimmed" lh={1.8}>
                 Torkin is a Discord bot that provides movie and TV show discovery features including watch availability
-                information, recommendations, and watchlist tracking. The service is provided as-is and Shady Donkey
+                information, recommendations, tracking, and more. The service is provided as-is and Shady Donkey
                 reserves the right to modify, suspend, or discontinue any aspect of the service at any time.
               </Text>
             </Section>
@@ -118,7 +118,7 @@ export default function Terms() {
               </Text>
               <Stack gap="xs" ml="md">
                 <Text c="dimmed" size="sm" lh={1.6}>
-                  Use Torkin in accordance with Discord;s Terms of Service and Community Guidelines
+                  Use Torkin in accordance with Discord's Terms of Service and Community Guidelines
                 </Text>
                 <Text c="dimmed" size="sm" lh={1.6}>
                   Not use Torkin to spam, harass, or harm other users
@@ -171,7 +171,7 @@ export default function Terms() {
                   TMDB Terms of Use
                 </Anchor>{' '}
                 and{' '}
-                <Anchor href="https://thetvdb.com/terms" target="_blank">
+                <Anchor href="https://thetvdb.com/tos" target="_blank">
                   TVDB Terms of Service
                 </Anchor>
                 . You agree to respect all applicable copyright and attribution requirements.
@@ -205,7 +205,7 @@ export default function Terms() {
               <Text c="dimmed" lh={1.8}>
                 You may stop using Torkin at any time by simply discontinuing use of the bot or removing it from your
                 server. Shady Donkey reserves the right to terminate, suspend, or restrict your access to Torkin without
-                notice for any reason, including violation of these Terms of Service or Discord;s Terms of Service.
+                notice for any reason, including violation of these Terms of Service or Discord's Terms of Service.
               </Text>
             </Section>
 
