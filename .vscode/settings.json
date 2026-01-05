@@ -8,7 +8,6 @@
   "files.readonlyInclude": {
     "**/routeTree.gen.ts": true
   },
-  "typescript.preferences.importModuleSpecifier": "non-relative",
   "[javascript]": {
     "editor.defaultFormatter": "biomejs.biome"
   },

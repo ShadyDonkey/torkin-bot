@@ -2,7 +2,7 @@ import type { MessageComponentInteraction } from '@dressed/react'
 import { ActionRow, Button, Section, Thumbnail } from '@dressed/react'
 import { format } from 'date-fns'
 import { bold, h3, subtext } from 'discord-fmt'
-import { getImageUrl } from '@/server/lib/tmdb'
+import { getImageUrl } from '../../lib/tmdb'
 
 export function PaginationButtons({
   currentPage,

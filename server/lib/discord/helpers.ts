@@ -1,5 +1,5 @@
 import { listApplicationEmojis } from 'dressed'
-import { cache } from '@/server/lib/cache'
+import { cache } from '../../lib/cache'
 
 export async function getApplicationEmojis() {
   return cache.getOrSet(

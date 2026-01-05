@@ -1,9 +1,9 @@
 import { Cron } from 'croner'
-import { cache } from '@/server/lib/cache'
-import { CACHE_CONFIG as TMDB_CACHE_CONFIG } from '@/server/lib/tmdb'
-import { availableWatchProviders, trending } from '@/server/lib/tmdb/api'
-import { unwrap } from '@/server/utilities'
-import { logger } from '@/server/utilities/logger'
+import { cache } from './lib/cache'
+import { CACHE_CONFIG as TMDB_CACHE_CONFIG } from './lib/tmdb'
+import { availableWatchProviders, trending } from './lib/tmdb/api'
+import { unwrap } from './utilities'
+import { logger } from './utilities/logger'
 
 logger.info('Starting scheduled jobs')
 

@@ -4,7 +4,6 @@ export const transport = pino.transport({
   targets: [
     {
       target: 'pino-loki',
-
       level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
       options: {
         labels: {

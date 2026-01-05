@@ -1,7 +1,7 @@
 import { type CommandInteraction, Container } from '@dressed/react'
 import { link, list } from 'discord-fmt'
 import type { CommandConfig } from 'dressed'
-import { DEV_GUILD_ID, IS_IN_DEV } from '@/server/lib/config'
+import { DEV_GUILD_ID, IS_IN_DEV } from '../../../lib/config'
 
 export const config = {
   description: "Attribution for the bot's data sources",
