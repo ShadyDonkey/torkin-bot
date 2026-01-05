@@ -34,6 +34,7 @@ COPY --from=prerelease /usr/src/app/public ./public
 COPY --from=prerelease /usr/src/app/server ./server
 RUN cd server && bun zen generate --no-version-check
 RUN cd server && bun run bot:build
+RUN cd server && bun zen migrate deploy --no-version-check
 # COPY --from=prerelease /usr/src/app/package.json .
 
 USER bun
