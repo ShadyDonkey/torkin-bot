@@ -21,7 +21,7 @@ FROM base AS prerelease
 COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 ENV NODE_ENV=production
-RUN cd client && bun run build
+RUN cd client && bunx react-router build
 # RUN bun --filter=server build --minify-whitespace --minify-syntax --target bun --outdir ./dist/server server/main.ts
 RUN cp -r ./client/build/client ./public
 
