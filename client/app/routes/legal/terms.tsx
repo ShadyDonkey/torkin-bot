@@ -154,24 +154,24 @@ export default function Terms() {
               </Text>
               <Text c="dimmed" size="sm" lh={1.6} ml="md">
                 -{' '}
-                <Anchor href="https://www.themoviedb.org/" target="_blank" c="red">
+                <Anchor href="https://www.themoviedb.org/" target="_blank">
                   TMDB
                 </Anchor>{' '}
                 (The Movie Database)
               </Text>
               <Text c="dimmed" size="sm" lh={1.6} ml="md">
                 -{' '}
-                <Anchor href="https://thetvdb.com/" target="_blank" c="red">
+                <Anchor href="https://thetvdb.com/" target="_blank">
                   TVDB
                 </Anchor>
               </Text>
               <Text c="dimmed" lh={1.8} mt="sm">
                 See{' '}
-                <Anchor href="https://www.themoviedb.org/terms-of-use" target="_blank" c="red">
+                <Anchor href="https://www.themoviedb.org/terms-of-use" target="_blank">
                   TMDB Terms of Use
                 </Anchor>{' '}
                 and{' '}
-                <Anchor href="https://thetvdb.com/terms" target="_blank" c="red">
+                <Anchor href="https://thetvdb.com/terms" target="_blank">
                   TVDB Terms of Service
                 </Anchor>
                 . You agree to respect all applicable copyright and attribution requirements.
@@ -227,7 +227,7 @@ export default function Terms() {
             <Section id={SECTIONS[10].id} title="11. Contact">
               <Text c="dimmed" lh={1.8}>
                 Questions? Contact us via{' '}
-                <Anchor href="https://discord.gg/RP36fV6MNe" target="_blank" c="red">
+                <Anchor href="https://discord.gg/RP36fV6MNe" target="_blank">
                   our Discord server
                 </Anchor>
                 .

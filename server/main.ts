@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 import { staticPlugin } from '@elysiajs/static'
 import { handleRequest, installCommands } from 'dressed/server'
-import { Elysia } from 'elysia'
+import { Elysia, file } from 'elysia'
 import { commands, components, config, events } from './.dressed'
 import { cache } from './lib/cache'
 import { logger } from './utilities/logger'
@@ -10,7 +10,7 @@ import { overrideConsole } from './utilities/overrides'
 const app = new Elysia()
   .onError((err) => {
     logger.error(err)
-    return new Response('Internal Server Error', { status: 500 })
+    // return new Response('Internal Server Error', { status: 500 })
   })
   // .get('/install-commands', async () => {
   //   await installCommands(commands)
@@ -28,9 +28,10 @@ const app = new Elysia()
     staticPlugin({
       assets: join(import.meta.dir, '../public'),
       prefix: '/',
-      indexHTML: true,
+      alwaysStatic: true,
     }),
   )
+  .get('*', () => file(join(import.meta.dir, '../public/index.html')))
   .listen(3000)
 
 // Have to do this to hijack Dressed's logs and pipe them to pino/LOKI
