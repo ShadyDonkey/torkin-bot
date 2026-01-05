@@ -12,15 +12,15 @@ const app = new Elysia()
     logger.error(err)
     return new Response('Internal Server Error', { status: 500 })
   })
-  .get('/install-commands', async () => {
-    await installCommands(commands)
+  // .get('/install-commands', async () => {
+  //   await installCommands(commands)
 
-    return 'Commands installed'
-  })
-  .get('/clear-cache', () => {
-    cache.clear()
-    return 'Cache cleared'
-  })
+  //   return 'Commands installed'
+  // })
+  // .get('/clear-cache', () => {
+  //   cache.clear()
+  //   return 'Cache cleared'
+  // })
   .post('/discord/handle-interaction', ({ request }) => handleRequest(request, commands, components, events, config), {
     parse: 'none',
   })
