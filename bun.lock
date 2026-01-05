@@ -49,6 +49,7 @@
       "dependencies": {
         "@dressed/matcher": "^1.4.0",
         "@dressed/react": "^1.8.0-rc.3.1",
+        "@elysiajs/static": "^1.4.7",
         "@keyv/redis": "^5.1.5",
         "@lukeed/ms": "^2.0.2",
         "@sindresorhus/slugify": "^3.0.0",
@@ -205,6 +206,8 @@
     "@dressed/matcher": ["@dressed/matcher@1.4.0", "", {}, "sha512-hAM5KaaGrhmMFr1Fd+KCQep6VnODcxInnIXATAbyJo64XN56pM20UvccWVhrIR6Hk2fFZUI69eJ0ehzK4rKxnw=="],
 
     "@dressed/react": ["@dressed/react@1.8.0-rc.3.1", "", { "dependencies": { "discord-api-types": "^0.38.37", "react-reconciler": "npm:@dressed/react-reconciler" }, "peerDependencies": { "dressed": "^1.10.1", "react": "^19.2.3" } }, "sha512-9Gg2mDHVwbXmNjwKEv+JKUngS4yZ0r/m89JtLFXjPRj0gnuMeedl/tM4fOCKo4P8GmS4NVzRqOzs/lgWq6cVUQ=="],
+
+    "@elysiajs/static": ["@elysiajs/static@1.4.7", "", { "peerDependencies": { "elysia": ">= 1.4.0" } }, "sha512-Go4kIXZ0G3iWfkAld07HmLglqIDMVXdyRKBQK/sVEjtpDdjHNb+rUIje73aDTWpZYg4PEVHUpi9v4AlNEwrQug=="],
 
     "@esbuild/aix-ppc64": ["@esbuild/aix-ppc64@0.27.2", "", { "os": "aix", "cpu": "ppc64" }, "sha512-GZMB+a0mOMZs4MpDbj8RJp4cw+w1WV5NYD6xzgvzUJ5Ek2jerwfO2eADyI6ExDSUED+1X8aMbegahsJi+8mgpw=="],
 

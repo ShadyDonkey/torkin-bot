@@ -1,3 +1,5 @@
+import { join } from 'node:path'
+import { staticPlugin } from '@elysiajs/static'
 import { handleRequest, installCommands } from 'dressed/server'
 import { Elysia } from 'elysia'
 import { commands, components, config, events } from '@/server/.dressed'
@@ -10,7 +12,6 @@ const app = new Elysia()
     logger.error(err)
     return new Response('Internal Server Error', { status: 500 })
   })
-  .get('/', () => '🦊 Elysia')
   .get('/install-commands', async () => {
     await installCommands(commands)
 
@@ -23,6 +24,13 @@ const app = new Elysia()
   .post('/discord/handle-interaction', ({ request }) => handleRequest(request, commands, components, events, config), {
     parse: 'none',
   })
+  .use(
+    staticPlugin({
+      assets: join(import.meta.dir, '../client/build/client'),
+      prefix: '/',
+      indexHTML: true,
+    }),
+  )
   .listen(3000)
 
 // Have to do this to hijack Dressed's logs and pipe them to pino/LOKI
