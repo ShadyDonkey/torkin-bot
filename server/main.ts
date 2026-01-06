@@ -51,7 +51,7 @@ app.on(['POST', 'GET'], '/api/auth/*', (c) => {
 })
 
 if (process.env.NODE_ENV === 'production') {
-  app.use('*', serveStatic({ root: join(import.meta.dir, '../public') }))
+  app.get('*', serveStatic({ root: join(import.meta.dir, '../public') }))
   app.get('/*', serveStatic({ path: join(import.meta.dir, '../public/index.html') }))
 }
 
