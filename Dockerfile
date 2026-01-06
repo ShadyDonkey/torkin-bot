@@ -41,4 +41,5 @@ RUN cd server && bun zen migrate deploy --no-version-check
 
 USER bun
 EXPOSE 3000/tcp
+EXPOSE 3001/tcp
 ENTRYPOINT ["sh", "entrypoint.sh"]

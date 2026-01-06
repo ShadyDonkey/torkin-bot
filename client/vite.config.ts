@@ -18,7 +18,7 @@ const config = defineConfig({
     viteReact(),
   ],
   server: {
-    allowedHosts: import.meta.env.DEV ? true : undefined,
+    allowedHosts: process.env.NODE_ENV === 'development' ? true : undefined,
   },
 })
 

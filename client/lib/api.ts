@@ -5,14 +5,13 @@ import { type App, app } from '../../server/main'
 import { unwrap } from '../utilities'
 
 export const getTreaty = createIsomorphicFn()
-  .server(() => treaty(app).api)
-  .client(
-    () =>
-      treaty<App>(import.meta.env.VITE_API_URL || '/', {
-        fetch: {
-          credentials: 'include',
-        },
-      }).api,
+  .server(() => treaty(app))
+  .client(() =>
+    treaty<App>(import.meta.env.VITE_API_URL || 'http://localhost:3000', {
+      fetch: {
+        credentials: 'include',
+      },
+    }),
   )
 
 export async function sendApiRequest<T>(promise: Promise<T>, errorMessage = 'Request failed'): Promise<T> {

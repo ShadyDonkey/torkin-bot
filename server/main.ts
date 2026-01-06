@@ -9,7 +9,7 @@ import { overrideConsole } from './utilities/overrides'
 // Have to do this to hijack Dressed's logs and pipe them to pino/LOKI
 overrideConsole()
 
-export const app = new Elysia({ prefix: '/api' })
+export const app = new Elysia()
   .onError((err) => {
     logger.error(err)
   })
@@ -25,7 +25,8 @@ export const app = new Elysia({ prefix: '/api' })
     }),
   )
   .mount(auth.handler)
+  .listen(3000)
 
-logger.info(`🦊 Elysia is handling API requests`)
+logger.info(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`)
 
 export type App = typeof app

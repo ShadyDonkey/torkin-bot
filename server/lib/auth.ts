@@ -15,7 +15,7 @@ export const auth = betterAuth({
     discord: {
       clientId: process.env.DISCORD_APP_ID as string,
       clientSecret: process.env.DISCORD_OAUTH_SECRET as string,
-      redirectURI: `${process.env.BASE_URL || 'http://localhost:5173'}/api/auth/callback/discord`,
+      // redirectURI: `${process.env.BASE_URL || 'http://localhost:3000'}/api/auth/callback/discord`,
     },
   },
   plugins: [admin()],
