@@ -1,4 +1,4 @@
-import type { Route } from './+types/'
+import type { Route } from './+types'
 
 export function meta(_: Route.MetaArgs) {
   return [{ title: 'Admin | Home' }]
