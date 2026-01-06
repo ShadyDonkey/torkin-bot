@@ -1,4 +1,5 @@
 import { ColorSchemeScript, MantineProvider, mantineHtmlProps } from '@mantine/core'
+import { Notifications } from '@mantine/notifications'
 import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router'
 import type { Route } from './+types/root'
 import '@mantine/core/styles.css'
@@ -28,7 +29,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <MantineProvider defaultColorScheme="dark">{children}</MantineProvider>
+        <MantineProvider defaultColorScheme="dark">
+          <Notifications />
+          {children}
+        </MantineProvider>
         <ScrollRestoration />
         <Scripts />
       </body>

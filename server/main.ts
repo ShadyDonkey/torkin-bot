@@ -47,3 +47,5 @@ overrideConsole()
 logger.info(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`)
 
 import './jobs'
+
+export type App = typeof app
