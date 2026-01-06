@@ -9,15 +9,24 @@
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
+    "@elysiajs/eden": "^1.4.6",
     "@icons-pack/react-simple-icons": "^13.8.0",
-    "@mantine/core": "^8.3.10",
-    "@mantine/hooks": "^8.3.10",
-    "@mantine/notifications": "^8.3.10",
+    "@lukeed/ms": "^2.0.2",
+    "@mantine/core": "^8.3.11",
+    "@mantine/hooks": "^8.3.11",
+    "@mantine/notifications": "^8.3.11",
+    "@mantine/nprogress": "^8.3.11",
     "@react-router/node": "7.11.0",
     "@react-router/serve": "7.11.0",
-    "isbot": "^5.1.31",
+    "@tanstack/react-query": "^5.90.16",
+    "@uidotdev/usehooks": "^2.4.1",
+    "await-to-js": "^3.0.0",
+    "better-auth": "^1.4.10",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "isbot": "^5.1.32",
     "lucide-react": "^0.562.0",
-    "motion": "^12.23.26",
+    "motion": "^12.24.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-router": "7.11.0"
@@ -30,7 +39,7 @@
     "postcss": "^8.5.6",
     "postcss-preset-mantine": "^1.18.0",
     "postcss-simple-vars": "^7.0.1",
-    "vite": "^7.1.7",
+    "vite": "^7.3.0",
     "vite-tsconfig-paths": "^6.0.3"
   }
 }

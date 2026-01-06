@@ -14,10 +14,11 @@ import {
   ThemeIcon,
   Title,
 } from '@mantine/core'
-import { Bell, Compass, FileText, Globe, Headset, LogIn, Tv, Zap } from 'lucide-react'
+import { Bell, Compass, FileText, Globe, Headset, LogIn, LogOut, Tv, UserStar, Zap } from 'lucide-react'
 import { motion } from 'motion/react'
-import type { Route } from '../../+types/root'
+import type { Route } from './+types'
 import './index.css'
+import { authClient } from '../../../lib/auth'
 
 export function meta(_: Route.MetaArgs) {
   return [
@@ -63,6 +64,10 @@ const FEATURES = [
 ]
 
 export default function Home() {
+  const { signIn, signOut } = authClient
+  const { data: session } = authClient.useSession()
+
+  // authClient.getSession().then((s) => { s.data.})
   return (
     <AppShell className="shell">
       <AppShell.Main>
@@ -191,16 +196,46 @@ export default function Home() {
                 <Text c="dimmed" size="sm" mb="md">
                   Movie and TV assistant for Discord.
                 </Text>
-                <Button
-                  component="a"
-                  href="/dashboard"
-                  variant="subtle"
-                  c="dimmed"
-                  size="xs"
-                  leftSection={<LogIn size={14} />}
-                >
-                  Admin Login
-                </Button>
+                {session ? (
+                  <>
+                    <Button
+                      variant="subtle"
+                      c="dimmed"
+                      size="xs"
+                      leftSection={<LogOut size={14} />}
+                      onClick={() => signOut()}
+                    >
+                      Logout
+                    </Button>
+
+                    {session.user.role === 'admin' && (
+                      <Button
+                        component="a"
+                        href="/admin"
+                        variant="subtle"
+                        c="dimmed"
+                        size="xs"
+                        leftSection={<UserStar size={14} />}
+                      >
+                        Admin Dashboard
+                      </Button>
+                    )}
+                  </>
+                ) : (
+                  <Button
+                    variant="subtle"
+                    c="dimmed"
+                    size="xs"
+                    leftSection={<LogIn size={14} />}
+                    onClick={() =>
+                      signIn.social({
+                        provider: 'discord',
+                      })
+                    }
+                  >
+                    Admin Login
+                  </Button>
+                )}
               </Box>
 
               <Box>

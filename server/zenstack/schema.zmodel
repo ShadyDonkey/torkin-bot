@@ -1,25 +1,8 @@
+import './schemas/better-auth'
 import './schemas/user'
 
-datasource db {
-    provider = 'postgresql'
-    url = env('DATABASE_URL')
-}
-
-// /// User model
-// model User {
-//     id    String @id @default(cuid())
-//     email String @unique @email @length(6, 32)
-//     posts Post[]
-// }
-
-// /// Post model
-// model Post {
-//     id        String   @id @default(cuid())
-//     createdAt DateTime @default(now())
-//     updatedAt DateTime @updatedAt
-//     title     String   @length(1, 256)
-//     content   String
-//     published Boolean  @default(false)
-//     author    User     @relation(fields: [authorId], references: [id])
-//     authorId  String
+// This is defined in better-auth
+// datasource db {
+//     provider = 'postgresql'
+//     url = env('DATABASE_URL')
 // }

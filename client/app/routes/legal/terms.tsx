@@ -1,6 +1,6 @@
 import { Anchor, Box, Container, Divider, Group, Paper, rem, ScrollArea, Stack, Text, Title } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import type { Route } from '../../+types/root'
+import type { Route } from './+types/terms'
 
 export function meta(_: Route.MetaArgs) {
   return [{ title: 'Terms of Service | Torkin' }, { name: 'description', content: 'Torkin terms of service' }]
