@@ -18,14 +18,14 @@ export const app = new Elysia()
   })
   .use(
     cors({
-      origin: process.env.BASE_URL || 'http://localhost:5173',
+      origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       credentials: true,
       allowedHeaders: ['Content-Type', 'Authorization'],
     }),
   )
   .mount(auth.handler)
-  .listen(3000)
+  .listen(process.env.PORT || 3000)
 
 logger.info(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`)
 
