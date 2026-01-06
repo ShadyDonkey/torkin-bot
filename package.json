@@ -2,6 +2,7 @@
   "name": "torkin-bot",
   "private": true,
   "scripts": {
+    "dev": "bun --filter=client run dev",
     "sherif": "sherif -r root-package-manager-field",
     "sherif:fix": "sherif -r root-package-manager-field --fix"
   },

@@ -6,6 +6,9 @@ import { auth } from './lib/auth'
 import { logger } from './utilities/logger'
 import { overrideConsole } from './utilities/overrides'
 
+// Have to do this to hijack Dressed's logs and pipe them to pino/LOKI
+overrideConsole()
+
 export const app = new Elysia({ prefix: '/api' })
   .onError((err) => {
     logger.error(err)
@@ -22,27 +25,7 @@ export const app = new Elysia({ prefix: '/api' })
     }),
   )
   .mount(auth.handler)
-// .use(spa({ dir: join(import.meta.dir, '../public') }))
-// .get('/*', async ({ path }) => {
-//   const staticFile = Bun.file(join(import.meta.dir, `../public/${path}`))
-//   const fallBackFile = Bun.file(join(import.meta.dir, '../public/index.html'))
-//   return (await staticFile.exists()) ? staticFile : fallBackFile
-// })
-// .use(
-//   staticPlugin({
-//     assets: join(import.meta.dir, '../public'),
-//     prefix: '/',
-//     indexHTML: true,
-//     alwaysStatic: false,
-//   }),
-// )
-// .listen(3000)
 
-// Have to do this to hijack Dressed's logs and pipe them to pino/LOKI
-overrideConsole()
-
-logger.info(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`)
-
-import './jobs'
+logger.info(`🦊 Elysia is handling API requests`)
 
 export type App = typeof app

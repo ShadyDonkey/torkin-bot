@@ -17,6 +17,9 @@ const config = defineConfig({
     tanstackStart(),
     viteReact(),
   ],
+  server: {
+    allowedHosts: import.meta.env.DEV ? true : undefined,
+  },
 })
 
 export default config
