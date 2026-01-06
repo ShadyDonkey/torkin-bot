@@ -28,7 +28,7 @@ const app = new Elysia()
       assets: join(import.meta.dir, '../public'),
       prefix: '/',
       indexHTML: true,
-      alwaysStatic: true,
+      alwaysStatic: false,
     }),
   )
   .listen(3000)
