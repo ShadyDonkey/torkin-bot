@@ -24,19 +24,18 @@ COPY . .
 ENV NODE_ENV=production
 RUN cd client && bun run build
 # RUN bun --filter=server build --minify-whitespace --minify-syntax --target bun --outdir ./dist/server server/main.ts
-RUN cp -r ./client/build/client ./public
 
 # Copy prod deps and rest of the files
 FROM base AS release
 COPY --from=install /temp/prod/node_modules node_modules
 COPY --from=install /temp/prod/server/node_modules server/node_modules
-COPY --from=prerelease /usr/src/app/public ./public
+COPY --from=prerelease /usr/src/app/client ./client
 COPY --from=prerelease /usr/src/app/server ./server
 COPY --from=prerelease /usr/src/app/entrypoint.sh .
 RUN chmod +x entrypoint.sh
 RUN cd server && bun zen generate --no-version-check
 RUN cd server && bun run bot:build
-RUN cd server && bun zen migrate deploy --no-version-check
+# RUN cd server && bun zen migrate deploy --no-version-check
 # COPY --from=prerelease /usr/src/app/package.json .
 
 USER bun
