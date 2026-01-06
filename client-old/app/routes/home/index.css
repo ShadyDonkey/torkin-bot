@@ -1,0 +1,15 @@
+body {
+  background: var(--mantine-color-dark-8);
+}
+.hero-ambient {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse, var(--mantine-color-dark-7) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+}
