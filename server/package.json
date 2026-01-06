@@ -3,8 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "bot:build": "dressed build",
     "auth:generate": "bunx @better-auth/cli generate --output ./zenstack/schemas/better-auth.zmodel --config ./lib/auth.ts",
+    "bot:build": "dressed build",
+    "db:migrate:create": "DATABASE_URL=postgresql://postgres:secret@localhost:5432/migrate bun zen migrate dev --create-only",
+    "db:migrate:reset": "DATABASE_URL=postgresql://postgres:secret@localhost:5432/migrate bun zen migrate reset",
     "lib:tmdb:generate-schema": "openapi-typescript https://developer.themoviedb.org/openapi/tmdb-api.json -o ./lib/tmdb/schema.d.ts",
     "lib:tvdb:generate-schema": "openapi-typescript https://thetvdb.github.io/v4-api/swagger.yml -o ./lib/tvdb/schema.d.ts"
   },
