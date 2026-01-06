@@ -6,7 +6,7 @@ import { db } from './db'
 
 export const auth = betterAuth({
   appName: 'Torkin',
-  basePath: '/auth/api',
+  basePath: '/auth',
   trustedOrigins: [process.env.BASE_URL || 'http://localhost:5173'],
   database: zenstackAdapter(db, {
     provider: 'postgresql',
@@ -15,6 +15,7 @@ export const auth = betterAuth({
     discord: {
       clientId: process.env.DISCORD_APP_ID as string,
       clientSecret: process.env.DISCORD_OAUTH_SECRET as string,
+      // redirectURI: `${process.env.BASE_URL || 'http://localhost:3000'}/api/auth/callback/discord`,
     },
   },
   plugins: [admin()],

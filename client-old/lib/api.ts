@@ -1,18 +1,13 @@
 import { treaty } from '@elysiajs/eden'
 import { notifications } from '@mantine/notifications'
-import { createIsomorphicFn } from '@tanstack/react-start'
-import { type App, app } from '../../server/main'
+import type { App } from '../../server/main'
 import { unwrap } from '../utilities'
 
-export const getTreaty = createIsomorphicFn()
-  .server(() => treaty(app))
-  .client(() =>
-    treaty<App>(import.meta.env.VITE_API_URL || 'http://localhost:3000', {
-      fetch: {
-        credentials: 'include',
-      },
-    }),
-  )
+export const client = treaty<App>(import.meta.env.VITE_API_URL || 'http://localhost:3000', {
+  fetch: {
+    credentials: 'include',
+  },
+})
 
 export async function sendApiRequest<T>(promise: Promise<T>, errorMessage = 'Request failed'): Promise<T> {
   const [error, data] = await unwrap<T>(promise)

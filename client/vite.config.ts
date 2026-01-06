@@ -1,17 +1,25 @@
-import { reactRouter } from '@react-router/dev/vite'
+import { devtools } from '@tanstack/devtools-vite'
+import { tanstackStart } from '@tanstack/react-start/plugin/vite'
+import viteReact from '@vitejs/plugin-react'
+import { nitro } from 'nitro/vite'
 import { defineConfig } from 'vite'
-import tsconfigPaths from 'vite-tsconfig-paths'
+import viteTsConfigPaths from 'vite-tsconfig-paths'
 
-export default defineConfig({
-  plugins: [reactRouter(), tsconfigPaths()],
-  base: process.env.BASE_URL || '/',
+const config = defineConfig({
+  plugins: [
+    devtools(),
+    nitro(),
+    // this is the plugin that enables path aliases
+    viteTsConfigPaths({
+      projects: ['./tsconfig.json'],
+    }),
 
-  resolve:
-    process.env.NODE_ENV === 'development'
-      ? {}
-      : {
-          alias: {
-            'react-dom/server': 'react-dom/server.node',
-          },
-        },
+    tanstackStart(),
+    viteReact(),
+  ],
+  server: {
+    allowedHosts: process.env.NODE_ENV === 'development' ? true : undefined,
+  },
 })
+
+export default config
