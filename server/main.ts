@@ -23,21 +23,21 @@ const app = new Elysia()
     }),
   )
   .mount(auth.handler)
-  // .use(spa({ dir: join(import.meta.dir, '../public') }))
-  // .get('/*', async ({ path }) => {
-  //   const staticFile = Bun.file(join(import.meta.dir, `../public/${path}`))
-  //   const fallBackFile = Bun.file(join(import.meta.dir, '../public/index.html'))
-  //   return (await staticFile.exists()) ? staticFile : fallBackFile
-  // })
-  // .use(
-  //   staticPlugin({
-  //     assets: join(import.meta.dir, '../public'),
-  //     prefix: '/',
-  //     indexHTML: true,
-  //     alwaysStatic: false,
-  //   }),
-  // )
-  .listen(3000)
+// .use(spa({ dir: join(import.meta.dir, '../public') }))
+// .get('/*', async ({ path }) => {
+//   const staticFile = Bun.file(join(import.meta.dir, `../public/${path}`))
+//   const fallBackFile = Bun.file(join(import.meta.dir, '../public/index.html'))
+//   return (await staticFile.exists()) ? staticFile : fallBackFile
+// })
+// .use(
+//   staticPlugin({
+//     assets: join(import.meta.dir, '../public'),
+//     prefix: '/',
+//     indexHTML: true,
+//     alwaysStatic: false,
+//   }),
+// )
+// .listen(3000)
 
 // Have to do this to hijack Dressed's logs and pipe them to pino/LOKI
 overrideConsole()
