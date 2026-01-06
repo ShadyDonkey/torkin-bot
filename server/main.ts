@@ -25,7 +25,7 @@ const app = new Elysia()
   .mount(auth.handler)
   .use(
     staticPlugin({
-      assets: '../public',
+      assets: join(import.meta.dir, '../public'),
       prefix: '/',
       indexHTML: true,
       alwaysStatic: true,
@@ -39,5 +39,6 @@ overrideConsole()
 logger.info(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`)
 
 import './jobs'
+import { join } from 'node:path'
 
 export type App = typeof app
