@@ -1,10 +1,13 @@
-import { ColorSchemeScript, MantineProvider, mantineHtmlProps } from '@mantine/core'
+import { Center, ColorSchemeScript, Container, MantineProvider, mantineHtmlProps, Text, Title } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
+import { NavigationProgress } from '@mantine/nprogress'
 import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router'
 import type { Route } from './+types/root'
+
 import '@mantine/core/styles.css'
+import '@mantine/notifications/styles.css'
+import '@mantine/nprogress/styles.css'
 import './app.css'
-import { NavigationProgress } from '@mantine/nprogress'
 
 export const links: Route.LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -60,14 +63,22 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
-      <h1>{message}</h1>
-      <p>{details}</p>
-      {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
-          <code>{stack}</code>
-        </pre>
-      )}
-    </main>
+    <Container fluid h="99vh">
+      <Center h="100%">
+        <div>
+          <Title order={1}>{message}</Title>
+
+          <Text size="md" fw={500}>
+            {details}
+          </Text>
+
+          {stack && (
+            <pre>
+              <code>{stack}</code>
+            </pre>
+          )}
+        </div>
+      </Center>
+    </Container>
   )
 }

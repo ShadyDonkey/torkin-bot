@@ -208,7 +208,7 @@ export default function Home() {
                       Logout
                     </Button>
 
-                    {session.user.role === 'admin' || (
+                    {session.user.role === 'admin' && (
                       <Button
                         component="a"
                         href="/admin"
