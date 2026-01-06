@@ -31,15 +31,19 @@ const app = new Elysia()
   .post('/discord/handle-interaction', ({ request }) => handleRequest(request, commands, components, events, config), {
     parse: 'none',
   })
-  .use(
-    staticPlugin({
-      assets: join(import.meta.dir, '../public'),
-      prefix: '/',
-      alwaysStatic: true,
-    }),
-  )
-  .get('*', () => file(join(import.meta.dir, '../public/index.html')))
   .listen(3000)
+
+if (process.env.NODE_ENV === 'production') {
+  app
+    .use(
+      staticPlugin({
+        assets: join(import.meta.dir, '../public'),
+        prefix: '/',
+        alwaysStatic: true,
+      }),
+    )
+    .get('*', () => file(join(import.meta.dir, '../public/index.html')))
+}
 
 // Have to do this to hijack Dressed's logs and pipe them to pino/LOKI
 overrideConsole()
