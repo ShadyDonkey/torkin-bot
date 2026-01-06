@@ -1,11 +1,10 @@
 import { join } from 'node:path'
 import { cors } from '@elysiajs/cors'
 import { staticPlugin } from '@elysiajs/static'
-import { handleRequest, installCommands } from 'dressed/server'
+import { handleRequest } from 'dressed/server'
 import { Elysia, file } from 'elysia'
 import { commands, components, config, events } from './.dressed'
 import { auth } from './lib/auth'
-import { cache } from './lib/cache'
 import { logger } from './utilities/logger'
 import { overrideConsole } from './utilities/overrides'
 
