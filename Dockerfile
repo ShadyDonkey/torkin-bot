@@ -28,7 +28,7 @@ RUN cd client && bun run build
 FROM base AS release
 COPY --from=install /temp/prod/node_modules node_modules
 COPY --from=install /temp/prod/server/node_modules server/node_modules
-COPY --from=prerelease /usr/src/app/client ./client
+COPY --from=prerelease /usr/src/app/client/.output ./client
 COPY --from=prerelease /usr/src/app/server ./server
 COPY --from=prerelease /usr/src/app/entrypoint.sh .
 RUN chmod +x entrypoint.sh
