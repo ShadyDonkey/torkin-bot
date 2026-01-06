@@ -1,12 +1,11 @@
 import { zenstackAdapter } from '@zenstackhq/better-auth'
 import { betterAuth } from 'better-auth'
 import { admin } from 'better-auth/plugins'
-import { Elysia } from 'elysia'
+// import { Elysia } from 'elysia'
 import { db } from './db'
 
 export const auth = betterAuth({
   appName: 'Torkin',
-  basePath: '/auth/api',
   trustedOrigins: [process.env.BASE_URL || 'http://localhost:5173'],
   database: zenstackAdapter(db, {
     provider: 'postgresql',
@@ -20,21 +19,21 @@ export const auth = betterAuth({
   plugins: [admin()],
 })
 
-export const authMacro = new Elysia({ name: 'better-auth-macro' }).macro({
-  auth: {
-    async resolve({ status, request: { headers } }) {
-      const session = await auth.api.getSession({
-        headers,
-      })
+// export const authMacro = new Elysia({ name: 'better-auth-macro' }).macro({
+//   auth: {
+//     async resolve({ status, request: { headers } }) {
+//       const session = await auth.api.getSession({
+//         headers,
+//       })
 
-      if (!session) {
-        return status(401)
-      }
+//       if (!session) {
+//         return status(401)
+//       }
 
-      return {
-        user: session.user,
-        session: session.session,
-      }
-    },
-  },
-})
+//       return {
+//         user: session.user,
+//         session: session.session,
+//       }
+//     },
+//   },
+// })

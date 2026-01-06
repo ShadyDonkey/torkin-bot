@@ -9,7 +9,6 @@
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
-    "@elysiajs/eden": "^1.4.6",
     "@icons-pack/react-simple-icons": "^13.8.0",
     "@mantine/core": "^8.3.11",
     "@mantine/hooks": "^8.3.11",
@@ -21,6 +20,7 @@
     "@uidotdev/usehooks": "^2.4.1",
     "await-to-js": "^3.0.0",
     "better-auth": "^1.4.10",
+    "hono": "^4.11.3",
     "isbot": "^5.1.32",
     "lucide-react": "^0.562.0",
     "motion": "^12.24.0",
