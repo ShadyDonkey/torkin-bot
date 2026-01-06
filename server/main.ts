@@ -1,5 +1,4 @@
 import { cors } from '@elysiajs/cors'
-import { staticPlugin } from '@elysiajs/static'
 import { handleRequest } from 'dressed/server'
 import { Elysia } from 'elysia'
 import { commands, components, config, events } from './.dressed'
@@ -7,7 +6,7 @@ import { auth } from './lib/auth'
 import { logger } from './utilities/logger'
 import { overrideConsole } from './utilities/overrides'
 
-const app = new Elysia()
+export const app = new Elysia({ prefix: '/api' })
   .onError((err) => {
     logger.error(err)
   })
