@@ -1,8 +1,7 @@
-import { join } from 'node:path'
 import { cors } from '@elysiajs/cors'
 import { staticPlugin } from '@elysiajs/static'
 import { handleRequest } from 'dressed/server'
-import { Elysia, file } from 'elysia'
+import { Elysia } from 'elysia'
 import { commands, components, config, events } from './.dressed'
 import { auth } from './lib/auth'
 import { logger } from './utilities/logger'
@@ -11,13 +10,10 @@ import { overrideConsole } from './utilities/overrides'
 const app = new Elysia()
   .onError((err) => {
     logger.error(err)
-    // return new Response('Internal Server Error', { status: 500 })
   })
-  // .get('/install-commands', async () => {
-  //   await installCommands(commands)
-
-  //   return 'Commands installed'
-  // })
+  .post('/discord/handle-interaction', ({ request }) => handleRequest(request, commands, components, events, config), {
+    parse: 'none',
+  })
   .use(
     cors({
       origin: process.env.BASE_URL || 'http://localhost:5173',
@@ -27,17 +23,14 @@ const app = new Elysia()
     }),
   )
   .mount(auth.handler)
-  .post('/discord/handle-interaction', ({ request }) => handleRequest(request, commands, components, events, config), {
-    parse: 'none',
-  })
   .use(
     staticPlugin({
-      assets: join(import.meta.dir, '../public'),
+      assets: '../public',
       prefix: '/',
+      indexHTML: true,
       alwaysStatic: true,
     }),
   )
-  .get('*', () => file(join(import.meta.dir, '../public/index.html')))
   .listen(3000)
 
 // Have to do this to hijack Dressed's logs and pipe them to pino/LOKI

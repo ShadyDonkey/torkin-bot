@@ -6,7 +6,7 @@ import { db } from './db'
 
 export const auth = betterAuth({
   appName: 'Torkin',
-  basePath: '/api-auth',
+  basePath: '/auth/api',
   trustedOrigins: [process.env.BASE_URL || 'http://localhost:5173'],
   database: zenstackAdapter(db, {
     provider: 'postgresql',
