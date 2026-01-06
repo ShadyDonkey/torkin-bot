@@ -1,8 +1,10 @@
 import { join } from 'node:path'
+import { cors } from '@elysiajs/cors'
 import { staticPlugin } from '@elysiajs/static'
 import { handleRequest, installCommands } from 'dressed/server'
 import { Elysia, file } from 'elysia'
 import { commands, components, config, events } from './.dressed'
+import { auth } from './lib/auth'
 import { cache } from './lib/cache'
 import { logger } from './utilities/logger'
 import { overrideConsole } from './utilities/overrides'
@@ -17,10 +19,15 @@ const app = new Elysia()
 
   //   return 'Commands installed'
   // })
-  // .get('/clear-cache', () => {
-  //   cache.clear()
-  //   return 'Cache cleared'
-  // })
+  .use(
+    cors({
+      origin: process.env.BASE_URL || 'http://localhost:5173',
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      credentials: true,
+      allowedHeaders: ['Content-Type', 'Authorization'],
+    }),
+  )
+  .mount(auth.handler)
   .post('/discord/handle-interaction', ({ request }) => handleRequest(request, commands, components, events, config), {
     parse: 'none',
   })
