@@ -16,7 +16,7 @@ import {
 } from '@mantine/core'
 import { Bell, Compass, FileText, Globe, Headset, LogIn, LogOut, Tv, UserStar, Zap } from 'lucide-react'
 import { motion } from 'motion/react'
-import type { Route } from '../../+types/root'
+import type { Route } from './+types'
 import './index.css'
 import { authClient } from '../../../lib/auth'
 

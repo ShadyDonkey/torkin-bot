@@ -1,6 +1,6 @@
 import { Anchor, Box, Container, Divider, Group, Paper, rem, ScrollArea, Stack, Text, Title } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import type { Route } from '../../+types/root'
+import type { Route } from './+types/privacy'
 
 export function meta(_: Route.MetaArgs) {
   return [{ title: 'Privacy Policy | Torkin' }, { name: 'description', content: 'Torkin privacy policy' }]
