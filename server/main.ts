@@ -25,7 +25,7 @@ export const app = new Elysia()
     }),
   )
   .mount(auth.handler)
-  .listen(process.env.PORT || 3000)
+  .listen(3000)
 
 logger.info(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`)
 
