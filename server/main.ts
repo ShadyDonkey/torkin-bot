@@ -37,3 +37,11 @@ export const app = new Elysia()
 logger.info(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`)
 
 export type App = typeof app
+
+process.on('uncaughtException', (err) => {
+  logger.error(err)
+})
+
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error(promise, String(reason))
+})
