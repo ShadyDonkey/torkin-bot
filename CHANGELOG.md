@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/ShadyDonkey/torkin-bot/compare/v1.0.0...v1.0.1) (2026-01-07)
+
+
+### Bug Fixes
+
+* create user preferences if not existing ([#72](https://github.com/ShadyDonkey/torkin-bot/issues/72)) ([cd9a9a7](https://github.com/ShadyDonkey/torkin-bot/commit/cd9a9a7a2751c3b289d96eba5fda47f0bf1495d0))
+
 ## 1.0.0 (2026-01-07)
 
 
