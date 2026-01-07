@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/ShadyDonkey/torkin-bot/compare/v1.0.1...v1.1.0) (2026-01-07)
+
+
+### Features
+
+* resume and trigger jobs on startup ([#74](https://github.com/ShadyDonkey/torkin-bot/issues/74)) ([6fc855d](https://github.com/ShadyDonkey/torkin-bot/commit/6fc855dfe012df09ae78644807418e89ca3ba1d7))
+
+
+### Bug Fixes
+
+* log uncaught errors instead of process exit ([b56519f](https://github.com/ShadyDonkey/torkin-bot/commit/b56519f796fe3b007a8390e2e1fd0d33ce2be630)), closes [#67](https://github.com/ShadyDonkey/torkin-bot/issues/67)
+
 ## [1.0.1](https://github.com/ShadyDonkey/torkin-bot/compare/v1.0.0...v1.0.1) (2026-01-07)
 
 
