@@ -19,17 +19,9 @@ export function createResponseSchema<T extends TSchema>(
   }
 }
 
-export function createErrorRes(
-  message: string | string[],
-  status?: (code: number, reason: string) => void,
-  code: number | { code: number; reason?: string } = 200,
-): ErrorResponse {
-  if (status) {
-    if (typeof code === 'object') {
-      status(code.code, code.reason ?? 'Internal Server Error')
-    } else {
-      status(code, 'Internal Server Error')
-    }
+export function createErrorRes(message: string | string[], set?: any, statusCode?: number): ErrorResponse {
+  if (set && statusCode) {
+    set.status = statusCode
   }
 
   return {

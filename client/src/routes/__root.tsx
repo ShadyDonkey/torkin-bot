@@ -5,6 +5,7 @@ import mantineNotificationStyles from '@mantine/notifications/styles.css?url'
 import { NavigationProgress } from '@mantine/nprogress'
 import mantineNprogressStyles from '@mantine/nprogress/styles.css?url'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createRootRoute, HeadContent, Scripts } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 
@@ -41,6 +42,8 @@ export const Route = createRootRoute({
   shellComponent: RootDocument,
 })
 
+const queryClient = new QueryClient()
+
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" {...mantineHtmlProps}>
@@ -49,11 +52,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <MantineProvider defaultColorScheme="dark">
-          <NavigationProgress />
-          <Notifications />
-          {children}
-        </MantineProvider>
+        <QueryClientProvider client={queryClient}>
+          <MantineProvider defaultColorScheme="dark">
+            <NavigationProgress />
+            <Notifications />
+            {children}
+          </MantineProvider>
+        </QueryClientProvider>
 
         <TanStackDevtools
           config={{
