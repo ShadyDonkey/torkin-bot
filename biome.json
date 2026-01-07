@@ -11,7 +11,9 @@
       "!**/client/.tanstack",
       "!**/server/.dressed",
       "!**/schema.d.ts",
-      "!**/server/zenstack"
+      "!**/server/zenstack",
+      "!.release-please*",
+      "!package.json"
     ]
   },
   "formatter": {
