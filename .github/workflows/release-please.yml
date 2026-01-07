@@ -1,0 +1,33 @@
+name: Release Please
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      # Changelog & PR
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          release-type: node
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+
+      # Publish steps
+      - uses: actions/checkout@v5
+        if: ${{ steps.release.outputs.release_created }}
+
+      - name: Deploy on Coolify
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          curl "https://app.coolify.io/api/v1/deploy?uuid=${{ secrets.COOLIFY_UUID }}&force=false" --header "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}"
