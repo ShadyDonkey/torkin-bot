@@ -1,11 +1,23 @@
-import { Cron } from 'croner'
+import { Cron, type CronOptions } from 'croner'
 import { cache } from './lib/cache'
 import { CACHE_CONFIG as TMDB_CACHE_CONFIG } from './lib/tmdb'
 import { availableWatchProviders, trending } from './lib/tmdb/api'
 import { unwrap } from './utilities'
 import { logger } from './utilities/logger'
 
-logger.info('Starting scheduled jobs')
+function protect(job: Cron) {
+  logger.warn(`Job ${job.name} is blocked because a run is already in progress from ${job.currentRun()?.toISOString()}`)
+}
+
+function catchHandler(error: unknown, job: Cron) {
+  logger.error({ error }, `Error occurred in ${job.name} job`)
+}
+
+const defaultOptions: CronOptions = {
+  protect,
+  catch: catchHandler,
+  paused: true,
+}
 
 export const trendingJobs = {
   movie: {
@@ -13,8 +25,7 @@ export const trendingJobs = {
       '@daily',
       {
         name: 'fetch-movie-trending-day',
-        protect,
-        catch: catchHandler,
+        ...defaultOptions,
       },
       async () => {
         const [responseErr, response] = await unwrap(trending('movie', 'day'))
@@ -50,8 +61,7 @@ export const trendingJobs = {
       '@daily',
       {
         name: 'fetch-movie-trending-week',
-        protect,
-        catch: catchHandler,
+        ...defaultOptions,
       },
       async () => {
         const [responseErr, response] = await unwrap(trending('movie', 'week'))
@@ -89,8 +99,7 @@ export const trendingJobs = {
       '@daily',
       {
         name: 'fetch-tv-trending-day',
-        protect,
-        catch: catchHandler,
+        ...defaultOptions,
       },
       async () => {
         const [responseErr, response] = await unwrap(trending('tv', 'day'))
@@ -126,8 +135,7 @@ export const trendingJobs = {
       '@daily',
       {
         name: 'fetch-tv-trending-week',
-        protect,
-        catch: catchHandler,
+        ...defaultOptions,
       },
       async () => {
         const [responseErr, response] = await unwrap(trending('tv', 'week'))
@@ -169,8 +177,7 @@ export const providerJobs = {
     PROVIDER_JOB_CRON_PATTERN,
     {
       name: 'fetch-available-watch-providers-regions',
-      protect,
-      catch: catchHandler,
+      ...defaultOptions,
     },
     async () => {
       const [responseErr, response] = await unwrap(availableWatchProviders('regions'))
@@ -210,8 +217,7 @@ export const providerJobs = {
     PROVIDER_JOB_CRON_PATTERN,
     {
       name: 'fetch-available-watch-providers-movie',
-      protect,
-      catch: catchHandler,
+      ...defaultOptions,
     },
     async () => {
       const [responseErr, response] = await unwrap(availableWatchProviders('movie'))
@@ -251,8 +257,7 @@ export const providerJobs = {
     PROVIDER_JOB_CRON_PATTERN,
     {
       name: 'fetch-available-watch-providers-tv',
-      protect,
-      catch: catchHandler,
+      ...defaultOptions,
     },
     async () => {
       const [responseErr, response] = await unwrap(availableWatchProviders('tv'))
@@ -286,10 +291,34 @@ export const providerJobs = {
   ),
 }
 
-function protect(job: Cron) {
-  logger.warn(`Job ${job.name} is blocked because a run is already in progress from ${job.currentRun()?.toISOString()}`)
+export const startJobs = (triggerNow = false) => {
+  for (const job of Object.values(providerJobs)) {
+    if (!job.isBusy() && !job.isRunning()) {
+      resume(job, triggerNow)
+    }
+  }
+
+  for (const group of Object.values(trendingJobs)) {
+    for (const job of Object.values(group)) {
+      resume(job, triggerNow)
+    }
+  }
 }
 
-function catchHandler(error: unknown, job: Cron) {
-  logger.error({ error }, `Error occurred in ${job.name} job`)
+function resume(job: Cron, triggerNow: boolean) {
+  if (!job.isBusy() && !job.isRunning()) {
+    logger.debug(`Resuming job ${job.name}`)
+    const resumed = job.resume()
+
+    if (resumed) {
+      logger.info(`Job ${job.name} resumed`)
+
+      if (triggerNow) {
+        logger.info(`Triggering job ${job.name}`)
+        job.trigger()
+      }
+    } else {
+      logger.warn(`Job ${job.name} is already running or busy`)
+    }
+  }
 }
