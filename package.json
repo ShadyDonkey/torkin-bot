@@ -1,15 +1,13 @@
 {
   "name": "torkin-bot",
   "private": true,
+  "version": "1.0.0",
   "scripts": {
     "sherif": "sherif -r root-package-manager-field",
     "sherif:fix": "sherif -r root-package-manager-field --fix"
   },
   "workspaces": {
-    "packages": [
-      "client",
-      "server"
-    ]
+    "packages": ["client", "server"]
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.11",
@@ -21,6 +19,5 @@
   },
   "peerDependencies": {
     "typescript": "^5.9.3"
-  },
-  "version": "1.0.0"
+  }
 }
