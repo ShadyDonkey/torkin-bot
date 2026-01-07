@@ -2,6 +2,7 @@ import { cors } from '@elysiajs/cors'
 import { handleRequest } from 'dressed/server'
 import { Elysia } from 'elysia'
 import { commands, components, config, events } from './.dressed'
+import { startJobs } from './jobs'
 import { auth } from './lib/auth'
 import { adminRoutes } from './routes/admin'
 import { logger } from './utilities/logger'
@@ -9,6 +10,10 @@ import { overrideConsole } from './utilities/overrides'
 
 // Have to do this to hijack Dressed's logs and pipe them to pino/LOKI
 overrideConsole()
+
+// Start jobs and trigger
+const triggerOnStart = process.env.NODE_ENV === 'production'
+startJobs(triggerOnStart)
 
 export const app = new Elysia()
   .onError((err) => {
