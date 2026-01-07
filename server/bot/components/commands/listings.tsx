@@ -131,34 +131,31 @@ export function ListingPage({
   const { type, details } = (query.data ?? listing) as StandardListing<TypeSelection, MDE, TVDE> | StandardListing
 
   useEffect(() => {
-    if (query.isLoading || !details) {
-      return
-    }
-
-    if ('translations' in details && details.translations.translations) {
-      const translation = details.translations.translations.find((t) => t.iso_639_1 === userPreferences.language)
-
-      if (translation?.data) {
-        const obj: Pick<StandardListing, 'title' | 'description'> = {}
-        if ('title' in translation.data && 'runtime' in translation.data) {
-          const data = translation.data as NonNullable<MovieTranslationsResponse['translations']>[number]['data']
-          if (data?.title && data.title.length > 0) {
-            obj.title = data.title
-          }
-        }
-        if ('name' in translation.data) {
-          const data = translation.data as NonNullable<TvTranslationsResponse['translations']>[number]['data']
-          if (data?.name && data.name.length > 0) {
-            obj.title = data.name
-          }
-          if (data?.overview && data.overview.length > 0) {
-            obj.description = data.overview
-          }
-        }
-        setMergedListing((prev) => ({ ...prev, ...obj }))
+    if ('translations' in details) {
+      const translation = details.translations.translations?.find((t) => t.iso_639_1 === userPreferences.language)
+      if (!translation?.data) {
+        return
       }
+
+      const obj: Pick<StandardListing, 'title' | 'description'> = {}
+
+      if (type === 'movie') {
+        const { data } = translation as NonNullable<MovieTranslationsResponse['translations']>[number]
+        if (data?.title?.length) {
+          obj.title = data.title
+        }
+      } else if (type === 'tv') {
+        const { data } = translation as NonNullable<TvTranslationsResponse['translations']>[number]
+        if (data?.name?.length) {
+          obj.title = data.name
+        }
+      }
+      if (translation.data.overview?.length) {
+        obj.description = translation.data.overview
+      }
+      setMergedListing((prev) => ({ ...prev, ...obj }))
     }
-  }, [userPreferences.language, query.isLoading, details])
+  }, [userPreferences.language, type, details])
 
   return (
     <>

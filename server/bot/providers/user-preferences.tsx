@@ -6,7 +6,7 @@ type UserPreferences = { language: string; country: string; timezone: string }
 
 const UserPreferencesContext = createContext<UserPreferences | null>(null)
 
-const defaultPreferences = { language: 'en', country: 'US', timezone: 'America/New_York' }
+const initialData = { language: 'en', country: 'US', timezone: 'America/New_York' }
 
 export function useUserPreferences() {
   const context = useContext(UserPreferencesContext)
@@ -22,12 +22,8 @@ export function UserPreferencesProvider({ children, userId }: Readonly<PropsWith
   const query = useQuery({
     queryKey: ['preferences', userId],
     queryFn: () => db.userPreference.findUnique({ where: { discordUserId: userId } }),
-    initialData: () => defaultPreferences,
+    initialData,
   })
 
-  return (
-    <UserPreferencesContext.Provider value={query.data ?? defaultPreferences}>
-      {children}
-    </UserPreferencesContext.Provider>
-  )
+  return <UserPreferencesContext.Provider value={query.data ?? initialData}>{children}</UserPreferencesContext.Provider>
 }
