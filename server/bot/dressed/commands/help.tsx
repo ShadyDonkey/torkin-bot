@@ -1,13 +1,10 @@
-import { ActionRow, Button, type CommandInteraction, Container, TextDisplay } from '@dressed/react'
-import { link, list } from 'discord-fmt'
+import { ActionRow, Button, type CommandInteraction, TextDisplay } from '@dressed/react'
 import type { CommandConfig } from 'dressed'
-import { DEV_GUILD_ID, IS_IN_DEV } from '../../../lib/config'
+import { GENERIC_COMMAND_CONFIG } from '../../utilities'
 
 export const config = {
+  ...GENERIC_COMMAND_CONFIG,
   description: 'A generic help command',
-  default_member_permissions: IS_IN_DEV ? ['Administrator'] : undefined,
-  integration_type: IS_IN_DEV ? 'Guild' : 'User',
-  guilds: IS_IN_DEV ? [DEV_GUILD_ID] : undefined,
 } satisfies CommandConfig
 
 export default async function (interaction: CommandInteraction<typeof config>) {

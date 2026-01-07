@@ -1,19 +1,17 @@
 import { type CommandInteraction, Container } from '@dressed/react'
 import { h3, subtext } from 'discord-fmt'
 import { type CommandAutocompleteInteraction, type CommandConfig, CommandOption } from 'dressed'
-import { DEV_GUILD_ID, IS_IN_DEV } from '../../../lib/config'
 import { db } from '../../../lib/db'
 import { getCountries, getLanguages, getTimezones } from '../../../lib/tmdb'
+import { GENERIC_COMMAND_CONFIG } from '../../utilities'
 
 type MappedOption<N extends string> = ReturnType<
   typeof CommandOption<'Subcommand', N, false, [ReturnType<typeof CommandOption<'String', 'value', true, never>>]>
 >
 
 export const config = {
+  ...GENERIC_COMMAND_CONFIG,
   description: 'Manage your settings for the bot',
-  default_member_permissions: IS_IN_DEV ? ['Administrator'] : undefined,
-  integration_type: IS_IN_DEV ? 'Guild' : 'User',
-  guilds: IS_IN_DEV ? [DEV_GUILD_ID] : undefined,
   options: [
     CommandOption({ type: 'Subcommand', name: 'view', description: 'View your current settings' }),
     CommandOption({

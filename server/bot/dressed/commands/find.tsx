@@ -6,17 +6,15 @@ import ErrorPage from '../../../bot/components/commands/error'
 import { ListingPage, Listings } from '../../../bot/components/commands/listings'
 import { RecommendationsPage } from '../../../bot/components/commands/recommendations'
 import { logger } from '../../../bot/utilities/logger'
-import { DEV_GUILD_ID, IS_IN_DEV } from '../../../lib/config'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '../../../lib/keyv'
 import { search } from '../../../lib/tmdb'
 import type { TypeSelection } from '../../../lib/tmdb/types'
 import { unwrap } from '../../../utilities'
+import { GENERIC_COMMAND_CONFIG } from '../../utilities'
 
 export const config = {
+  ...GENERIC_COMMAND_CONFIG,
   description: 'Find a show or movie by name',
-  default_member_permissions: IS_IN_DEV ? ['Administrator'] : undefined,
-  integration_type: IS_IN_DEV ? 'Guild' : 'User',
-  guilds: IS_IN_DEV ? [DEV_GUILD_ID] : undefined,
   options: [
     CommandOption({
       name: 'movie',

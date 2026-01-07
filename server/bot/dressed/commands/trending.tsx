@@ -2,10 +2,10 @@ import type { CommandInteraction } from '@dressed/react'
 import { type CommandConfig, CommandOption } from 'dressed'
 import { Listings } from '../../../bot/components/commands/listings'
 import { logger } from '../../../bot/utilities/logger'
-import { DEV_GUILD_ID, IS_IN_DEV } from '../../../lib/config'
 import { type CmdTrendingCacheEntry, KEYV_CONFIG, keyv } from '../../../lib/keyv'
 import { getTrending } from '../../../lib/tmdb'
 import { unwrap } from '../../../utilities'
+import { GENERIC_COMMAND_CONFIG } from '../../utilities'
 
 function getPeriodChoices(description: string) {
   return [
@@ -22,10 +22,8 @@ function getPeriodChoices(description: string) {
 }
 
 export const config = {
+  ...GENERIC_COMMAND_CONFIG,
   description: 'See trending movies and TV shows',
-  default_member_permissions: IS_IN_DEV ? ['Administrator'] : undefined,
-  integration_type: IS_IN_DEV ? 'Guild' : 'User',
-  guilds: IS_IN_DEV ? [DEV_GUILD_ID] : undefined,
   options: [
     CommandOption({
       name: 'movie',
@@ -58,7 +56,6 @@ export default async function (interaction: CommandInteraction<typeof config>) {
         initialPage={1}
         queryData={{ queryKey: ['trending', type, window], queryFn: () => getTrending(type, window) }}
         listTitle={`Trending ${type === 'movie' ? 'Movie' : 'TV Show'}s ${window === 'day' ? 'Today' : 'This Week'}`}
-        userId={interaction.user.id}
       />,
     )
   } catch (err) {
