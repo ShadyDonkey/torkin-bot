@@ -40,11 +40,12 @@ export function useApiMutation<T, V = void>(
   // biome-ignore lint/suspicious/noExplicitAny: need to fix later
   mutationFn: (variables: V) => Promise<any>,
   options: {
-    errorMessage: string
-    successMessage: string
+    successMessage?: string
+    errorMessage?: string
     invalidateQueries?: string[]
     onSuccess?: (data: T) => void
     onError?: (error: unknown) => void
+    onSettled?: () => void
   },
 ) {
   const queryClient = useQueryClient()
@@ -74,5 +75,6 @@ export function useApiMutation<T, V = void>(
       options?.onSuccess?.(data)
     },
     onError: options?.onError,
+    onSettled: options?.onSettled,
   })
 }

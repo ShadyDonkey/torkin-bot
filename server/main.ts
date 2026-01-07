@@ -3,6 +3,7 @@ import { handleRequest } from 'dressed/server'
 import { Elysia } from 'elysia'
 import { commands, components, config, events } from './.dressed'
 import { auth } from './lib/auth'
+import { adminRoutes } from './routes/admin'
 import { logger } from './utilities/logger'
 import { overrideConsole } from './utilities/overrides'
 
@@ -25,6 +26,7 @@ export const app = new Elysia()
     }),
   )
   .mount(auth.handler)
+  .use(adminRoutes)
   .listen(3000)
 
 logger.info(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`)

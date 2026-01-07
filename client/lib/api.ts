@@ -1,18 +1,16 @@
 import { treaty } from '@elysiajs/eden'
 import { notifications } from '@mantine/notifications'
 import { createIsomorphicFn } from '@tanstack/react-start'
-import { type App, app } from '../../server/main'
+import type { App } from '../../server/main'
 import { unwrap } from '../utilities'
 
-export const getTreaty = createIsomorphicFn()
-  .server(() => treaty(app))
-  .client(() =>
-    treaty<App>(import.meta.env.VITE_API_URL || 'http://localhost:3000', {
-      fetch: {
-        credentials: 'include',
-      },
-    }),
-  )
+export const getTreaty = createIsomorphicFn().client(() =>
+  treaty<App>(import.meta.env.VITE_API_URL || 'http://localhost:3000', {
+    fetch: {
+      credentials: 'include',
+    },
+  }),
+)
 
 export async function sendApiRequest<T>(promise: Promise<T>, errorMessage = 'Request failed'): Promise<T> {
   const [error, data] = await unwrap<T>(promise)
@@ -28,8 +26,14 @@ export async function sendApiRequest<T>(promise: Promise<T>, errorMessage = 'Req
 
 export function handleApiResponse<T>(response: { data?: unknown; error?: unknown }, errorMessage?: string) {
   if (response.error) {
-    const errorObj = response.error as { errors?: string[] }
-    const errors = errorObj.errors || [errorMessage || 'Request failed']
+    const entries = Object.entries(response.error)
+    let errors = [errorMessage || 'Request failed']
+
+    // biome-ignore lint/style/noNonNullAssertion: This is safe because we are checking if the entry exists
+    if (entries.at(1) && entries.at(1)?.at(0) === 'value' && 'errors' in entries.at(1)!.at(1)) {
+      errors = entries.at(1)?.at(1)?.errors || errors
+    }
+
     return { success: false, errors, data: null }
   }
 

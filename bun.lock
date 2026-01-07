@@ -26,6 +26,7 @@
         "@mantine/notifications": "^8.3.11",
         "@mantine/nprogress": "^8.3.11",
         "@tanstack/react-devtools": "^0.7.0",
+        "@tanstack/react-query": "^5.90.16",
         "@tanstack/react-router": "^1.132.0",
         "@tanstack/react-router-devtools": "^1.132.0",
         "@tanstack/react-router-ssr-query": "^1.131.7",
