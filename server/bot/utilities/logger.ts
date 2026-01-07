@@ -1,4 +1,3 @@
-import pino from 'pino'
-import { transport } from '../../lib/pino'
+import { pinoLogger } from '../../lib/pino'
 
-export const logger = pino(transport).child({ module: 'bot' })
+export const logger = pinoLogger.child({ module: 'bot' })
