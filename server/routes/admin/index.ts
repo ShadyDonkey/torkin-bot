@@ -1,6 +1,6 @@
 import { differenceInHours, getTime } from 'date-fns'
 import { installCommands } from 'dressed/server'
-import { Elysia, t } from 'elysia'
+import { Elysia } from 'elysia'
 import { StatusCodes } from 'http-status-codes'
 import { commands } from '../../.dressed'
 import { auth, authMacro } from '../../lib/auth'

@@ -1,4 +1,4 @@
-import { AppShell, Box, Burger, Center, Container, Group, Loader, NavLink, Text } from '@mantine/core'
+import { AppShell, Burger, Center, Container, Group, Loader, NavLink, Text } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { notifications } from '@mantine/notifications'
 import { createFileRoute, Outlet, useLocation, useNavigate } from '@tanstack/react-router'
