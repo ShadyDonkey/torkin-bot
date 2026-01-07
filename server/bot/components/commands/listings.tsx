@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 import { ItemActions, ListingPreview, PaginationButtons } from '../../../bot/components/builders'
 import { TrendingMovieDetails, TrendingTvDetails, VoteSection } from '../../../bot/components/tmdb'
-import { useUserPreferences } from '../../../bot/utilities/user'
+import { useUserPreferences } from '../../../bot/providers/user-preferences'
 import { getDetails, getImageUrl, getItemWatchProviders } from '../../../lib/tmdb'
 import type {
   MovieExternalIdsResponse,
@@ -29,13 +29,7 @@ export function Listings({
   initialPage,
   queryData,
   listTitle,
-  userId,
-}: Readonly<{
-  initialPage: number
-  queryData: UndefinedInitialDataOptions<StandardListing[]>
-  listTitle?: string
-  userId: string
-}>) {
+}: Readonly<{ initialPage: number; queryData: UndefinedInitialDataOptions<StandardListing[]>; listTitle?: string }>) {
   const query = useQuery(queryData)
   const [page, setPage] = useState(initialPage)
   const [focused, setFocused] = useState<number>()
@@ -58,14 +52,13 @@ export function Listings({
 
   if (focused !== undefined && query.data[focused] && recommendationsFor) {
     const listing = query.data[focused]
-    return <RecommendationsPage listing={listing} onBack={() => setRecommendationsFor(null)} userId={userId} />
+    return <RecommendationsPage listing={listing} onBack={() => setRecommendationsFor(null)} />
   }
 
   if (focused !== undefined && query.data[focused]) {
     return (
       <ListingPage
         listing={query.data[focused]}
-        userId={userId}
         onBack={() => setFocused(undefined)}
         onShowRecommendations={(id, type) => {
           setRecommendationsFor({ id, type })
@@ -121,16 +114,14 @@ export function ListingPage({
   backText,
   onShowRecommendations,
   disableRecommendations,
-  userId,
 }: Readonly<{
   listing: StandardListing
   onBack: () => void
   backText?: string
-  userId: string
   onShowRecommendations?: (id: number, type: TypeSelection) => void
   disableRecommendations?: boolean
 }>) {
-  const userPreferences = useUserPreferences(userId)
+  const userPreferences = useUserPreferences()
   const [mergedListing, setMergedListing] = useState(structuredClone(listing))
   const query = useQuery({
     queryKey: ['details', listing.type, listing.id],
@@ -140,34 +131,31 @@ export function ListingPage({
   const { type, details } = (query.data ?? listing) as StandardListing<TypeSelection, MDE, TVDE> | StandardListing
 
   useEffect(() => {
-    if (query.isLoading || !details) {
-      return
-    }
-
-    if ('translations' in details && details.translations.translations) {
-      const translation = details.translations.translations.find((t) => t.iso_639_1 === userPreferences.language)
-
-      if (translation?.data) {
-        const obj: Pick<StandardListing, 'title' | 'description'> = {}
-        if ('title' in translation.data && 'runtime' in translation.data) {
-          const data = translation.data as NonNullable<MovieTranslationsResponse['translations']>[number]['data']
-          if (data?.title && data.title.length > 0) {
-            obj.title = data.title
-          }
-        }
-        if ('name' in translation.data) {
-          const data = translation.data as NonNullable<TvTranslationsResponse['translations']>[number]['data']
-          if (data?.name && data.name.length > 0) {
-            obj.title = data.name
-          }
-          if (data?.overview && data.overview.length > 0) {
-            obj.description = data.overview
-          }
-        }
-        setMergedListing((prev) => ({ ...prev, ...obj }))
+    if ('translations' in details) {
+      const translation = details.translations.translations?.find((t) => t.iso_639_1 === userPreferences.language)
+      if (!translation?.data) {
+        return
       }
+
+      const obj: Pick<StandardListing, 'title' | 'description'> = {}
+
+      if (type === 'movie') {
+        const { data } = translation as NonNullable<MovieTranslationsResponse['translations']>[number]
+        if (data?.title?.length) {
+          obj.title = data.title
+        }
+      } else if (type === 'tv') {
+        const { data } = translation as NonNullable<TvTranslationsResponse['translations']>[number]
+        if (data?.name?.length) {
+          obj.title = data.name
+        }
+      }
+      if (translation.data.overview?.length) {
+        obj.description = translation.data.overview
+      }
+      setMergedListing((prev) => ({ ...prev, ...obj }))
     }
-  }, [userPreferences.language, query.isLoading, details])
+  }, [userPreferences.language, type, details])
 
   return (
     <>
