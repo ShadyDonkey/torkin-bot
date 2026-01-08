@@ -23,32 +23,18 @@ export function useUserPreferences() {
 export function UserPreferencesProvider({ children, userId }: Readonly<PropsWithChildren<{ userId: string }>>) {
   const query = useQuery({
     queryKey: ['preferences', userId],
-    queryFn: async () => {
-      const [err, result] = await unwrap(db.userPreference.findUnique({ where: { discordUserId: userId } }))
+    async queryFn() {
+      const [err, result] = await unwrap(
+        db.userPreference.upsert({
+          where: { discordUserId: userId },
+          update: {},
+          create: { discordUserId: userId, createdBy: userId },
+        }),
+      )
 
       if (err) {
         logger.error(err, 'Failed to fetch user preferences')
-        return null
-      }
-
-      if (!result) {
-        const [createErr, createResult] = await unwrap(
-          db.userPreference.create({
-            data: {
-              discordUserId: userId,
-              createdBy: userId,
-            },
-          }),
-        )
-
-        if (createErr) {
-          logger.error(createErr, 'Failed to create user preferences')
-          return null
-        }
-
-        logger.debug(createResult, 'Created user preferences')
-
-        return createResult
+        return initialData
       }
 
       return result
@@ -56,5 +42,5 @@ export function UserPreferencesProvider({ children, userId }: Readonly<PropsWith
     initialData,
   })
 
-  return <UserPreferencesContext.Provider value={query.data ?? initialData}>{children}</UserPreferencesContext.Provider>
+  return <UserPreferencesContext.Provider value={query.data}>{children}</UserPreferencesContext.Provider>
 }
