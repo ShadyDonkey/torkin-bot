@@ -6,3 +6,12 @@ import './schemas/user'
 //     provider = 'postgresql'
 //     url = env('DATABASE_URL')
 // }
+
+model DiscordWebhookEventLog {
+  id        String   @id @default(cuid(2)) @map('id')
+  type      String   @map('type')
+  data      Json     @map('data')
+  timestamp DateTime @default(now()) @map('timestamp')
+
+  @@map('discord_webhook_event_log')
+}

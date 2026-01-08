@@ -13,7 +13,8 @@
       "!**/schema.d.ts",
       "!**/server/zenstack",
       "!.release-please*",
-      "!package.json"
+      "!package.json",
+      "!**/server/bot/dressed/events/*.ts"
     ]
   },
   "formatter": {
