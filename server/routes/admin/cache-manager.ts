@@ -25,9 +25,7 @@ export const cacheManager = new Elysia({ prefix: '/cache-manager' })
           }
         } catch {}
 
-        const cleanKey = key
-          .replace(/^mrapi-cache::mrapi-cache:/, '')
-          .replace(/^mrapi-rate-limiter::mrapi-rate-limiter:/, '')
+        const cleanKey = key.replace(/^torkin-cache::torkin-cache:/, '')
 
         const parts = cleanKey.split(':')
         const baseCategory = parts[0] || 'other'
