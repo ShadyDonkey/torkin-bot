@@ -1,9 +1,12 @@
 import { nprogress } from '@mantine/nprogress'
 import { type UseQueryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import type { Ref } from 'react'
 import { handleApiResponseWithToast, sendApiRequest } from '../lib/api'
 
-export const QUERY_KEYS = {} as const
+export const QUERY_KEYS = {
+  ADMIN: {
+    CACHE_MANAGER_RESULTS: 'admin/cache-manager/results',
+  },
+} as const
 
 export function useApiQuery<T>(
   queryKey: string | string[],
@@ -15,6 +18,7 @@ export function useApiQuery<T>(
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: Array.isArray(queryKey) ? queryKey : [queryKey],
     queryFn: async () => {
+      // type T =
       const response = await sendApiRequest(apiCall())
       const result = handleApiResponseWithToast<T>(response, errorMessage)
 
@@ -29,7 +33,7 @@ export function useApiQuery<T>(
   })
 
   return {
-    data: data as Ref<T | undefined>,
+    data: data as T | undefined,
     isLoading,
     error,
     refetch,
