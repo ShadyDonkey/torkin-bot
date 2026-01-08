@@ -8,6 +8,7 @@ import { cache } from '../../lib/cache'
 import { unwrap } from '../../utilities'
 import { createErrorRes, createResponseSchema, createSuccessRes } from '../../utilities/elysia/response'
 import { logger } from '../../utilities/logger'
+import { cacheManager } from './cache-manager'
 import { InstallCommandSchema } from './types'
 
 export const adminRoutes = new Elysia({
@@ -27,6 +28,7 @@ export const adminRoutes = new Elysia({
       }
     },
   })
+  .use(cacheManager)
   .post(
     '/bot/install-commands',
     async ({ set }) => {
