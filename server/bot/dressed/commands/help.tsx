@@ -15,7 +15,7 @@ export default async function (interaction: CommandInteraction<typeof config>) {
         If you're in need of help, want to report a bug, or have a suggestion, please reach out to us on our support
         server.
         {'\n\n'}
-        Enjoying Torkin? Consider ${link('donating on Ko-Fi', '<https://ko-fi.com/matthatcher>')} to keep the project
+        Enjoying Torkin? Consider {link('donating on Ko-Fi', '<https://ko-fi.com/matthatcher>')} to keep the project
         alive and remain free.
       </TextDisplay>
       <ActionRow>
