@@ -1,9 +1,4 @@
-import {
-  type CommandInteraction,
-  type MessageComponentInteraction,
-  patchInteraction,
-  TextDisplay,
-} from '@dressed/react'
+import { type MessageComponentInteraction, patchInteraction, TextDisplay } from '@dressed/react'
 import { link, subtext } from 'discord-fmt'
 import type { ServerConfig } from 'dressed/server'
 import { BotProviders } from './bot/providers'
@@ -12,30 +7,18 @@ export default {
   build: { root: 'bot/dressed', extensions: ['tsx', 'ts'] },
   port: 3000,
   middleware: {
-    commands(i) {
-      const patched = patchInteraction(i)
-      return [
-        {
-          ...patched,
-          reply: (c, ...p) => patched.reply(<BotProviders userId={patched.user.id}>{c}</BotProviders>, ...p),
-          editReply: (c, ...p) => patched.editReply(<BotProviders userId={patched.user.id}>{c}</BotProviders>, ...p),
-          followUp: (c, ...p) => patched.followUp(<BotProviders userId={patched.user.id}>{c}</BotProviders>, ...p),
-        } as CommandInteraction,
-      ]
-    },
+    commands: (i) => [
+      patchInteraction(i, ({ children }) => <BotProviders userId={i.user.id}>{children}</BotProviders>),
+    ],
     async components(i, ...p) {
       if (i.message?.interaction_metadata && i.message.interaction_metadata.user.id !== i.user.id) {
         await i.reply({ content: "You did't initiate this interaction!", ephemeral: true })
         throw new Error('Not the triggering user')
       }
-      const patched = patchInteraction(i)
+      const patched = patchInteraction(i, ({ children }) => <BotProviders userId={i.user.id}>{children}</BotProviders>)
       return [
         {
           ...patched,
-          reply: (c, ...p) => patched.reply(<BotProviders userId={patched.user.id}>{c}</BotProviders>, ...p),
-          editReply: (c, ...p) => patched.editReply(<BotProviders userId={patched.user.id}>{c}</BotProviders>, ...p),
-          update: (c, ...p) => patched.update(<BotProviders userId={patched.user.id}>{c}</BotProviders>, ...p),
-          followUp: (c, ...p) => patched.followUp(<BotProviders userId={patched.user.id}>{c}</BotProviders>, ...p),
           updateResponse(data, ...p) {
             if (typeof data !== 'string' && Math.random() < 0.7) {
               data = (

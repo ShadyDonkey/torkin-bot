@@ -1,5 +1,5 @@
 import type { MessageComponentInteraction } from '@dressed/react'
-import { setupCallbackHandler } from '@dressed/react/callbacks'
+import { createCallbackHandler } from '@dressed/react/callbacks'
 import type { APIMessageComponent } from 'discord-api-types/v10'
 import { createInteractionCallback } from 'dressed'
 
@@ -25,7 +25,7 @@ function trace(id: string, type: number, components: APIMessageComponent[]): API
   }
 }
 
-const callbackHandler = setupCallbackHandler({
+const callbackHandler = createCallbackHandler({
   async default(i: Omit<MessageComponentInteraction, 'updateResponse'>) {
     const component = trace(i.data.custom_id, i.data.component_type, i.message?.components ?? [])
     if (component) {
