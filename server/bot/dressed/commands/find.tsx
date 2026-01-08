@@ -5,7 +5,7 @@ import { useState } from 'react'
 import ErrorPage from '../../../bot/components/commands/error'
 import { ListingPage, Listings } from '../../../bot/components/commands/listings'
 import { RecommendationsPage } from '../../../bot/components/commands/recommendations'
-import { logger } from '../../../bot/utilities/logger'
+import { botLogger } from '../../../bot/utilities/logger'
 import { type CmdFindCacheEntry, KEYV_CONFIG, keyv } from '../../../lib/keyv'
 import { search } from '../../../lib/tmdb'
 import type { TypeSelection } from '../../../lib/tmdb/types'
@@ -63,7 +63,7 @@ export default async function (interaction: CommandInteraction<typeof config>) {
   try {
     await interaction.reply(<ListingsWrapper searchType={searchType} queryString={query} />)
   } catch (err) {
-    logger.error(err)
+    botLogger.error(err)
     return await interaction.editReply('Something went wrong when finding that...')
   }
 
@@ -76,7 +76,7 @@ export default async function (interaction: CommandInteraction<typeof config>) {
   )
 
   if (cacheErr || !cached) {
-    logger.error({ cacheErr, cached })
+    botLogger.error({ cacheErr, cached })
   }
 }
 
