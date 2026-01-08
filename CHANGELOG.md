@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.0](https://github.com/ShadyDonkey/torkin-bot/compare/v1.2.0...v1.3.0) (2026-01-08)
+
+
+### Features
+
+* add webhook handling for Discord events ([#79](https://github.com/ShadyDonkey/torkin-bot/issues/79)) ([34a91e4](https://github.com/ShadyDonkey/torkin-bot/commit/34a91e44635221e3a50d1b2910db2cda64e710c2))
+
+
+### Bug Fixes
+
+* extra dollar sign in the help command ([af86d13](https://github.com/ShadyDonkey/torkin-bot/commit/af86d13e6ddd0ae0bbee136373f6edc88d918c4a))
+
 ## [1.2.0](https://github.com/ShadyDonkey/torkin-bot/compare/v1.1.0...v1.2.0) (2026-01-08)
 
 
