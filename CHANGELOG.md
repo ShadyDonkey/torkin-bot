@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0](https://github.com/ShadyDonkey/torkin-bot/compare/v1.1.0...v1.2.0) (2026-01-08)
+
+
+### Features
+
+* add generic help command ([dfae347](https://github.com/ShadyDonkey/torkin-bot/commit/dfae347b5280203efa08ea0911347744a45fa02d))
+
+
+### Bug Fixes
+
+* add std serializers to handle proper error serialization ([d607f32](https://github.com/ShadyDonkey/torkin-bot/commit/d607f32051d8abf3d6e14ad09614bca272ed142b))
+* undefined risk for getTreaty on client ([8e18f41](https://github.com/ShadyDonkey/torkin-bot/commit/8e18f415b01faafe702c44aea3f7f570d98aeaa5))
+
 ## [1.1.0](https://github.com/ShadyDonkey/torkin-bot/compare/v1.0.1...v1.1.0) (2026-01-07)
 
 
