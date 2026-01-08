@@ -129,10 +129,7 @@ export async function recommendations(type: TypeSelection, id: string | number, 
   )
 }
 
-export async function discover(
-  type: TypeSelection,
-  params: typeof type extends 'movie' ? DiscoverMovieQueryParams : DiscoverTvQueryParams,
-) {
+export async function discover(type: TypeSelection, params: DiscoverMovieQueryParams | DiscoverTvQueryParams) {
   return await fetch<typeof type extends 'movie' ? DiscoverMovieResponse : DiscoverTvResponse>(
     `discover/${type}`,
     params,

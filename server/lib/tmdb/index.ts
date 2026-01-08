@@ -1,8 +1,11 @@
+import { format } from 'date-fns'
 import { cache, cacheEntry } from '../../lib/cache'
 import { slugify, unwrap } from '../../utilities'
 import { logger } from '../../utilities/logger'
 import * as api from '../tmdb/api'
 import type {
+  DiscoverMovieQueryParams,
+  DiscoverTvQueryParams,
   SearchMovieResponse,
   StandardListing,
   TimeWindow,
@@ -347,4 +350,24 @@ export async function getRecommendations(type: TypeSelection, id: string | numbe
         details: r,
       }) as StandardListing,
   ) ?? []) as StandardListing[]
+}
+
+export async function airingOnDate(type: TypeSelection, date: string) {
+  let params: DiscoverMovieQueryParams | DiscoverTvQueryParams = {}
+
+  if (type === 'movie') {
+    params = {
+      ...params,
+      'primary_release_date.gte': date,
+      'primary_release_date.lte': date,
+    } as DiscoverMovieQueryParams
+  } else {
+    params = {
+      ...params,
+      'first_air_date.gte': date,
+      'first_air_date.lte': date,
+    } as DiscoverTvQueryParams
+  }
+
+  return await getOrSet('', '2d', async () => await api.discover(type, params))
 }
