@@ -37,7 +37,7 @@ export default {
           update: (c, ...p) => patched.update(<BotProviders userId={patched.user.id}>{c}</BotProviders>, ...p),
           followUp: (c, ...p) => patched.followUp(<BotProviders userId={patched.user.id}>{c}</BotProviders>, ...p),
           updateResponse(data, ...p) {
-            if (typeof data !== 'string' && Math.random() < 0.3) {
+            if (typeof data !== 'string' && Math.random() < 0.7) {
               data = (
                 <>
                   {data}
