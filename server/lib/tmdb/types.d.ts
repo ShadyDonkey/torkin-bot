@@ -57,3 +57,8 @@ export type MovieRecommendationsResponse =
   paths['/3/movie/{movie_id}/recommendations']['get']['responses']['200']['content']['application/json']
 export type TvRecommendationsResponse =
   paths['/3/tv/{series_id}/recommendations']['get']['responses']['200']['content']['application/json']
+
+export type DiscoverMovieQueryParams = paths['/3/discover/movie']['get']['parameters']['query']
+export type DiscoverMovieResponse = paths['/3/discover/movie']['get']['responses']['200']['content']['application/json']
+export type DiscoverTvQueryParams = paths['/3/discover/tv']['get']['parameters']['query']
+export type DiscoverTvResponse = paths['/3/discover/tv']['get']['responses']['200']['content']['application/json']

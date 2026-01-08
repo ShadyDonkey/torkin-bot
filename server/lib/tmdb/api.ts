@@ -3,6 +3,10 @@ import type {
   ConfigCountriesResponse,
   ConfigLanguagesResponse,
   ConfigTimezonesResponse,
+  DiscoverMovieQueryParams,
+  DiscoverMovieResponse,
+  DiscoverTvQueryParams,
+  DiscoverTvResponse,
   MovieGenresResponse,
   MovieRecommendationsResponse,
   MovieTranslationsResponse,
@@ -122,5 +126,15 @@ export async function recommendations(type: TypeSelection, id: string | number, 
   return await fetch<typeof type extends 'movie' ? MovieRecommendationsResponse : TvRecommendationsResponse>(
     `${type}/${id}/recommendations`,
     { page },
+  )
+}
+
+export async function discover(
+  type: TypeSelection,
+  params: typeof type extends 'movie' ? DiscoverMovieQueryParams : DiscoverTvQueryParams,
+) {
+  return await fetch<typeof type extends 'movie' ? DiscoverMovieResponse : DiscoverTvResponse>(
+    `discover/${type}`,
+    params,
   )
 }
