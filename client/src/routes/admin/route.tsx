@@ -3,7 +3,7 @@ import { useDisclosure } from '@mantine/hooks'
 import { notifications } from '@mantine/notifications'
 import { createFileRoute, Outlet, useLocation, useNavigate } from '@tanstack/react-router'
 import { authClient } from 'lib/auth'
-import { Home } from 'lucide-react'
+import { DatabaseZap, Home } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 
 export const Route = createFileRoute('/admin')({
@@ -15,6 +15,11 @@ const LINKS = [
     link: '/admin',
     label: 'Dashboard',
     icon: Home,
+  },
+  {
+    link: '/admin/cache-manager',
+    label: 'Cache Manager',
+    icon: DatabaseZap,
   },
 ]
 
@@ -73,8 +78,8 @@ function AdminLayout() {
             key={link.link}
             href={link.link}
             label={link.label}
-            leftSection={<link.icon />}
-            p="md"
+            leftSection={<link.icon size={16} />}
+            p="sm"
             active={pathname === link.link}
           />
         ))}

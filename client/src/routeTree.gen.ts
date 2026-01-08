@@ -14,6 +14,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as LegalTermsRouteImport } from './routes/legal/terms'
 import { Route as LegalPrivacyRouteImport } from './routes/legal/privacy'
+import { Route as AdminCacheManagerRouteImport } from './routes/admin/cache-manager'
 
 const AdminRouteRoute = AdminRouteRouteImport.update({
   id: '/admin',
@@ -40,16 +41,23 @@ const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
   path: '/legal/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminCacheManagerRoute = AdminCacheManagerRouteImport.update({
+  id: '/cache-manager',
+  path: '/cache-manager',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
+  '/admin/cache-manager': typeof AdminCacheManagerRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin/cache-manager': typeof AdminCacheManagerRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/admin': typeof AdminIndexRoute
@@ -58,19 +66,32 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
+  '/admin/cache-manager': typeof AdminCacheManagerRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/legal/privacy' | '/legal/terms' | '/admin/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/admin/cache-manager'
+    | '/legal/privacy'
+    | '/legal/terms'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/legal/privacy' | '/legal/terms' | '/admin'
+  to:
+    | '/'
+    | '/admin/cache-manager'
+    | '/legal/privacy'
+    | '/legal/terms'
+    | '/admin'
   id:
     | '__root__'
     | '/'
     | '/admin'
+    | '/admin/cache-manager'
     | '/legal/privacy'
     | '/legal/terms'
     | '/admin/'
@@ -120,14 +141,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LegalPrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/cache-manager': {
+      id: '/admin/cache-manager'
+      path: '/cache-manager'
+      fullPath: '/admin/cache-manager'
+      preLoaderRoute: typeof AdminCacheManagerRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
   }
 }
 
 interface AdminRouteRouteChildren {
+  AdminCacheManagerRoute: typeof AdminCacheManagerRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminCacheManagerRoute: AdminCacheManagerRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
