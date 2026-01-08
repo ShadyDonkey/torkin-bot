@@ -1,7 +1,7 @@
 import type { CommandInteraction } from '@dressed/react'
 import { type CommandConfig, CommandOption } from 'dressed'
 import { Listings } from '../../../bot/components/commands/listings'
-import { logger } from '../../../bot/utilities/logger'
+import { botLogger } from '../../../bot/utilities/logger'
 import { type CmdTrendingCacheEntry, KEYV_CONFIG, keyv } from '../../../lib/keyv'
 import { getTrending } from '../../../lib/tmdb'
 import { unwrap } from '../../../utilities'
@@ -59,7 +59,7 @@ export default async function (interaction: CommandInteraction<typeof config>) {
       />,
     )
   } catch (err) {
-    logger.error(err)
+    botLogger.error(err)
     return await interaction.editReply('Something went wrong when fetching trending content...')
   }
 
@@ -76,6 +76,6 @@ export default async function (interaction: CommandInteraction<typeof config>) {
   )
 
   if (cacheErr || !cached) {
-    logger.error({ cacheErr, cached })
+    botLogger.error({ cacheErr, cached })
   }
 }

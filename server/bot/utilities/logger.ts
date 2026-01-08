@@ -1,3 +1,3 @@
 import { pinoLogger } from '../../lib/pino'
 
-export const logger = pinoLogger.child({ module: 'bot' })
+export const botLogger = pinoLogger.child({ module: 'bot' })

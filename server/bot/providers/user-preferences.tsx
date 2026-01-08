@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { createContext, type PropsWithChildren, useContext } from 'react'
 import { db } from '../../lib/db'
 import { unwrap } from '../../utilities'
-import { logger } from '../utilities/logger'
+import { botLogger } from '../utilities/logger'
 
 type UserPreferences = { language: string; country: string; timezone: string }
 
@@ -33,7 +33,7 @@ export function UserPreferencesProvider({ children, userId }: Readonly<PropsWith
       )
 
       if (err) {
-        logger.error(err, 'Failed to fetch user preferences')
+        botLogger.error(err, 'Failed to fetch user preferences')
         return initialData
       }
 
