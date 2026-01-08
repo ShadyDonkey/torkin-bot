@@ -1,4 +1,5 @@
 import pino from 'pino'
+import pinoStdSerializers from 'pino-std-serializers'
 
 const sharedOptions = {
   labels: {
@@ -10,6 +11,10 @@ const sharedOptions = {
 
 export const pinoLogger = pino({
   level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
+  serializers: {
+    err: pinoStdSerializers.err,
+    error: pinoStdSerializers.err,
+  },
   transport: {
     targets: [
       {

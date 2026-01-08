@@ -7,7 +7,12 @@ export function overrideConsole() {
     logger.info(args.join(' '))
   }
   console.error = (...args) => {
-    logger.error(args.join(' '))
+    const firstArg = args.at(0)
+    if (firstArg instanceof Error) {
+      logger.error({ err: firstArg })
+    } else {
+      logger.error(args.join(' '))
+    }
   }
   console.warn = (...args) => {
     logger.warn(args.join(' '))

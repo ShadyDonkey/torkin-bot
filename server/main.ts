@@ -42,6 +42,10 @@ process.on('uncaughtException', (err) => {
   logger.error(err)
 })
 
-process.on('unhandledRejection', (reason, promise) => {
-  logger.error(promise, String(reason))
+process.on('unhandledRejection', (reason) => {
+  if (reason instanceof Error) {
+    logger.error({ err: reason })
+  } else {
+    logger.error(String(reason))
+  }
 })
