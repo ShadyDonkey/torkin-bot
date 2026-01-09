@@ -8,3 +8,20 @@ model UserPreference with TimestampMixin {
 
   @@map('user_preference')
 }
+
+model UserItemTracking with TimestampMixin {
+  id         String   @id @default(cuid(2)) @map('id')
+  userId     String   @map('discord_user_id')
+  tmdbData   Json     @map('tmdb_data')
+  notifyDate DateTime @map('notify_on')
+
+  @@map('user_item_tracking')
+}
+
+model UserTrackingSetting with TimestampMixin {
+  userId           String @id @map('discord_user_id')
+  notificationHour Int    @map('notification_hour') @default(15)
+
+
+  @@map('user_tracking_setting')
+}
