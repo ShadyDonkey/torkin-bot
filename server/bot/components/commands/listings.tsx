@@ -1,4 +1,3 @@
-import { inspect } from 'node:util'
 import { Button, Container, Section, Separator, TextDisplay, Thumbnail } from '@dressed/react'
 import { type UndefinedInitialDataOptions, useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
@@ -214,21 +213,11 @@ export function ListingPage({
             }
 
             const [dbErr, settings] = await unwrap(
-              db.userTrackingSetting.findFirst({
-                where: {
-                  userId: interaction.user.id,
-                },
-              }),
+              db.userTrackingSetting.findFirst({ where: { userId: interaction.user.id } }),
             )
 
             if (dbErr) {
-              botLogger.error(
-                {
-                  err: dbErr,
-                },
-                'Error loading tracking settings',
-              )
-
+              botLogger.error({ err: dbErr }, 'Error loading tracking settings')
               return await interaction.followUp({
                 content: 'Error loading tracking settings',
                 ephemeral: true,
@@ -238,7 +227,14 @@ export function ListingPage({
             if (!settings) {
               return await interaction.followUp({
                 content:
-                  'No tracking settings found, please ensure to set up your `/tracking settings` before you can track listings.',
+                  'No tracking settings found, please set up `/tracking settings` before you can track listings.',
+                ephemeral: true,
+              })
+            }
+
+            if (!query.data) {
+              return await interaction.followUp({
+                content: 'No data available for this item.',
                 ephemeral: true,
               })
             }
@@ -246,7 +242,7 @@ export function ListingPage({
             let data: UserTrackingEntryData | null = null
             let notifyOn: string | null = null
 
-            if (query.data?.type === 'movie') {
+            if (query.data.type === 'movie') {
               if (!query.data.releaseDate) {
                 return await interaction.followUp({
                   content: 'No release date found for this movie.',
@@ -254,28 +250,22 @@ export function ListingPage({
                 })
               }
 
-              data = {
-                id: query.data.id,
-                type: 'movie',
-                releaseDate: query.data.releaseDate,
-              }
-
-              // biome-ignore lint/style/noNonNullAssertion: Expected
-              notifyOn = data.releaseDate!
-            } else if (query.data?.type === 'tv') {
-              if (!query.data.details.next_episode_to_air) {
-                return await interaction.followUp({
-                  content: 'No next episode found for this TV show.',
-                  ephemeral: true,
-                })
-              }
-
-              const nextEpisode = query.data.details.next_episode_to_air as {
+              data = { id: query.data.id, type: 'movie', releaseDate: query.data.releaseDate }
+              notifyOn = query.data.releaseDate ?? null
+            } else if (query.data.type === 'tv') {
+              const nextEpisode = query.data.details?.next_episode_to_air as {
                 id: number
                 air_date: string
                 episode_number: number
                 season_number: number
                 show_id: number
+              }
+
+              if (!nextEpisode) {
+                return await interaction.followUp({
+                  content: 'No next episode found for this TV show.',
+                  ephemeral: true,
+                })
               }
 
               data = {
@@ -289,9 +279,7 @@ export function ListingPage({
                   showId: nextEpisode.show_id,
                 },
               }
-
-              // biome-ignore lint/style/noNonNullAssertion: Excepted here.
-              notifyOn = data.episode!.airDate
+              notifyOn = nextEpisode.air_date ?? null
             }
 
             if (!notifyOn || !data) {
@@ -301,20 +289,11 @@ export function ListingPage({
               })
             }
 
-            // check for existing
-
             const [existingErr, existing] = await unwrap(
               db.userTrackingEntry.findFirst({
                 where: {
                   userId: interaction.user.id,
-                  tmdbData: {
-                    type: {
-                      equals: data.type,
-                    },
-                    id: {
-                      equals: data.id,
-                    },
-                  },
+                  tmdbData: { type: { equals: data.type }, id: { equals: data.id } },
                 },
               }),
             )
