@@ -57,3 +57,6 @@ export type MovieRecommendationsResponse =
   paths['/3/movie/{movie_id}/recommendations']['get']['responses']['200']['content']['application/json']
 export type TvRecommendationsResponse =
   paths['/3/tv/{series_id}/recommendations']['get']['responses']['200']['content']['application/json']
+
+export type TvEpisodeDetails =
+  paths['/3/tv/{series_id}/season/{season_number}/episode/{episode_number}']['get']['responses']['200']['content']['application/json']

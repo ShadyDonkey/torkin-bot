@@ -17,6 +17,10 @@ export const CACHE_CONFIG = {
     watchProviders: cacheEntry((id) => `${CACHE_PREFIX}:tv:${slugify(String(id))}:watch_providers`, '1d'),
     recommendations: cacheEntry((id) => `${CACHE_PREFIX}:tv:${slugify(String(id))}:recommendations`, '1d'),
     translations: cacheEntry((id) => `${CACHE_PREFIX}:tv:${slugify(String(id))}:translations`, '1d'),
+    episodeDetails: cacheEntry(
+      (id, season, episode) => `${CACHE_PREFIX}:tv:${slugify(String(id))}:episode_details:${season}:${episode}`,
+      '1d',
+    ),
   },
   movie: {
     details: cacheEntry((id) => `${CACHE_PREFIX}:movie:${slugify(String(id))}:details`, '1d'),
@@ -228,4 +232,12 @@ export async function getRecommendations(type: TypeSelection, id: string | numbe
   )
 
   return stdListings(type, (cached as never) ?? [])
+}
+
+export async function getEpisodeDetails(id: string | number, season: string | number, episode: string | number) {
+  return await getOrSet(
+    CACHE_CONFIG.tv.episodeDetails.key(id, season, episode),
+    CACHE_CONFIG.tv.episodeDetails.ttl,
+    async () => await api.episodeDetails(id, season, episode),
+  )
 }

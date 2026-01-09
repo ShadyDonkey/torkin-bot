@@ -12,6 +12,7 @@ import type {
   TimeWindow,
   TrendingMovieResponse,
   TrendingTvResponse,
+  TvEpisodeDetails,
   TvGenresResponse,
   TvRecommendationsResponse,
   TvTranslationsResponse,
@@ -123,4 +124,8 @@ export async function recommendations(type: TypeSelection, id: string | number, 
     `${type}/${id}/recommendations`,
     { page },
   )
+}
+
+export async function episodeDetails(id: string | number, season: string | number, episode: string | number) {
+  return await fetch<TvEpisodeDetails>(`tv/${id}/season/${season}/episode/${episode}`)
 }

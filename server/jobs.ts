@@ -1,7 +1,12 @@
+import { UTCDate } from '@date-fns/utc'
 import { Cron, type CronOptions } from 'croner'
+import { startOfDay } from 'date-fns'
+import { createDM, createMessage } from 'dressed'
 import { cache } from './lib/cache'
-import { CACHE_CONFIG as TMDB_CACHE_CONFIG } from './lib/tmdb'
+import { db } from './lib/db'
+import { getDetails, getEpisodeDetails, CACHE_CONFIG as TMDB_CACHE_CONFIG } from './lib/tmdb'
 import { availableWatchProviders, trending } from './lib/tmdb/api'
+import type { StandardListing, TvEpisodeDetails } from './lib/tmdb/types'
 import { unwrap } from './utilities'
 import { logger } from './utilities/logger'
 
@@ -298,18 +303,178 @@ const trackingNotification = new Cron(
     ...defaultOptions,
   },
   async () => {
-    /*
+    const currentHour = new UTCDate().getUTCHours()
+    const today = startOfDay(new UTCDate())
 
-      Execution
-      - Get all users with the current notification hour
-      - Chunk the users into batches
-      - For each user in a batch:
-        - get all the items they are tracking
-        - Build basic message for each item
-        - send a message to the user 
-     
-      Ideally do in parallel?
-    */
+    const users = await db.userTrackingSetting.findMany({
+      where: {
+        notificationHour: currentHour,
+      },
+    })
+
+    if (users.length < 1) {
+      logger.info('No users to notify')
+      return
+    }
+
+    const promises = users.map(async (user) => {
+      if (!user.dmChannelId) {
+        logger.warn(`User ${user.userId} has no dm channel id, need to create one.`)
+        const [channelErr, channel] = await unwrap(createDM(user.userId))
+
+        if (channelErr) {
+          logger.error({ error: channelErr }, 'Error creating dm channel for user')
+          return
+        }
+
+        user.dmChannelId = channel.id
+
+        const [updateErr] = await unwrap(
+          db.userTrackingSetting.update({
+            where: { userId: user.userId },
+            data: { dmChannelId: channel.id },
+          }),
+        )
+
+        if (updateErr) {
+          logger.error({ error: updateErr }, 'Error updating user tracking setting')
+        }
+      }
+
+      const trackedEntriesToday = await db.userTrackingEntry.findMany({
+        where: {
+          userId: user.userId,
+          notifyDate: {
+            lte: today,
+          },
+          notified: false,
+        },
+      })
+
+      if (trackedEntriesToday.length < 1) {
+        return
+      }
+
+      let message = 'Howdy! Here is your tracking update for today:\n\n'
+      const movieGroup: StandardListing<'movie'>[] = []
+      const tvGroup: {
+        listing: StandardListing<'tv'>
+        episode: TvEpisodeDetails
+      }[] = []
+
+      const movieIds = new Set<string>()
+      const tvIds = new Set<string>()
+
+      for (const entry of trackedEntriesToday) {
+        if (entry.tmdbData.type === 'movie') {
+          movieIds.add(entry.id)
+
+          const [err, item] = await unwrap(getDetails('movie', entry.tmdbData.id))
+
+          if (err) {
+            logger.error({ err, userId: user.userId }, 'Error getting details for movie')
+            continue
+          }
+
+          movieGroup.push(item as StandardListing<'movie'>)
+        } else if (entry.tmdbData.type === 'tv') {
+          tvIds.add(entry.id)
+
+          if (!entry.tmdbData.episode) {
+            continue
+          }
+
+          const [err, item] = await unwrap(getDetails('tv', entry.tmdbData.id))
+
+          if (err) {
+            logger.error({ err, userId: user.userId }, 'Error getting details for tv')
+            continue
+          }
+
+          const [episodeErr, episode] = await unwrap(
+            getEpisodeDetails(
+              entry.tmdbData.id,
+              entry.tmdbData.episode.seasonNumber,
+              entry.tmdbData.episode.episodeNumber,
+            ),
+          )
+
+          if (episodeErr) {
+            logger.error({ err: episodeErr, userId: user.userId }, 'Error getting episode details')
+            continue
+          }
+
+          tvGroup.push({
+            listing: item as StandardListing<'tv'>,
+            episode,
+          })
+        }
+      }
+
+      message += '**Movie Releases**\n'
+      for (const movie of movieGroup) {
+        message += `- ${movie.title}\n`
+      }
+
+      message += '\n**TV Episodes**\n'
+      for (const tv of tvGroup) {
+        message += `- ${tv.listing.title} - ${tv.episode.name}\n`
+      }
+
+      const [dmErr] = await unwrap(
+        createMessage(user.dmChannelId, {
+          content: message,
+        }),
+      )
+
+      if (dmErr) {
+        logger.error({ err: dmErr, userId: user.userId }, 'Error sending message to user')
+      }
+
+      const [movieDeleteErr] = await unwrap(
+        db.userTrackingEntry.deleteMany({
+          where: {
+            userId: user.userId,
+            id: {
+              in: Array.from(movieIds),
+            },
+            notifyDate: {
+              lte: today,
+            },
+          },
+        }),
+      )
+
+      if (movieDeleteErr) {
+        logger.error({ err: movieDeleteErr, userId: user.userId }, 'Error deleting movie tracking entries')
+      }
+
+      const [tvMarkedErr] = await unwrap(
+        db.userTrackingEntry.updateMany({
+          where: {
+            userId: user.userId,
+            id: {
+              in: Array.from(tvIds),
+            },
+            notifyDate: {
+              lte: today,
+            },
+          },
+          data: {
+            notified: true,
+          },
+        }),
+      )
+
+      if (tvMarkedErr) {
+        logger.error({ err: tvMarkedErr, userId: user.userId }, 'Error marking TV tracking entries as notified')
+      }
+    })
+
+    const chunkSize = Math.ceil(promises.length / 5)
+    const chunks = Array.from({ length: 5 }, (_, i) => promises.slice(i * chunkSize, (i + 1) * chunkSize))
+
+    // TODO: Run through each chunk in parallel...like 1 of each group at a time
   },
 )
 

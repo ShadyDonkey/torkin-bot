@@ -29,15 +29,16 @@ model UserTrackingEntry with TimestampMixin {
   id         String                @id @default(cuid(2)) @map('id')
   userId     String                @map('discord_user_id')
   tmdbData   UserTrackingEntryData @json @map('tmdb_data')
-  notifyDate DateTime              @map('notify_on')
+  notified   Boolean               @default(false) @map('notified')
+  notifyDate DateTime?             @map('notify_on')
 
   @@map('user_tracking_entry')
 }
 
 model UserTrackingSetting with TimestampMixin {
-  userId           String @id @map('discord_user_id')
-  notificationHour Int    @map('notification_hour') @default(15)
-
+  userId           String  @id @map('discord_user_id')
+  dmChannelId      String? @map('dm_channel_id')
+  notificationHour Int     @map('notification_hour') @default(15)
 
   @@map('user_tracking_setting')
 }
