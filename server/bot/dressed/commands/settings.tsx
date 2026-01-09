@@ -100,11 +100,11 @@ export async function autocomplete(interaction: CommandAutocompleteInteraction) 
   const type = group?.getSubcommand('country') || group?.getSubcommand('language') || group?.getSubcommand('timezone')
   const input = type?.getOption('value')?.string()
 
-  if (!type || !input) {
+  if (!type) {
     return
   }
 
-  const searchInput = input.toLowerCase()
+  const searchInput = input?.toLowerCase().trim() ?? ''
   const limit = 25
 
   const limitedMatches = <T extends { name: string; value: string }>(items: T[], predicate: (item: T) => boolean) =>
