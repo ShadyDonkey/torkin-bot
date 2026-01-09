@@ -4,8 +4,8 @@ export type TypeSelection = 'movie' | 'tv'
 export type TimeWindow = 'day' | 'week'
 export type StandardListing<T extends TypeSelection = TypeSelection, MD = unknown, TVD = unknown> = {
   id: number
-  title?: string
-  description?: string
+  title: string
+  description: string
   releaseDate?: string
   thumbnail?: string
   voteAverage: number
