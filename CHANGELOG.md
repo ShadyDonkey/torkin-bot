@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.3](https://github.com/ShadyDonkey/torkin-bot/compare/v1.5.2...v1.5.3) (2026-01-09)
+
+
+### Chores
+
+* **dressed dep:** bump to canary.4 ([a234f5e](https://github.com/ShadyDonkey/torkin-bot/commit/a234f5ece2623e54825fbea8e1f848bde2578c55))
+
 ## [1.5.2](https://github.com/ShadyDonkey/torkin-bot/compare/v1.5.1...v1.5.2) (2026-01-09)
 
 
