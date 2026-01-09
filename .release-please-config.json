@@ -9,28 +9,27 @@
       "changelog-sections": [
         {
           "type": "feat",
-          "section": "Features",
-          "hidden": false
+          "section": "Features"
         },
         {
           "type": "fix",
-          "section": "Bug Fixes",
-          "hidden": false
+          "section": "Bug Fixes"
         },
         {
           "type": "perf",
-          "section": "Performance Improvements",
-          "hidden": false
+          "section": "Performance Improvements"
         },
         {
           "type": "refactor",
-          "section": "Code Refactoring",
-          "hidden": false
+          "section": "Code Refactoring"
         },
         {
           "type": "docs",
-          "section": "Documentation",
-          "hidden": false
+          "section": "Documentation"
+        },
+        {
+          "type": "chore",
+          "section": "Chores"
         }
       ]
     }
