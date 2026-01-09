@@ -59,6 +59,7 @@ export function ListingPreview({
   description,
   releaseDate,
   thumbnail,
+  adult,
   ...props
 }: Readonly<
   {
@@ -67,6 +68,7 @@ export function ListingPreview({
     description?: string
     releaseDate?: string
     thumbnail?: string
+    adult: boolean
   } & ({ linkId: string } | { onClick: (interaction: MessageComponentInteraction<'Button'>) => void })
 >) {
   return (
@@ -74,9 +76,9 @@ export function ListingPreview({
       <Section
         accessory={
           <Button
-            // @ts-expect-error This is to make the overrides realize it's a button that has styles
             custom_id=""
             {...('linkId' in props ? { custom_id: props.linkId } : { onClick: props.onClick })}
+            emoji={adult ? { name: '🔞' } : undefined}
             label="View Details"
             style="Secondary"
           />
@@ -90,7 +92,12 @@ export function ListingPreview({
       </Section>
       {(description || thumbnail) && (
         <Section
-          accessory={<Thumbnail media={thumbnail?.startsWith('http') ? thumbnail : getImageUrl(thumbnail ?? '')} />}
+          accessory={
+            <Thumbnail
+              media={thumbnail?.startsWith('http') ? thumbnail : getImageUrl(thumbnail ?? '')}
+              spoiler={adult}
+            />
+          }
         >
           {description ? `${description.substring(0, 255)}` : '‎'}
           {description && description.length > 255 && '...'}

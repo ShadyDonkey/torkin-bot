@@ -74,9 +74,6 @@ export function Listings({
       {listTitle && h2(listTitle)}
       <Container>
         {results.map((item, index) => {
-          if (!item.title || !item.description || item.adult) {
-            return null
-          }
           const globalIndex = (page - 1) * ITEMS_PER_PAGE + index
           return (
             <Fragment key={item.id}>
@@ -137,7 +134,7 @@ export function ListingPage({
         return
       }
 
-      const obj: Pick<StandardListing, 'title' | 'description'> = {}
+      const obj = {} as Pick<StandardListing, 'title' | 'description'>
 
       if (type === 'movie') {
         const { data } = translation as NonNullable<MovieTranslationsResponse['translations']>[number]

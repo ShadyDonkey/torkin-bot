@@ -117,9 +117,7 @@ function ListingsWrapper({ searchType, queryString }: Readonly<{ searchType: Typ
       listing={query.data[0]}
       onBack={() => setShowList(true)}
       backText="See All Results"
-      onShowRecommendations={(id, type) => {
-        setRecommendationsFor({ id, type })
-      }}
+      onShowRecommendations={(id, type) => setRecommendationsFor({ id, type })}
     />
   )
 }
