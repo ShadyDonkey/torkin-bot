@@ -9,13 +9,29 @@ model UserPreference with TimestampMixin {
   @@map('user_preference')
 }
 
-model UserItemTracking with TimestampMixin {
-  id         String   @id @default(cuid(2)) @map('id')
-  userId     String   @map('discord_user_id')
-  tmdbData   Json     @map('tmdb_data')
-  notifyDate DateTime @map('notify_on')
+type UserTrackingEntryData {
+  id          Int
+  type        String
+  releaseDate String?
+  episode     EpisodeData?
+}
 
-  @@map('user_item_tracking')
+type EpisodeData {
+  id            Int
+  airDate       String
+  episodeNumber Int
+  seasonNumber  Int
+  showId        Int
+}
+
+
+model UserTrackingEntry with TimestampMixin {
+  id         String                @id @default(cuid(2)) @map('id')
+  userId     String                @map('discord_user_id')
+  tmdbData   UserTrackingEntryData @json @map('tmdb_data')
+  notifyDate DateTime              @map('notify_on')
+
+  @@map('user_tracking_entry')
 }
 
 model UserTrackingSetting with TimestampMixin {
