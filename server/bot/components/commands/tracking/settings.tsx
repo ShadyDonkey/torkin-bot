@@ -65,7 +65,7 @@ export default function TrackingSettings({ userId }: Readonly<{ userId: string }
       Notifications for tracking will be sent via DM, there is no other manner of notification. To stop receiving
       notifications, remove all tracked items.
       {'\n'}
-      *By changing the settings below you're giving us permission to send you notifications at the time you select.*
+      *This feature is still in testing, please report any issues ASAP.*
       {'\n'}
       {h3('Notification Time')}
       {'\n'}
