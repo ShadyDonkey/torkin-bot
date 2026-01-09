@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.2](https://github.com/ShadyDonkey/torkin-bot/compare/v1.5.1...v1.5.2) (2026-01-09)
+
+
+### Bug Fixes
+
+* added missing new line in similar results ([9315a14](https://github.com/ShadyDonkey/torkin-bot/commit/9315a1487d012c6692ded25ee0392e4da680a530)), closes [#88](https://github.com/ShadyDonkey/torkin-bot/issues/88)
+* return partial list for settings ([8eda161](https://github.com/ShadyDonkey/torkin-bot/commit/8eda16103ce204c393805909bdcfe36f1fbfd5f9)), closes [#81](https://github.com/ShadyDonkey/torkin-bot/issues/81)
+
 ## [1.5.1](https://github.com/ShadyDonkey/torkin-bot/compare/v1.5.0...v1.5.1) (2026-01-09)
 
 

@@ -1,7 +1,7 @@
 {
   "name": "torkin-bot",
   "private": true,
-  "version": "1.5.1",
+  "version": "1.5.2",
   "scripts": {
     "sherif": "sherif -r root-package-manager-field",
     "sherif:fix": "sherif -r root-package-manager-field --fix"
