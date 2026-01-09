@@ -2,14 +2,7 @@ import { cache, cacheEntry } from '../../lib/cache'
 import { slugify, unwrap } from '../../utilities'
 import { logger } from '../../utilities/logger'
 import * as api from '../tmdb/api'
-import type {
-  SearchMovieResponse,
-  StandardListing,
-  TimeWindow,
-  TrendingMovieResponse,
-  TrendingTvResponse,
-  TypeSelection,
-} from '../tmdb/types'
+import type { StandardListing, TimeWindow, TypeSelection } from '../tmdb/types'
 
 const MAX_TRENDING_PAGES = 5
 const CACHE_PREFIX = 'lib:tmdb'
@@ -65,45 +58,28 @@ export function getImageUrl(path: string, width?: number) {
   return `https://image.tmdb.org/t/p/${width ? `w${width}` : 'original'}${path.startsWith('/') ? path : `/${path}`}`
 }
 
+function standardizeListing<T extends TypeSelection>(type: T, data: StandardListing<T>['details']) {
+  const details = data as StandardListing<'movie'>['details'] & StandardListing<'tv'>['details']
+  return {
+    id: data.id,
+    title: details.title ?? details.original_title ?? details.name ?? details.original_name ?? 'Unknown title',
+    description: data.overview || 'Missing description',
+    releaseDate: details.release_date ?? details.first_air_date,
+    thumbnail: data.poster_path,
+    voteAverage: data.vote_average,
+    adult: data.adult,
+    type,
+    details,
+  } as StandardListing<T>
+}
+
+function stdListings<T extends TypeSelection>(type: T, data: StandardListing<T>['details'][]) {
+  return data.map((d) => standardizeListing(type, d)).filter((l) => l.title !== 'Unknown title' && !l.adult)
+}
+
 export async function search(type: TypeSelection, query: string, page: number = 1) {
   const response = await api.search(type, query, page)
-  if (type === 'movie') {
-    return (
-      (response as SearchMovieResponse).results?.map(
-        (r) =>
-          ({
-            id: r.id,
-            title: r.title ?? r.original_title,
-            description: r.overview,
-            releaseDate: r.release_date,
-            thumbnail: r.poster_path,
-            voteAverage: r.vote_average,
-            adult: r.adult,
-            type: 'movie',
-            details: r,
-          }) as StandardListing<'movie'>,
-      ) ?? []
-    )
-  }
-  if (type === 'tv') {
-    return (
-      response.results?.map(
-        (r) =>
-          ({
-            id: r.id,
-            title: r.name ?? r.original_name,
-            description: r.overview,
-            releaseDate: r.first_air_date,
-            thumbnail: r.poster_path,
-            voteAverage: r.vote_average,
-            adult: r.adult,
-            type: 'tv',
-            details: r,
-          }) as StandardListing<'tv'>,
-      ) ?? []
-    )
-  }
-  return []
+  return stdListings(type, (response.results as never) ?? [])
 }
 
 export async function getTrending(type: TypeSelection, timeWindow: TimeWindow) {
@@ -122,82 +98,17 @@ export async function getTrending(type: TypeSelection, timeWindow: TimeWindow) {
     return filtered.toSorted((a, b) => b.popularity - a.popularity)
   })
 
-  if (type === 'movie') {
-    return (
-      (cached as TrendingMovieResponse['results'])?.map(
-        (r) =>
-          ({
-            id: r.id,
-            title: r.title ?? r.original_title,
-            description: r.overview,
-            releaseDate: r.release_date,
-            thumbnail: r.poster_path,
-            voteAverage: r.vote_average,
-            adult: r.adult,
-            type: 'movie',
-            details: r,
-          }) as StandardListing<'movie'>,
-      ) ?? []
-    )
-  }
-
-  return (
-    (cached as TrendingTvResponse['results'])?.map(
-      (r) =>
-        ({
-          id: r.id,
-          title: r.name ?? r.original_name,
-          description: r.overview,
-          releaseDate: r.first_air_date,
-          thumbnail: r.poster_path,
-          voteAverage: r.vote_average,
-          adult: r.adult,
-          type: 'tv',
-          details: r,
-        }) as StandardListing<'tv'>,
-    ) ?? []
-  )
+  return stdListings(type, (cached as never) ?? [])
 }
 
-export async function getDetails<M, TV>(
-  type: TypeSelection,
-  id: string | number,
-  append = [] as string[],
-): Promise<StandardListing<TypeSelection, M, TV>> {
+export async function getDetails<M, TV>(type: TypeSelection, id: string | number, append = [] as string[]) {
   const details = await getOrSet(
     CACHE_CONFIG[type].details.key(id),
     CACHE_CONFIG[type].details.ttl,
     async () => await api.details<StandardListing<TypeSelection, M, TV>['details']>(type, id, append),
   )
 
-  if (type === 'movie') {
-    const movie = details as StandardListing<'movie', M, TV>['details']
-    return {
-      id: movie.id,
-      title: movie.title ?? movie.original_title,
-      description: movie.overview,
-      releaseDate: movie.release_date,
-      thumbnail: movie.poster_path,
-      voteAverage: movie.vote_average,
-      adult: movie.adult,
-      type: 'movie',
-      details: movie,
-    }
-  }
-
-  const show = details as StandardListing<'tv', M, TV>['details']
-
-  return {
-    id: show.id,
-    title: show.name ?? show.original_name,
-    description: show.overview,
-    releaseDate: show.first_air_date,
-    thumbnail: show.poster_path,
-    voteAverage: show.vote_average,
-    adult: show.adult,
-    type: 'tv',
-    details: show,
-  }
+  return standardizeListing(type, details) as StandardListing<TypeSelection, M, TV>
 }
 
 export async function getTranslations(type: TypeSelection, id: string | number) {
@@ -316,35 +227,5 @@ export async function getRecommendations(type: TypeSelection, id: string | numbe
     },
   )
 
-  if (type === 'movie') {
-    return ((cached as TrendingMovieResponse['results'])?.map(
-      (r) =>
-        ({
-          id: r.id,
-          title: r.title ?? r.original_title,
-          description: r.overview,
-          releaseDate: r.release_date,
-          thumbnail: r.poster_path,
-          voteAverage: r.vote_average,
-          adult: r.adult,
-          type: 'movie',
-          details: r,
-        }) as StandardListing,
-    ) ?? []) as StandardListing[]
-  }
-
-  return ((cached as TrendingTvResponse['results'])?.map(
-    (r) =>
-      ({
-        id: r.id,
-        title: r.name ?? r.original_name,
-        description: r.overview,
-        releaseDate: r.first_air_date,
-        thumbnail: r.poster_path,
-        voteAverage: r.vote_average,
-        adult: r.adult,
-        type: 'tv',
-        details: r,
-      }) as StandardListing,
-  ) ?? []) as StandardListing[]
+  return stdListings(type, (cached as never) ?? [])
 }

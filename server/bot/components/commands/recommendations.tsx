@@ -59,24 +59,12 @@ export function RecommendationsPage({ listing, onBack }: Readonly<{ listing: Sta
     <>
       <Container>
         {h2(`Similar to ${listing.title}`)}
-        {results.map((item, index) => {
-          if (!item.title || !item.description || item.adult) {
-            return null
-          }
-
-          return (
-            <Fragment key={item.id}>
-              <ListingPreview
-                title={item.title}
-                description={item.description}
-                releaseDate={item.releaseDate}
-                thumbnail={item.thumbnail ?? undefined}
-                onClick={() => setFocused(item)}
-              />
-              {index < results.length - 1 && <Separator />}
-            </Fragment>
-          )
-        })}
+        {results.map((item, index) => (
+          <Fragment key={item.id}>
+            <ListingPreview onClick={() => setFocused(item)} {...item} />
+            {index < results.length - 1 && <Separator />}
+          </Fragment>
+        ))}
         {results.length === 0 && 'No recommendations found!'}
       </Container>
       <PaginationButtons currentPage={page} totalPages={totalPages} setPage={setPage} />
