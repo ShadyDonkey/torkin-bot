@@ -291,6 +291,28 @@ export const providerJobs = {
   ),
 }
 
+const trackingNotification = new Cron(
+  '10 * * * *',
+  {
+    name: 'user-item-tracking-notification',
+    ...defaultOptions,
+  },
+  async () => {
+    /*
+
+      Execution
+      - Get all users with the current notification hour
+      - Chunk the users into batches
+      - For each user in a batch:
+        - get all the items they are tracking
+        - Build basic message for each item
+        - send a message to the user 
+     
+      Ideally do in parallel?
+    */
+  },
+)
+
 export const startJobs = (triggerNow = false) => {
   for (const job of Object.values(providerJobs)) {
     if (!job.isBusy() && !job.isRunning()) {
@@ -303,6 +325,8 @@ export const startJobs = (triggerNow = false) => {
       resume(job, triggerNow)
     }
   }
+
+  resume(trackingNotification, false)
 }
 
 function resume(job: Cron, triggerNow: boolean) {
