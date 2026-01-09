@@ -65,9 +65,9 @@ export function RecommendationsPage({ listing, onBack }: Readonly<{ listing: Sta
             {index < results.length - 1 && <Separator />}
           </Fragment>
         ))}
-        {results.length === 0 && 'No recommendations found!'}
+        {results.length === 0 && '\nNo recommendations found!'}
       </Container>
-      <PaginationButtons currentPage={page} totalPages={totalPages} setPage={setPage} />
+      {results.length > 0 && <PaginationButtons currentPage={page} totalPages={totalPages} setPage={setPage} />}
       <ActionRow>
         <Button onClick={onBack} label="Back" style="Secondary" />
       </ActionRow>
