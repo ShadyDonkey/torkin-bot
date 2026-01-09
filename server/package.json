@@ -11,6 +11,8 @@
     "lib:tvdb:generate-schema": "openapi-typescript https://thetvdb.github.io/v4-api/swagger.yml -o ./lib/tvdb/schema.d.ts"
   },
   "dependencies": {
+    "@date-fns/tz": "^1.4.1",
+    "@date-fns/utc": "^2.1.1",
     "@dressed/matcher": "^1.4.0",
     "@dressed/react": "^1.8.1",
     "@elysiajs/cors": "^1.4.1",
@@ -39,6 +41,7 @@
     "kysely": "~0.28.9",
     "lru-cache": "^11.2.4",
     "openapi-typescript": "^7.10.1",
+    "p-limit": "^7.2.0",
     "pg": "^8.16.3",
     "pino": "^10.1.0",
     "pino-loki": "^3.0.0",

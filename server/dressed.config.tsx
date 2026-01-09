@@ -8,14 +8,22 @@ export default {
   port: 3000,
   middleware: {
     commands: (i) => [
-      patchInteraction(i, ({ children }) => <BotProviders userId={i.user.id}>{children}</BotProviders>),
+      patchInteraction(i, ({ children }) => (
+        <BotProviders userId={i.user.id} interaction={i}>
+          {children}
+        </BotProviders>
+      )),
     ],
     async components(i, ...p) {
       if (i.message?.interaction_metadata && i.message.interaction_metadata.user.id !== i.user.id) {
         await i.reply({ content: "You did't initiate this interaction!", ephemeral: true })
         throw new Error('Not the triggering user')
       }
-      const patched = patchInteraction(i, ({ children }) => <BotProviders userId={i.user.id}>{children}</BotProviders>)
+      const patched = patchInteraction(i, ({ children }) => (
+        <BotProviders userId={i.user.id} interaction={i}>
+          {children}
+        </BotProviders>
+      ))
       return [
         {
           ...patched,

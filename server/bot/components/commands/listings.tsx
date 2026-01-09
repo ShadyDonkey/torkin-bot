@@ -2,11 +2,12 @@ import { Button, Container, Section, Separator, TextDisplay, Thumbnail } from '@
 import { type UndefinedInitialDataOptions, useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { h2 } from 'discord-fmt'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 import { ItemActions, ListingPreview, PaginationButtons } from '../../../bot/components/builders'
 import { TrendingMovieDetails, TrendingTvDetails, VoteSection } from '../../../bot/components/tmdb'
 import { useUserPreferences } from '../../../bot/providers/user-preferences'
+import { db } from '../../../lib/db'
 import { getDetails, getImageUrl, getItemWatchProviders } from '../../../lib/tmdb'
 import type {
   MovieExternalIdsResponse,
@@ -19,7 +20,10 @@ import type {
   TypeSelection,
 } from '../../../lib/tmdb/types'
 import { DUPLICATE_PROVIDER_ID_MAPPING } from '../../../lib/tmdb/watch-providers'
-import { paginateArray } from '../../../utilities'
+import { paginateArray, unwrap } from '../../../utilities'
+import type { UserTrackingEntryData } from '../../../zenstack/models'
+import { useInteraction } from '../../providers/interaction'
+import { botLogger } from '../../utilities/logger'
 import ErrorPage from './error'
 import { RecommendationsPage } from './recommendations'
 
@@ -119,11 +123,27 @@ export function ListingPage({
   disableRecommendations?: boolean
 }>) {
   const userPreferences = useUserPreferences()
+  const interaction = useInteraction()
   const [mergedListing, setMergedListing] = useState(structuredClone(listing))
   const query = useQuery({
     queryKey: ['details', listing.type, listing.id],
     queryFn: () => getDetails<MDE, TVDE>(listing.type, listing.id, ['videos', 'external_ids', 'translations']),
   })
+  const canTrack = useMemo(() => {
+    if (!query.data) {
+      return false
+    }
+
+    if (query.data.type === 'movie') {
+      return query.data.details.status !== 'Released'
+    }
+
+    if (query.data.type === 'tv') {
+      return query.data.details.status !== 'Ended'
+    }
+
+    return false
+  }, [query.data])
 
   const { type, details } = (query.data ?? listing) as StandardListing<TypeSelection, MDE, TVDE> | StandardListing
 
@@ -184,6 +204,142 @@ export function ListingPage({
             )}
           </>
         )}
+
+        <Button
+          disabled={!canTrack}
+          onClick={async () => {
+            if (!interaction?.user.id) {
+              return
+            }
+
+            const [dbErr, settings] = await unwrap(
+              db.userTrackingSetting.findFirst({ where: { userId: interaction.user.id } }),
+            )
+
+            if (dbErr) {
+              botLogger.error({ err: dbErr }, 'Error loading tracking settings')
+              return await interaction.followUp({
+                content: 'Error loading tracking settings',
+                ephemeral: true,
+              })
+            }
+
+            if (!settings) {
+              return await interaction.followUp({
+                content:
+                  'No tracking settings found, please set up `/tracking settings` before you can track listings.',
+                ephemeral: true,
+              })
+            }
+
+            if (!query.data) {
+              return await interaction.followUp({
+                content: 'No data available for this item.',
+                ephemeral: true,
+              })
+            }
+
+            let data: UserTrackingEntryData | null = null
+            let notifyOn: string | null = null
+
+            if (query.data.type === 'movie') {
+              if (!query.data.releaseDate) {
+                return await interaction.followUp({
+                  content: 'No release date found for this movie.',
+                  ephemeral: true,
+                })
+              }
+
+              data = { id: query.data.id, type: 'movie', releaseDate: query.data.releaseDate }
+              notifyOn = query.data.releaseDate ?? null
+            } else if (query.data.type === 'tv') {
+              const nextEpisode = query.data.details?.next_episode_to_air as {
+                id: number
+                air_date: string
+                episode_number: number
+                season_number: number
+                show_id: number
+              }
+
+              if (!nextEpisode) {
+                return await interaction.followUp({
+                  content: 'No next episode found for this TV show.',
+                  ephemeral: true,
+                })
+              }
+
+              data = {
+                id: query.data.id,
+                type: 'tv',
+                episode: {
+                  id: nextEpisode.id,
+                  airDate: nextEpisode.air_date,
+                  episodeNumber: nextEpisode.episode_number,
+                  seasonNumber: nextEpisode.season_number,
+                  showId: nextEpisode.show_id,
+                },
+              }
+              notifyOn = nextEpisode.air_date ?? null
+            }
+
+            if (!notifyOn || !data) {
+              return await interaction.followUp({
+                content: 'No compatible release date found for this item.',
+                ephemeral: true,
+              })
+            }
+
+            const [existingErr, existing] = await unwrap(
+              db.userTrackingEntry.findFirst({
+                where: {
+                  userId: interaction.user.id,
+                  tmdbData: { type: { equals: data.type }, id: { equals: data.id } },
+                },
+              }),
+            )
+
+            if (existingErr) {
+              botLogger.error({ err: existingErr })
+              return await interaction.followUp({
+                content: 'Error checking for existing tracking information.',
+                ephemeral: true,
+              })
+            }
+
+            if (existing) {
+              return await interaction.followUp({
+                content: 'You are already tracking this item.',
+                ephemeral: true,
+              })
+            }
+
+            const [createErr] = await unwrap(
+              db.userTrackingEntry.create({
+                data: {
+                  userId: interaction.user.id,
+                  createdBy: interaction.user.id,
+                  tmdbData: data,
+                  notifyDate: new Date(notifyOn),
+                },
+              }),
+            )
+
+            if (createErr) {
+              botLogger.error({ err: createErr })
+              return await interaction.followUp({
+                content: 'Error tracking this item.',
+                ephemeral: true,
+              })
+            }
+
+            return await interaction.followUp({
+              content: 'You are now tracking this item.',
+              ephemeral: true,
+            })
+          }}
+          style="Secondary"
+          label={`Track ${type === 'movie' ? 'Movie' : 'TV Show'}`}
+        />
 
         {onShowRecommendations && !disableRecommendations && (
           <Button
