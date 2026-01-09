@@ -11,6 +11,8 @@
     "lib:tvdb:generate-schema": "openapi-typescript https://thetvdb.github.io/v4-api/swagger.yml -o ./lib/tvdb/schema.d.ts"
   },
   "dependencies": {
+    "@date-fns/tz": "^1.4.1",
+    "@date-fns/utc": "^2.1.1",
     "@dressed/matcher": "^1.4.0",
     "@dressed/react": "^1.8.1",
     "@elysiajs/cors": "^1.4.1",

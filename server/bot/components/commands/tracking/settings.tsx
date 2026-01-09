@@ -1,16 +1,19 @@
+import { UTCDate } from '@date-fns/utc'
 import { ActionRow, Container, SelectMenu, SelectMenuOption } from '@dressed/react'
 import { useQuery } from '@tanstack/react-query'
-import { h2, h3, subtext } from 'discord-fmt'
-import { useEffect, useState } from 'react'
+import { addHours } from 'date-fns'
+import { h2, h3, subtext, TimestampStyle, timestamp } from 'discord-fmt'
+import { useEffect, useMemo, useState } from 'react'
 import { db } from '../../../../lib/db'
 import { unwrap } from '../../../../utilities'
+import { localHourToUtc, utcHourToLocal } from '../../../../utilities/timezone'
 import type { UserTrackingSetting } from '../../../../zenstack/models'
 import { useUserPreferences } from '../../../providers/user-preferences'
 import { botLogger } from '../../../utilities/logger'
 
 export default function TrackingSettings({ userId }: Readonly<{ userId: string }>) {
   const userPreferences = useUserPreferences()
-  const [defaultTime, setDefaultTime] = useState(12)
+  const [selectedLocalHour, setSelectedLocalHour] = useState(12)
   const query = useQuery<Pick<UserTrackingSetting, 'notificationHour'>>({
     queryKey: ['tracking-settings', userId],
     queryFn: async () => {
@@ -33,9 +36,27 @@ export default function TrackingSettings({ userId }: Readonly<{ userId: string }
 
   useEffect(() => {
     if (query.data) {
-      setDefaultTime(query.data.notificationHour)
+      setSelectedLocalHour(utcHourToLocal(query.data.notificationHour, userPreferences.timezone))
     }
-  }, [query.data])
+  }, [query.data, userPreferences.timezone])
+
+  const utcHour = useMemo(
+    () => localHourToUtc(selectedLocalHour, userPreferences.timezone),
+    [selectedLocalHour, userPreferences.timezone],
+  )
+
+  const epoch = useMemo(() => {
+    let utcDate = new UTCDate()
+    utcDate.setHours(utcHour, 0, 0, 0)
+
+    const now = new UTCDate()
+
+    if (utcDate.getTime() <= now.getTime()) {
+      utcDate = addHours(utcDate, 24)
+    }
+
+    return Math.floor(utcDate.getTime() / 1000).toString()
+  }, [utcHour])
 
   return (
     <Container>
@@ -51,9 +72,22 @@ export default function TrackingSettings({ userId }: Readonly<{ userId: string }
         <SelectMenu
           type="String"
           onSubmit={async (e) => {
-            // TODO: Take hour and convert to UTC to persist to database, then refetch the data
-            // const hour = e.data.values
-            const hour = Number(e.data.values.at(0)) ?? 12
+            const localHour = Number(e.data.values.at(0)) ?? 12
+            setSelectedLocalHour(localHour)
+            const utcHour = localHourToUtc(localHour, userPreferences.timezone)
+            const [err] = await unwrap(
+              db.userTrackingSetting.update({
+                where: { userId },
+                data: { notificationHour: utcHour },
+              }),
+            )
+
+            if (err) {
+              botLogger.error(err, 'Failed to update tracking settings')
+              return
+            }
+
+            await query.refetch()
           }}
         >
           {Array.from({ length: 24 }, (_, i) => (
@@ -62,15 +96,15 @@ export default function TrackingSettings({ userId }: Readonly<{ userId: string }
               key={i}
               label={`${i === 0 ? 12 : i > 12 ? i - 12 : i}${i >= 12 ? 'pm' : 'am'}`}
               value={String(i)}
-              default={defaultTime === i}
+              default={selectedLocalHour === i}
             />
           ))}
         </SelectMenu>
       </ActionRow>
       {'\n'}
+      Based on current selection, the next notification will be sent at {timestamp(epoch, TimestampStyle.ShortTime)} (
+      {timestamp(epoch, TimestampStyle.RelativeTime)}){'\n'}
       {subtext('This is a rough time estimate and notifications could be sent ±30 minutes')}
-      {'\n'}
-      {/* TODO: Need to use date-fns to convert the hour and timezone to next available UTC time */}
     </Container>
   )
 }
