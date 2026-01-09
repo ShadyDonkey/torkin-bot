@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/ShadyDonkey/torkin-bot/compare/v1.4.0...v1.5.0) (2026-01-09)
+
+
+### Features
+
+* add tracking ([#84](https://github.com/ShadyDonkey/torkin-bot/issues/84)) ([2b74e1a](https://github.com/ShadyDonkey/torkin-bot/commit/2b74e1ae022afb5d6bc4d6b16c345aea748f2bb4))
+
 ## [1.4.0](https://github.com/ShadyDonkey/torkin-bot/compare/v1.3.0...torkin-bot-v1.4.0) (2026-01-09)
 
 ### Bug Fixes
