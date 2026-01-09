@@ -2,6 +2,7 @@ import { UTCDate } from '@date-fns/utc'
 import { Cron, type CronOptions } from 'croner'
 import { startOfDay } from 'date-fns'
 import { createDM, createMessage } from 'dressed'
+import pLimit from 'p-limit'
 import { cache } from './lib/cache'
 import { db } from './lib/db'
 import { getDetails, getEpisodeDetails, CACHE_CONFIG as TMDB_CACHE_CONFIG } from './lib/tmdb'
@@ -318,7 +319,9 @@ const trackingNotification = new Cron(
     }
 
     const promises = users.map(async (user) => {
-      if (!user.dmChannelId) {
+      let dmChannelId = user.dmChannelId
+
+      if (!dmChannelId) {
         logger.warn(`User ${user.userId} has no dm channel id, need to create one.`)
         const [channelErr, channel] = await unwrap(createDM(user.userId))
 
@@ -327,7 +330,7 @@ const trackingNotification = new Cron(
           return
         }
 
-        user.dmChannelId = channel.id
+        dmChannelId = channel.id
 
         const [updateErr] = await unwrap(
           db.userTrackingSetting.update({
@@ -421,14 +424,19 @@ const trackingNotification = new Cron(
         message += `- ${tv.listing.title} - ${tv.episode.name}\n`
       }
 
+      if (message.length > 1800) {
+        message = `${message.slice(0, 1800)}\n\n_And more..._`
+      }
+
       const [dmErr] = await unwrap(
-        createMessage(user.dmChannelId, {
+        createMessage(dmChannelId, {
           content: message,
         }),
       )
 
       if (dmErr) {
         logger.error({ err: dmErr, userId: user.userId }, 'Error sending message to user')
+        return
       }
 
       const [movieDeleteErr] = await unwrap(
@@ -474,7 +482,15 @@ const trackingNotification = new Cron(
     const chunkSize = Math.ceil(promises.length / 5)
     const chunks = Array.from({ length: 5 }, (_, i) => promises.slice(i * chunkSize, (i + 1) * chunkSize))
 
-    // TODO: Run through each chunk in parallel...like 1 of each group at a time
+    const CONCURRENCY_PER_BATCH = 2
+    const limit = pLimit(CONCURRENCY_PER_BATCH)
+
+    await Promise.all(
+      chunks.map(async (chunk) => {
+        const promises = chunk.map((p) => limit(() => p))
+        await Promise.allSettled(promises)
+      }),
+    )
   },
 )
 
