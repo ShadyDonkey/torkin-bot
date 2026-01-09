@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/ShadyDonkey/torkin-bot/compare/v1.5.0...v1.5.1) (2026-01-09)
+
+
+### Chores
+
+* update deps ([62a4454](https://github.com/ShadyDonkey/torkin-bot/commit/62a44548e6d45e13a1d4a250b963e2da6db16d44))
+
 ## [1.5.0](https://github.com/ShadyDonkey/torkin-bot/compare/v1.4.0...v1.5.0) (2026-01-09)
 
 
