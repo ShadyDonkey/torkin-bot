@@ -38,6 +38,7 @@ model UserTrackingEntry with TimestampMixin {
 model UserTrackingSetting with TimestampMixin {
   userId           String  @id @map('discord_user_id')
   dmChannelId      String? @map('dm_channel_id')
+  dmFailedCount    Int     @default(0) @map('dm_failed_count')
   notificationHour Int     @map('notification_hour') @default(15)
 
   @@map('user_tracking_setting')

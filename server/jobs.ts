@@ -436,6 +436,12 @@ const trackingNotification = new Cron(
 
       if (dmErr) {
         logger.error({ err: dmErr, userId: user.userId }, 'Error sending message to user')
+
+        await db.userTrackingSetting.update({
+          where: { userId: user.userId },
+          data: { dmFailedCount: user.dmFailedCount + 1 },
+        })
+
         return
       }
 
