@@ -3,6 +3,9 @@
   "release-type": "node",
   "packages": {
     ".": {
+      "pull-request-title-pattern": "release: ${version}",
+      "tag-separator": "-",
+      "include-component-in-tag": false,
       "changelog-sections": [
         {
           "type": "feat",
