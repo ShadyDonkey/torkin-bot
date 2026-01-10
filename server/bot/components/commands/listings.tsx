@@ -22,7 +22,6 @@ import type {
 import { DUPLICATE_PROVIDER_ID_MAPPING } from '../../../lib/tmdb/watch-providers'
 import { paginateArray, unwrap } from '../../../utilities'
 import type { UserTrackingEntryData } from '../../../zenstack/models'
-import { useInteraction } from '../../providers/interaction'
 import { botLogger } from '../../utilities/logger'
 import ErrorPage from './error'
 import { RecommendationsPage } from './recommendations'
@@ -123,7 +122,6 @@ export function ListingPage({
   disableRecommendations?: boolean
 }>) {
   const userPreferences = useUserPreferences()
-  const interaction = useInteraction()
   const [mergedListing, setMergedListing] = useState(structuredClone(listing))
   const query = useQuery({
     queryKey: ['details', listing.type, listing.id],
@@ -207,36 +205,29 @@ export function ListingPage({
 
         <Button
           disabled={!canTrack}
-          onClick={async () => {
+          onClick={async (interaction) => {
             if (!interaction?.user.id) {
               return
             }
 
-            const [dbErr, settings] = await unwrap(
-              db.userTrackingSetting.findFirst({ where: { userId: interaction.user.id } }),
-            )
+            const [[dbErr, settings]] = await Promise.all([
+              unwrap(db.userTrackingSetting.findFirst({ where: { userId: interaction.user.id } })),
+              interaction.deferReply({ ephemeral: true }),
+            ])
 
             if (dbErr) {
               botLogger.error({ err: dbErr }, 'Error loading tracking settings')
-              return await interaction.followUp({
-                content: 'Error loading tracking settings',
-                ephemeral: true,
-              })
+              return await interaction.editReply('Error loading tracking settings')
             }
 
             if (!settings) {
-              return await interaction.followUp({
-                content:
-                  'No tracking settings found, please set up `/tracking settings` before you can track listings.',
-                ephemeral: true,
-              })
+              return await interaction.editReply(
+                'No tracking settings found, please set up `/tracking settings` before you can track listings.',
+              )
             }
 
             if (!query.data) {
-              return await interaction.followUp({
-                content: 'No data available for this item.',
-                ephemeral: true,
-              })
+              return await interaction.editReply('No data available for this item.')
             }
 
             let data: UserTrackingEntryData | null = null
@@ -244,10 +235,7 @@ export function ListingPage({
 
             if (query.data.type === 'movie') {
               if (!query.data.releaseDate) {
-                return await interaction.followUp({
-                  content: 'No release date found for this movie.',
-                  ephemeral: true,
-                })
+                return await interaction.editReply('No release date found for this movie.')
               }
 
               data = { id: query.data.id, type: 'movie', releaseDate: query.data.releaseDate }
@@ -262,10 +250,7 @@ export function ListingPage({
               }
 
               if (!nextEpisode) {
-                return await interaction.followUp({
-                  content: 'No next episode found for this TV show.',
-                  ephemeral: true,
-                })
+                return await interaction.editReply('No next episode found for this TV show.')
               }
 
               data = {
@@ -283,10 +268,7 @@ export function ListingPage({
             }
 
             if (!notifyOn || !data) {
-              return await interaction.followUp({
-                content: 'No compatible release date found for this item.',
-                ephemeral: true,
-              })
+              return await interaction.editReply('No compatible release date found for this item.')
             }
 
             const [existingErr, existing] = await unwrap(
@@ -300,17 +282,11 @@ export function ListingPage({
 
             if (existingErr) {
               botLogger.error({ err: existingErr })
-              return await interaction.followUp({
-                content: 'Error checking for existing tracking information.',
-                ephemeral: true,
-              })
+              return await interaction.editReply('Error checking for existing tracking information.')
             }
 
             if (existing) {
-              return await interaction.followUp({
-                content: 'You are already tracking this item.',
-                ephemeral: true,
-              })
+              return await interaction.editReply('You are already tracking this item.')
             }
 
             const [createErr] = await unwrap(
@@ -326,16 +302,10 @@ export function ListingPage({
 
             if (createErr) {
               botLogger.error({ err: createErr })
-              return await interaction.followUp({
-                content: 'Error tracking this item.',
-                ephemeral: true,
-              })
+              return await interaction.editReply('Error tracking this item.')
             }
 
-            return await interaction.followUp({
-              content: 'You are now tracking this item.',
-              ephemeral: true,
-            })
+            return await interaction.editReply('You are now tracking this item.')
           }}
           style="Secondary"
           label={`Track ${type === 'movie' ? 'Movie' : 'TV Show'}`}
@@ -385,7 +355,12 @@ function Availability({ type, id }: Readonly<{ type: 'movie' | 'tv'; id: number 
 }
 
 async function dedupeProviders(
-  providers: { logo_path?: string; provider_id: number; provider_name?: string; display_priority: number }[],
+  providers: {
+    logo_path?: string
+    provider_id: number
+    provider_name?: string
+    display_priority: number
+  }[],
 ) {
   const filtered = providers.filter((p) => !DUPLICATE_PROVIDER_ID_MAPPING[p.provider_id] && p.provider_name)
   const sorted = filtered.sort((a, b) => a.display_priority - b.display_priority)
