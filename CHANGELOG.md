@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.6.1](https://github.com/ShadyDonkey/torkin-bot/compare/v1.6.0...v1.6.1) (2026-01-10)
+
+
+### Chores
+
+* **deps:** update deps ([bef7d48](https://github.com/ShadyDonkey/torkin-bot/commit/bef7d48286b975a4a573c113e8575237f8ff835a))
+* **deps:** update dressed ([0036584](https://github.com/ShadyDonkey/torkin-bot/commit/0036584aa27ea7a43d154ac56cb90e9640d489b9))
+* update dressed to 1.8.2-rc.2.1 ([8eeaed4](https://github.com/ShadyDonkey/torkin-bot/commit/8eeaed416c16c5a1857204f009e788a0b934fede))
+
 ## [1.6.0](https://github.com/ShadyDonkey/torkin-bot/compare/v1.5.3...v1.6.0) (2026-01-10)
 
 
