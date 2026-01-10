@@ -79,6 +79,38 @@ export default async function (interaction: CommandInteraction<typeof config>) {
   if (setSubcommand) {
     const value = setSubcommand.getOption('value', true)?.string()
 
+    let valid = false
+    switch (setSubcommand.name) {
+      case 'country': {
+        const countries = (await getCountries())
+          .filter((e): e is { iso_3166_1: string; english_name: string } => Boolean(e.iso_3166_1 && e.english_name))
+          .map((e) => ({ name: e.english_name, value: e.iso_3166_1 }))
+        valid = countries.some((e) => e.value === value)
+        break
+      }
+      case 'language': {
+        const languages = (await getLanguages())
+          .filter((e): e is { iso_639_1: string; english_name: string } => Boolean(e.iso_639_1 && e.english_name))
+          .map((e) => ({ name: e.english_name, value: e.iso_639_1 }))
+        valid = languages.some((e) => e.value === value)
+        break
+      }
+      case 'timezone': {
+        const timezones = (await getTimezones())
+          .flatMap((country) => country.zones?.map((zone) => ({ name: zone, value: zone })) ?? [])
+          .filter((tz): tz is { name: string; value: string } => Boolean(tz.name && tz.value))
+        valid = timezones.some((e) => e.value === value)
+        break
+      }
+      default:
+        valid = false
+        break
+    }
+
+    if (!valid) {
+      return await interaction.reply(`Invalid ${setSubcommand.name} value: \`${value}\``, { ephemeral: true })
+    }
+
     await db.userPreference.upsert({
       where: { discordUserId: interaction.user.id },
       update: { [setSubcommand.name]: value, updatedBy: interaction.user.id },
