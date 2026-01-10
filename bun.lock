@@ -64,7 +64,7 @@
         "@date-fns/tz": "^1.4.1",
         "@date-fns/utc": "^2.1.1",
         "@dressed/matcher": "^1.4.0",
-        "@dressed/react": "^1.8.2-rc.2.1",
+        "@dressed/react": "^1.8.2",
         "@elysiajs/cors": "^1.4.1",
         "@elysiajs/static": "^1.4.7",
         "@keyv/redis": "^5.1.5",
@@ -252,7 +252,7 @@
 
     "@dressed/matcher": ["@dressed/matcher@1.4.0", "", {}, "sha512-hAM5KaaGrhmMFr1Fd+KCQep6VnODcxInnIXATAbyJo64XN56pM20UvccWVhrIR6Hk2fFZUI69eJ0ehzK4rKxnw=="],
 
-    "@dressed/react": ["@dressed/react@1.8.2-rc.2.1", "", { "dependencies": { "discord-api-types": "^0.38.37", "react-reconciler": "npm:@dressed/react-reconciler" }, "peerDependencies": { "dressed": "^1.10.1", "react": "^19.2.3" } }, "sha512-dHHSa5nkUhKW/WCR/AHHefipiHqcofIa8PeKi8fqvaj77XZgffprI9PS9idHxWsypEVYv463fFXNAPhBJYWmog=="],
+    "@dressed/react": ["@dressed/react@1.8.2", "", { "dependencies": { "discord-api-types": "^0.38.37", "react-reconciler": "npm:@dressed/react-reconciler" }, "peerDependencies": { "dressed": "^1.10.1", "react": "^19.2.3" } }, "sha512-lrH+LBj4mdW6e87xP4FdEgd+gj/OrzujfRNR79TbsOYOd2eMrzuEPAJ9Xd9B4ljzkPRtv+wNQtFEpvTCUysoTQ=="],
 
     "@elysiajs/cors": ["@elysiajs/cors@1.4.1", "", { "peerDependencies": { "elysia": ">= 1.4.0" } }, "sha512-lQfad+F3r4mNwsxRKbXyJB8Jg43oAOXjRwn7sKUL6bcOW3KjUqUimTS+woNpO97efpzjtDE0tEjGk9DTw8lqTQ=="],
 
