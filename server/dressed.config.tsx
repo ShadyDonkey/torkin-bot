@@ -16,7 +16,7 @@ export default {
     ],
     async components(i, ...p) {
       if (i.message?.interaction_metadata && i.message.interaction_metadata.user.id !== i.user.id) {
-        await i.reply({ content: "You did't initiate this interaction!", ephemeral: true })
+        await i.reply({ content: "You didn't initiate this interaction!", ephemeral: true })
         throw new Error('Not the triggering user')
       }
       const patched = patchInteraction(i, ({ children }) => (

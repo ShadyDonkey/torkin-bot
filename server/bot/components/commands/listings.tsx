@@ -328,33 +328,15 @@ function Availability({ type, id }: Readonly<{ type: 'movie' | 'tv'; id: number 
     queryKey: ['availability', type, id],
     queryFn: () => getItemWatchProviders(type, { id, season: 1 }),
   })
-  const [providerText, setProviderText] = useState('...')
 
-  useEffect(() => {
-    if (query.data?.results?.US?.flatrate?.length) {
-      dedupeProviders(query.data.results.US.flatrate).then((text) => setProviderText(text))
-    }
-  }, [query.data?.results?.US?.flatrate])
-
-  if (!query.data?.results) {
-    return (
-      <TextDisplay>
-        {query.isLoading && '...'}
-        {query.isError && 'Error Loading'}
-      </TextDisplay>
-    )
+  if (!query.data) {
+    return query.isLoading ? '...' : 'Error Loading'
   }
 
-  return (
-    <TextDisplay>
-      {query.data.results.US?.flatrate?.length && query.data.results.US.flatrate.length > 0
-        ? providerText
-        : 'Not Available'}
-    </TextDisplay>
-  )
+  return query.data.results?.US?.flatrate?.length ? dedupeProviders(query.data.results.US.flatrate) : 'Not Available'
 }
 
-async function dedupeProviders(
+function dedupeProviders(
   providers: {
     logo_path?: string
     provider_id: number
