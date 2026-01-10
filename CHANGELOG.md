@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.6.0](https://github.com/ShadyDonkey/torkin-bot/compare/v1.5.3...v1.6.0) (2026-01-10)
+
+
+### Features
+
+* add next episode to air ([59c0d52](https://github.com/ShadyDonkey/torkin-bot/commit/59c0d52683b18338f84cdd9d507ba35b68b8a805)), closes [#85](https://github.com/ShadyDonkey/torkin-bot/issues/85)
+
+
+### Bug Fixes
+
+* add settings validation ([f5643fc](https://github.com/ShadyDonkey/torkin-bot/commit/f5643fc7f9060fd5ec701d0a54cf0cca54598974))
+
 ## [1.5.3](https://github.com/ShadyDonkey/torkin-bot/compare/v1.5.2...v1.5.3) (2026-01-09)
 
 
