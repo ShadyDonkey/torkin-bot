@@ -333,7 +333,7 @@ function Availability({ type, id }: Readonly<{ type: 'movie' | 'tv'; id: number 
     return query.isLoading ? '...' : 'Error Loading'
   }
 
-  return query.data.results?.US?.flatrate?.length ? dedupeProviders(query.data.results.US.flatrate) : 'Not Available'
+  return dedupeProviders(query.data.results?.US?.flatrate ?? []) || 'Not Available'
 }
 
 function dedupeProviders(
