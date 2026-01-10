@@ -1,6 +1,6 @@
 import { getUnixTime } from 'date-fns'
 import { h3, subtext, TimestampStyle, timestamp } from 'discord-fmt'
-import type { StandardListing } from '../../lib/tmdb/types'
+import type { StandardListing, TvEpisodeDetails } from '../../lib/tmdb/types'
 
 export function TrendingTvDetails({ details }: { details: StandardListing<'tv'>['details'] }) {
   // TODO add genres, will need to cache and parse here.
@@ -9,6 +9,17 @@ export function TrendingTvDetails({ details }: { details: StandardListing<'tv'>[
 
   if (details.status) {
     detailsList.push(`Status: ${details.status}`)
+  }
+
+  if (details.next_episode_to_air) {
+    const nextEpisode = details.next_episode_to_air as TvEpisodeDetails
+
+    if (nextEpisode.air_date) {
+      const epoch = getUnixTime(new Date(nextEpisode.air_date)).toString()
+      detailsList.push(
+        `Next Episode: ${timestamp(epoch, TimestampStyle.ShortDate)} (${timestamp(epoch, TimestampStyle.RelativeTime)})`,
+      )
+    }
   }
 
   if (details.last_air_date) {
