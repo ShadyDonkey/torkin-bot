@@ -36,9 +36,9 @@ services:
     # `host` mode is NOT currently supported in Swarm Mode.
     # https://docs.docker.com/compose/compose-file/compose-file-v3/#network_mode
     # network_mode: "host"
-    # volumes:
-    #   - dragonflydata:/data
+    volumes:
+      - dragonflydata:/data
 
 volumes:
   pgdata:
-  # dragonflydata:
+  dragonflydata:
