@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.6.2](https://github.com/ShadyDonkey/torkin-bot/compare/v1.6.1...v1.6.2) (2026-01-11)
+
+
+### Code Refactoring
+
+* use callback interaction in track ([#100](https://github.com/ShadyDonkey/torkin-bot/issues/100)) ([cccd761](https://github.com/ShadyDonkey/torkin-bot/commit/cccd7619cd6c96ab86eddbfd1c13d6d0914e4180))
+
+
+### Chores
+
+* add volume back to the dragonfly db ([dc34fde](https://github.com/ShadyDonkey/torkin-bot/commit/dc34fde8f239606868a80bd0818e5c9e855e2a15))
+* update dressed-react ([3d8bc30](https://github.com/ShadyDonkey/torkin-bot/commit/3d8bc30d40b8ba22b152312778c802b5c723e290))
+
 ## [1.6.1](https://github.com/ShadyDonkey/torkin-bot/compare/v1.6.0...v1.6.1) (2026-01-10)
 
 
