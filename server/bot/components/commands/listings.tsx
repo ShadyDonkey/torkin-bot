@@ -185,7 +185,8 @@ export function ListingPage({
         {'\n'}
         {type === 'movie' ? <TrendingMovieDetails details={details} /> : <TrendingTvDetails details={details} />}
         <TextDisplay>
-          Watch Now (US): <Availability id={mergedListing.id} type={type} />
+          Watch Now ({userPreferences.country ?? 'US'}):{' '}
+          <Availability id={mergedListing.id} type={type} country={userPreferences.country} />
         </TextDisplay>
       </Container>
       <ItemActions id={mergedListing.id.toString()} type={type}>
@@ -324,7 +325,7 @@ export function ListingPage({
   )
 }
 
-function Availability({ type, id }: Readonly<{ type: 'movie' | 'tv'; id: number }>) {
+function Availability({ type, id, country }: Readonly<{ type: 'movie' | 'tv'; id: number; country: string }>) {
   const query = useQuery({
     queryKey: ['availability', type, id],
     queryFn: () => getItemWatchProviders(type, { id, season: 1 }),
@@ -334,9 +335,12 @@ function Availability({ type, id }: Readonly<{ type: 'movie' | 'tv'; id: number 
 
   useEffect(() => {
     if (query.data) {
-      dedupeProviders(type, query.data.results?.US?.flatrate ?? []).then(setProviders)
+      // @ts-expect-error TypeScript is reading this as a dictionary but we need to shove a string into it.
+      const results = query.data.results?.[country]?.flatrate ?? query.data.results?.US?.flatrate ?? []
+
+      dedupeProviders(type, results).then(setProviders)
     }
-  }, [query.data, type])
+  }, [query.data, type, country])
 
   if (!query.data) {
     return query.isLoading ? '...' : 'Error Loading'
