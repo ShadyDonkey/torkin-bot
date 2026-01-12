@@ -8,7 +8,7 @@ import { ItemActions, ListingPreview, PaginationButtons } from '../../../bot/com
 import { TrendingMovieDetails, TrendingTvDetails, VoteSection } from '../../../bot/components/tmdb'
 import { useUserPreferences } from '../../../bot/providers/user-preferences'
 import { db } from '../../../lib/db'
-import { getDetails, getImageUrl, getItemWatchProviders } from '../../../lib/tmdb'
+import { getAvailableWatchProviders, getDetails, getImageUrl, getItemWatchProviders } from '../../../lib/tmdb'
 import type {
   MovieExternalIdsResponse,
   MovieTranslationsResponse,
@@ -21,6 +21,7 @@ import type {
 } from '../../../lib/tmdb/types'
 import { DUPLICATE_PROVIDER_ID_MAPPING } from '../../../lib/tmdb/watch-providers'
 import { paginateArray, unwrap } from '../../../utilities'
+import { logger } from '../../../utilities/logger'
 import type { UserTrackingEntryData } from '../../../zenstack/models'
 import { botLogger } from '../../utilities/logger'
 import ErrorPage from './error'
@@ -329,14 +330,23 @@ function Availability({ type, id }: Readonly<{ type: 'movie' | 'tv'; id: number 
     queryFn: () => getItemWatchProviders(type, { id, season: 1 }),
   })
 
+  const [providers, setProviders] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (query.data) {
+      dedupeProviders(type, query.data.results?.US?.flatrate ?? []).then(setProviders)
+    }
+  }, [query.data, type])
+
   if (!query.data) {
     return query.isLoading ? '...' : 'Error Loading'
   }
 
-  return dedupeProviders(query.data.results?.US?.flatrate ?? []) || 'Not Available'
+  return providers || 'Not Available'
 }
 
-function dedupeProviders(
+async function dedupeProviders(
+  type: TypeSelection,
   providers: {
     logo_path?: string
     provider_id: number
@@ -344,10 +354,19 @@ function dedupeProviders(
     display_priority: number
   }[],
 ) {
-  const filtered = providers.filter((p) => !DUPLICATE_PROVIDER_ID_MAPPING[p.provider_id] && p.provider_name)
-  const sorted = filtered.sort((a, b) => a.display_priority - b.display_priority)
+  const preFilteredIds = providers.filter((p) => p.provider_name).map((p) => p.provider_id)
+  const filteredIds = preFilteredIds.map((id) => DUPLICATE_PROVIDER_ID_MAPPING[id] || id)
+  const dedupedIds = new Set(filteredIds)
 
-  return sorted.map((p) => p.provider_name).join(', ')
+  const [err, response] = await unwrap(getAvailableWatchProviders(type))
+
+  if (err || !response.results) {
+    logger.error({ err }, 'Error fetching available watch providers')
+    return providers.map((p) => p.provider_name).join(', ')
+  }
+
+  const availableProviders = response.results.filter((r) => dedupedIds.has(r.provider_id))
+  return availableProviders.map((p) => p.provider_name).join(', ')
 }
 
 function findTrailer(results: MovieVideosResponse['results'] | TvVideosResponse['results']) {
