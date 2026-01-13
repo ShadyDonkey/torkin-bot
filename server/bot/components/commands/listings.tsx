@@ -19,6 +19,8 @@ import type {
   TvTranslationsResponse,
   TvVideosResponse,
   TypeSelection,
+  WatchProvidersMovieResponse,
+  WatchProvidersTvResponse,
 } from '../../../lib/tmdb/types'
 import { DUPLICATE_PROVIDER_ID_MAPPING } from '../../../lib/tmdb/watch-providers'
 import { paginateArray, unwrap } from '../../../utilities'
@@ -397,12 +399,15 @@ async function dedupeProviders(
     return providers.map((p) => p.provider_name)
   }
 
-  if (!response.results || !response.results.length) {
+  const available: WatchProvidersMovieResponse['results'] | WatchProvidersTvResponse['results'] =
+    response.results ?? (response as WatchProvidersMovieResponse['results'] | WatchProvidersTvResponse['results'])
+
+  if (!available || !available.length) {
     logger.error({ response: inspect(response, true, 1) }, 'No results found for available watch providers')
     return providers.map((p) => p.provider_name)
   }
 
-  const availableProviders = response.results.filter((r) => dedupedIds.has(r.provider_id))
+  const availableProviders = available.filter((r) => dedupedIds.has(r.provider_id))
   return availableProviders.map((p) => p.provider_name)
 }
 
