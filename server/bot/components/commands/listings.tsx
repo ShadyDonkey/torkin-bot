@@ -197,10 +197,8 @@ export function ListingPage({
             {details.external_ids.imdb_id && (
               <Button url={`https://www.imdb.com/title/${details.external_ids.imdb_id}`} label="View on IMDb" />
             )}
-            {details.videos.results && findTrailer(details.videos.results) && (
-              // TODO: fix this later
-              // biome-ignore lint/style/noNonNullAssertion: known, need to fix
-              <Button url={findTrailer(details.videos.results)!} label="View Latest Trailer" />
+            {details.videos.results && findTrailer(details.videos.results).length > 0 && (
+              <Button url={findTrailer(details.videos.results)} label="View Latest Trailer" />
             )}
           </>
         )}
@@ -399,7 +397,7 @@ async function dedupeProviders(
 
 function findTrailer(results: MovieVideosResponse['results'] | TvVideosResponse['results']) {
   if (!results) {
-    return null
+    return ''
   }
 
   const filtered = results?.filter(
@@ -407,7 +405,7 @@ function findTrailer(results: MovieVideosResponse['results'] | TvVideosResponse[
   )
 
   if (filtered.length === 0 || !filtered[0]?.key) {
-    return null
+    return ''
   }
 
   return `https://youtube.com/watch?v=${filtered[0].key}`
