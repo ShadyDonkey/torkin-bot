@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.8.0](https://github.com/ShadyDonkey/torkin-bot/compare/v1.7.1...v1.8.0) (2026-01-13)
+
+
+### Features
+
+* **ratings:** add OMDB API and ratings ([#111](https://github.com/ShadyDonkey/torkin-bot/issues/111)) ([9203714](https://github.com/ShadyDonkey/torkin-bot/commit/92037140013e83064ef5d8b9c849a6968ffb1f4b)), closes [#52](https://github.com/ShadyDonkey/torkin-bot/issues/52)
+
+
+### Bug Fixes
+
+* manually define contexts ([7f89920](https://github.com/ShadyDonkey/torkin-bot/commit/7f899206241fbbbaa6e5568b96a97eda54d378d8))
+* split result check and error check, add logging ([2fea2ff](https://github.com/ShadyDonkey/torkin-bot/commit/2fea2ff53fdac9400bd6faf27ea6468e12cf8159))
+
 ## [1.7.1](https://github.com/ShadyDonkey/torkin-bot/compare/v1.7.0...v1.7.1) (2026-01-13)
 
 
