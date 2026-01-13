@@ -1,7 +1,7 @@
 import { Button, Container, Section, Separator, TextDisplay, Thumbnail } from '@dressed/react'
 import { type UndefinedInitialDataOptions, useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
-import { bold, h2, list } from 'discord-fmt'
+import { h2, list } from 'discord-fmt'
 import { useEffect, useMemo, useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 import { ItemActions, ListingPreview, PaginationButtons } from '../../../bot/components/builders'
