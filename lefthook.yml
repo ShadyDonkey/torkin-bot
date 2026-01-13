@@ -8,8 +8,8 @@ pre-commit:
       stage_fixed: true
 
 commit-msg:
-  skip:
-    - ref: '^(?!refs/heads/main$)'
+  only:
+    - ref: 'refs/heads/main'
   commands:
     commitlint:
       run: bun commitlint --edit {1}

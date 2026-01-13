@@ -1,8 +1,8 @@
-import { cache, cacheEntry } from '../../lib/cache'
+import { cacheEntry, getOrSet } from '../../lib/cache'
 import { slugify, unwrap } from '../../utilities'
 import { logger } from '../../utilities/logger'
-import * as api from '../tmdb/api'
 import type { StandardListing, TimeWindow, TypeSelection } from '../tmdb/types'
+import * as api from './api'
 
 const MAX_TRENDING_PAGES = 5
 const CACHE_PREFIX = 'lib:tmdb'
@@ -39,24 +39,6 @@ export const CACHE_CONFIG = {
     timezones: cacheEntry(() => `${CACHE_PREFIX}:config:timezones`, '7d'),
   },
 } as const
-
-async function getOrSet<T>(key: string, ttl: string, fetcher: () => Promise<T>) {
-  const [err, result] = await unwrap(
-    cache.getOrSet(key, fetcher, {
-      ttl,
-    }),
-  )
-
-  if (err) {
-    throw err
-  }
-
-  if (!result) {
-    throw new Error('No result found')
-  }
-
-  return result
-}
 
 export function getImageUrl(path: string, width?: number) {
   return `https://image.tmdb.org/t/p/${width ? `w${width}` : 'original'}${path.startsWith('/') ? path : `/${path}`}`
