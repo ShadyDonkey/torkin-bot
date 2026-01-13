@@ -5,7 +5,7 @@ import { h2, list } from 'discord-fmt'
 import { useEffect, useMemo, useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 import { ItemActions, ListingPreview, PaginationButtons } from '../../../bot/components/builders'
-import { TrendingMovieDetails, TrendingTvDetails, VoteSection } from '../../../bot/components/tmdb'
+import { TrendingMovieDetails, TrendingTvDetails } from '../../../bot/components/tmdb'
 import { useUserPreferences } from '../../../bot/providers/user-preferences'
 import { db } from '../../../lib/db'
 import { getAvailableWatchProviders, getDetails, getImageUrl, getItemWatchProviders } from '../../../lib/tmdb'
@@ -25,6 +25,7 @@ import { logger } from '../../../utilities/logger'
 import type { UserTrackingEntryData } from '../../../zenstack/models'
 import { botLogger } from '../../utilities/logger'
 import ErrorPage from './error'
+import { Ratings } from './ratings'
 import { RecommendationsPage } from './recommendations'
 
 const ITEMS_PER_PAGE = 4
@@ -179,7 +180,11 @@ export function ListingPage({
         <Section accessory={<Thumbnail media={getImageUrl(mergedListing.thumbnail ?? '')} />}>
           ## {mergedListing.title}{' '}
           {mergedListing.releaseDate && `(${format(new Date(mergedListing.releaseDate), 'yyyy')})`}
-          {mergedListing.voteAverage > 0 && <VoteSection voteAverage={mergedListing.voteAverage} />}
+          {'\n'}
+          <Ratings
+            voteAverage={mergedListing.voteAverage}
+            imdbId={'external_ids' in details ? details.external_ids.imdb_id : undefined}
+          />
         </Section>
         {mergedListing.description}
         {'\n'}

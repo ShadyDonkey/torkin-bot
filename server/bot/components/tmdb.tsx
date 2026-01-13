@@ -96,8 +96,3 @@ export function TrendingMovieDetails({ details }: { details: StandardListing<'mo
 
   return `${h3('More Info')}\n${detailsList.join('\n')}`
 }
-
-export function VoteSection({ voteAverage }: Readonly<{ voteAverage: number }>) {
-  const rating = Math.max(Math.round(voteAverage / 2), 0)
-  return `\n${subtext('⭐'.repeat(rating))}`
-}
