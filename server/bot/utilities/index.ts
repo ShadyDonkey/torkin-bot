@@ -5,4 +5,5 @@ export const GENERIC_COMMAND_CONFIG = {
   default_member_permissions: IS_IN_DEV ? ['Administrator'] : undefined,
   integration_type: IS_IN_DEV ? 'Guild' : 'User',
   guilds: IS_IN_DEV ? [DEV_GUILD_ID] : undefined,
+  contexts: ['BotDM', 'PrivateChannel', 'Guild'],
 } satisfies Omit<CommandConfig, 'description'>
