@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.1](https://github.com/ShadyDonkey/torkin-bot/compare/v1.8.0...v1.8.1) (2026-01-13)
+
+
+### Bug Fixes
+
+* reduce logging depth ([8af2b84](https://github.com/ShadyDonkey/torkin-bot/commit/8af2b84eec9da41dc78661268fac606866d5e9df))
+
 ## [1.8.0](https://github.com/ShadyDonkey/torkin-bot/compare/v1.7.1...v1.8.0) (2026-01-13)
 
 
