@@ -391,8 +391,13 @@ async function dedupeProviders(
 
   const [err, response] = await unwrap(getAvailableWatchProviders(type))
 
-  if (err || !response.results) {
+  if (err) {
     logger.error({ err }, 'Error fetching available watch providers')
+    return providers.map((p) => p.provider_name)
+  }
+
+  if (!response.results) {
+    logger.error({ response }, 'No results found for available watch providers')
     return providers.map((p) => p.provider_name)
   }
 
