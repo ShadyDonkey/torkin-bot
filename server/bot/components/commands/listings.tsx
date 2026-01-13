@@ -1,7 +1,7 @@
 import { Button, Container, Section, Separator, TextDisplay, Thumbnail } from '@dressed/react'
 import { type UndefinedInitialDataOptions, useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
-import { h2 } from 'discord-fmt'
+import { bold, h2, list } from 'discord-fmt'
 import { useEffect, useMemo, useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 import { ItemActions, ListingPreview, PaginationButtons } from '../../../bot/components/builders'
@@ -185,7 +185,7 @@ export function ListingPage({
         {'\n'}
         {type === 'movie' ? <TrendingMovieDetails details={details} /> : <TrendingTvDetails details={details} />}
         <TextDisplay>
-          Watch Now ({userPreferences.country ?? 'US'}):{' '}
+          Watch Now ({userPreferences.country ?? 'US'}):{'\n'}
           <Availability id={mergedListing.id} type={type} country={userPreferences.country} />
         </TextDisplay>
       </Container>
@@ -336,9 +336,33 @@ function Availability({ type, id, country }: Readonly<{ type: 'movie' | 'tv'; id
   useEffect(() => {
     if (query.data) {
       // @ts-expect-error TypeScript is reading this as a dictionary but we need to shove a string into it.
-      const results = query.data.results?.[country]?.flatrate ?? query.data.results?.US?.flatrate ?? []
+      const results = query.data.results?.[country] ?? query.data.results?.US ?? {}
+      const flatrate = results.flatrate ?? []
+      const free = results.free ?? []
+      const buy = results.buy ?? []
+      const rent = results.rent ?? []
 
-      dedupeProviders(type, results).then(setProviders)
+      const promises = [
+        dedupeProviders(type, free),
+        dedupeProviders(type, flatrate),
+        dedupeProviders(type, buy),
+        dedupeProviders(type, rent),
+      ]
+
+      Promise.all(promises).then((r) => {
+        setProviders(
+          list(
+            ...(r
+              .map((p, i) => {
+                if (p.length > 0) {
+                  return `${['Streaming (Free)', 'Streaming', 'Buy', 'Rent'][i] ?? 'Unknown'}: ${p.join(', ')}`.trim()
+                }
+                return null
+              })
+              .filter(Boolean) as string[]),
+          ),
+        )
+      })
     }
   }, [query.data, type, country])
 
@@ -366,11 +390,11 @@ async function dedupeProviders(
 
   if (err || !response.results) {
     logger.error({ err }, 'Error fetching available watch providers')
-    return providers.map((p) => p.provider_name).join(', ')
+    return providers.map((p) => p.provider_name)
   }
 
   const availableProviders = response.results.filter((r) => dedupedIds.has(r.provider_id))
-  return availableProviders.map((p) => p.provider_name).join(', ')
+  return availableProviders.map((p) => p.provider_name)
 }
 
 function findTrailer(results: MovieVideosResponse['results'] | TvVideosResponse['results']) {
