@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.1](https://github.com/ShadyDonkey/torkin-bot/compare/v1.7.0...v1.7.1) (2026-01-13)
+
+
+### Bug Fixes
+
+* **typing:** resolve that todo for typing ([8a16d03](https://github.com/ShadyDonkey/torkin-bot/commit/8a16d03895bb79e7d0b50a81363db9a18bc92626))
+* update bunlock ([b25601b](https://github.com/ShadyDonkey/torkin-bot/commit/b25601bc465fb33081d05b6147678c0a50ea047b))
+
 ## [1.7.0](https://github.com/ShadyDonkey/torkin-bot/compare/v1.6.2...v1.7.0) (2026-01-13)
 
 
