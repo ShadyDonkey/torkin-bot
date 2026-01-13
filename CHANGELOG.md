@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.2](https://github.com/ShadyDonkey/torkin-bot/compare/v1.8.1...v1.8.2) (2026-01-13)
+
+
+### Bug Fixes
+
+* prod has a flattened array for some reason ([0e61c54](https://github.com/ShadyDonkey/torkin-bot/commit/0e61c54fc5a32abb620362de9e706913976ce6c1))
+
 ## [1.8.1](https://github.com/ShadyDonkey/torkin-bot/compare/v1.8.0...v1.8.1) (2026-01-13)
 
 
