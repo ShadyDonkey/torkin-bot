@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.7.0](https://github.com/ShadyDonkey/torkin-bot/compare/v1.6.2...v1.7.0) (2026-01-13)
+
+
+### Features
+
+* add ability to change providers using country ([85bc40e](https://github.com/ShadyDonkey/torkin-bot/commit/85bc40e26262e3bba7d601632145e88b264a32ab)), closes [#54](https://github.com/ShadyDonkey/torkin-bot/issues/54)
+* support all watch provider types ([6aa30ec](https://github.com/ShadyDonkey/torkin-bot/commit/6aa30ecb3ddf0e7d02b29c424e568fa5bc935da9))
+
+
+### Bug Fixes
+
+* remove risk of watch provider being blank ([7c42876](https://github.com/ShadyDonkey/torkin-bot/commit/7c428768fdf7671489cadfdd15d5c109228404fc)), closes [#96](https://github.com/ShadyDonkey/torkin-bot/issues/96)
+
 ## [1.6.2](https://github.com/ShadyDonkey/torkin-bot/compare/v1.6.1...v1.6.2) (2026-01-12)
 
 
