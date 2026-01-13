@@ -1,3 +1,4 @@
+import { inspect } from 'node:util'
 import { Button, Container, Section, Separator, TextDisplay, Thumbnail } from '@dressed/react'
 import { type UndefinedInitialDataOptions, useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
@@ -396,8 +397,8 @@ async function dedupeProviders(
     return providers.map((p) => p.provider_name)
   }
 
-  if (!response.results) {
-    logger.error({ response }, 'No results found for available watch providers')
+  if (!response.results || !response.results.length) {
+    logger.error({ response: inspect(response, true, 1) }, 'No results found for available watch providers')
     return providers.map((p) => p.provider_name)
   }
 
