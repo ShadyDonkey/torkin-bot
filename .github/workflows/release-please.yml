@@ -25,7 +25,7 @@ jobs:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
 
       # Publish steps
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         if: ${{ steps.release.outputs.release_created }}
 
       - name: Deploy on Coolify
