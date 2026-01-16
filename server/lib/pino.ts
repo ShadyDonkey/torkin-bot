@@ -1,11 +1,12 @@
 import pino from 'pino'
 import pinoStdSerializers from 'pino-std-serializers'
+import packageJson from '../../package.json'
 
 const sharedOptions = {
   labels: {
     application: 'torkin-bot',
     environment: process.env.NODE_ENV,
-    version: process.env.npm_package_version,
+    version: packageJson.version,
   },
 } as const
 
