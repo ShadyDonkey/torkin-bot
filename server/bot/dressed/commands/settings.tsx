@@ -5,10 +5,6 @@ import { db } from '../../../lib/db'
 import { getCountries, getLanguages, getTimezones } from '../../../lib/tmdb'
 import { GENERIC_COMMAND_CONFIG } from '../../utilities'
 
-type MappedOption<N extends string> = ReturnType<
-  typeof CommandOption<'Subcommand', N, false, [ReturnType<typeof CommandOption<'String', 'value', true, never>>]>
->
-
 export const config = {
   ...GENERIC_COMMAND_CONFIG,
   description: 'Manage your settings for the bot',
@@ -18,15 +14,11 @@ export const config = {
       type: 'SubcommandGroup',
       name: 'set',
       description: 'Set your settings',
-      options: Object.entries({
-        country: 'Set your country',
-        language: 'Set your language',
-        timezone: 'Set your timezone',
-      }).map(([name, description]) =>
+      options: (['country', 'language', 'timezone'] as const).map((name) =>
         CommandOption({
           type: 'Subcommand',
           name,
-          description,
+          description: `Set your ${name}`,
           options: [
             CommandOption({
               type: 'String',
@@ -37,15 +29,15 @@ export const config = {
             }),
           ],
         }),
-      ) as [MappedOption<'country'>, MappedOption<'language'>, MappedOption<'timezone'>],
+      ),
     }),
   ],
 } satisfies CommandConfig
 
 export default async function (interaction: CommandInteraction<typeof config>) {
-  const viewSubcommand = interaction.getOption('view')?.subcommand()
+  const { view, set } = interaction.options
 
-  if (viewSubcommand) {
+  if (view) {
     const preferences = await db.userPreference.findUnique({
       where: { discordUserId: interaction.user.id },
     })
@@ -72,12 +64,10 @@ export default async function (interaction: CommandInteraction<typeof config>) {
     )
   }
 
-  const setGroup = interaction.getOption('set')?.subcommandGroup()
-  const setSubcommand =
-    setGroup?.getSubcommand('country') || setGroup?.getSubcommand('language') || setGroup?.getSubcommand('timezone')
+  const setSubcommand = set?.subcommands.country || set?.subcommands.language || set?.subcommands.timezone
 
   if (setSubcommand) {
-    const value = setSubcommand.getOption('value', true)?.string()
+    const { value } = setSubcommand.options
 
     let valid = false
     switch (setSubcommand.name) {
@@ -102,9 +92,6 @@ export default async function (interaction: CommandInteraction<typeof config>) {
         valid = timezones.some((e) => e.value === value)
         break
       }
-      default:
-        valid = false
-        break
     }
 
     if (!valid) {
@@ -127,36 +114,35 @@ export default async function (interaction: CommandInteraction<typeof config>) {
   return await interaction.reply('Unknown subcommand', { ephemeral: true })
 }
 
-export async function autocomplete(interaction: CommandAutocompleteInteraction) {
-  const group = interaction.getOption('set')?.subcommandGroup()
-  const type = group?.getSubcommand('country') || group?.getSubcommand('language') || group?.getSubcommand('timezone')
-  const input = type?.getOption('value')?.string()
+export async function autocomplete(interaction: CommandAutocompleteInteraction<typeof config>) {
+  const { subcommands } = interaction.options.set ?? {}
+  const { options: { value } = {} } = subcommands?.country ?? subcommands?.language ?? subcommands?.timezone ?? {}
 
-  if (!type) {
+  if (!value) {
     return
   }
 
-  const searchInput = input?.toLowerCase().trim() ?? ''
+  const searchInput = value?.toLowerCase().trim() ?? ''
   const limit = 25
 
   const limitedMatches = <T extends { name: string; value: string }>(items: T[], predicate: (item: T) => boolean) =>
     items.filter(predicate).slice(0, limit)
 
   const fetchData = async () => {
-    switch (type.name) {
-      case 'country': {
+    switch (interaction.focused) {
+      case 'set.country.value': {
         const countries = (await getCountries())
           .filter((e): e is { iso_3166_1: string; english_name: string } => Boolean(e.iso_3166_1 && e.english_name))
           .map((e) => ({ name: e.english_name, value: e.iso_3166_1 }))
         return limitedMatches(countries, (c) => c.name.toLowerCase().includes(searchInput))
       }
-      case 'language': {
+      case 'set.language.value': {
         const languages = (await getLanguages())
           .filter((e): e is { iso_639_1: string; english_name: string } => Boolean(e.iso_639_1 && e.english_name))
           .map((e) => ({ name: e.english_name, value: e.iso_639_1 }))
         return limitedMatches(languages, (l) => l.name.toLowerCase().includes(searchInput))
       }
-      case 'timezone': {
+      case 'set.timezone.value': {
         const timezones = (await getTimezones())
           .flatMap((country) => country.zones?.map((zone) => ({ name: zone, value: zone })) ?? [])
           .filter((tz): tz is { name: string; value: string } => Boolean(tz.name && tz.value))

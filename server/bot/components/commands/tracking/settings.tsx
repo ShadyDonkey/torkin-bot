@@ -74,7 +74,7 @@ export default function TrackingSettings({ userId }: Readonly<{ userId: string }
         <SelectMenu
           type="String"
           onSubmit={async (e) => {
-            const localHour = Number(e.data.values.at(0)) ?? 12
+            const localHour = Number(e.values.at(0)) ?? 12
             setSelectedLocalHour(localHour)
             const utcHour = localHourToUtc(localHour, userPreferences.timezone)
             const [err] = await unwrap(

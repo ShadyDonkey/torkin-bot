@@ -16,7 +16,7 @@ export const config = {
 } satisfies CommandConfig
 
 export default async function (interaction: CommandInteraction<typeof config>) {
-  const subcommand = interaction.getOption('settings')?.subcommand()
+  const subcommand = interaction.options.settings
 
   if (!subcommand) {
     return await interaction.reply('Unknown subcommand')
