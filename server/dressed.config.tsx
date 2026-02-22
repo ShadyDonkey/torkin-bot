@@ -1,6 +1,6 @@
+import type { DressedConfig } from '@dressed/framework'
 import { type MessageComponentInteraction, patchInteraction, TextDisplay } from '@dressed/react'
 import { link, subtext } from 'discord-fmt'
-import type { ServerConfig } from 'dressed/server'
 import { BotProviders } from './bot/providers'
 
 export default {
@@ -50,4 +50,4 @@ export default {
       ]
     },
   },
-} satisfies ServerConfig
+} satisfies DressedConfig
