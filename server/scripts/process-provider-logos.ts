@@ -1,4 +1,4 @@
-import { createApplicationEmoji, listApplicationEmojis } from 'dressed'
+import { createAppEmoji, listAppEmojis } from 'dressed'
 import { getAvailableWatchProviders, getImageUrl } from '../lib/tmdb'
 import { DUPLICATE_PROVIDER_ID_MAPPING } from '../lib/tmdb/watch-providers'
 
@@ -43,7 +43,7 @@ for (const [id, provider] of priorityFiltered) {
   }
 }
 
-const existingEmojis = await listApplicationEmojis()
+const existingEmojis = await listAppEmojis()
 
 for (const [id, provider] of uniqueProviders) {
   const emoji = existingEmojis.items.find((emoji) => emoji.name === `watch_provider_${id}`)
@@ -59,7 +59,7 @@ for (const [id, provider] of uniqueProviders) {
 
   const discordFormatted = `data:image/jpeg;base64,${base64Image}`
 
-  await createApplicationEmoji({
+  await createAppEmoji({
     image: discordFormatted,
     name: `watch_provider_${id}`,
   })
