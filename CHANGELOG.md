@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.8.3](https://github.com/ShadyDonkey/torkin-bot/compare/v1.8.2...v1.8.3) (2026-03-04)
+
+
+### Bug Fixes
+
+* **deps:** update dependency lucide-react to ^0.577.0 ([#124](https://github.com/ShadyDonkey/torkin-bot/issues/124)) ([2bba9d1](https://github.com/ShadyDonkey/torkin-bot/commit/2bba9d10ffb653599b84c2cf78a3b92ab3786a58))
+* point to package.json instead of env for version ([8383cb2](https://github.com/ShadyDonkey/torkin-bot/commit/8383cb2d1164a529b99d706a4b373a841cb9dd12)), closes [#115](https://github.com/ShadyDonkey/torkin-bot/issues/115)
+
+
+### Chores
+
+* Configure Renovate ([#118](https://github.com/ShadyDonkey/torkin-bot/issues/118)) ([59260fb](https://github.com/ShadyDonkey/torkin-bot/commit/59260fbb95ab4cd8c89b963c608630ffa81890b1))
+* **deps:** pin dependencies ([#121](https://github.com/ShadyDonkey/torkin-bot/issues/121)) ([9d064d6](https://github.com/ShadyDonkey/torkin-bot/commit/9d064d6f29e6cf01d0f4fde345dc9d7537e00627))
+* **deps:** update actions/checkout action to v6 ([#119](https://github.com/ShadyDonkey/torkin-bot/issues/119)) ([eb91b98](https://github.com/ShadyDonkey/torkin-bot/commit/eb91b98387f8f38f40d30b17dc118626099f84bc))
+* **deps:** update dependency @tanstack/devtools-vite to ^0.5.0 ([#126](https://github.com/ShadyDonkey/torkin-bot/issues/126)) ([82ba986](https://github.com/ShadyDonkey/torkin-bot/commit/82ba986fe1f986ad7f43347c6977967576540389))
+* **deps:** update dependency @types/react to v19.2.14 ([#123](https://github.com/ShadyDonkey/torkin-bot/issues/123)) ([4631514](https://github.com/ShadyDonkey/torkin-bot/commit/46315148fe9652924ef63ec7a98b2d7fe3c8d677))
+* remove dependabot ([11db07a](https://github.com/ShadyDonkey/torkin-bot/commit/11db07aa632a2a8c00ec2fb171e65c26390a53fd))
+* update renovate config ([992e259](https://github.com/ShadyDonkey/torkin-bot/commit/992e2596b59796407beed22a8f27934ea600c271))
+
 ## [1.8.2](https://github.com/ShadyDonkey/torkin-bot/compare/v1.8.1...v1.8.2) (2026-01-13)
 
 
