@@ -13,7 +13,7 @@
   "dependencies": {
     "@date-fns/tz": "^1.4.1",
     "@date-fns/utc": "^2.1.1",
-    "@dressed/framework": "^0.4.0",
+    "@dressed/framework": "^0.5.0",
     "@dressed/matcher": "^1.4.0",
     "@dressed/react": "^1.8.5-rc.1.1",
     "@elysiajs/cors": "^1.4.1",
@@ -26,6 +26,7 @@
     "@zenstackhq/better-auth": "^3.3.3",
     "@zenstackhq/cli": "^3.3.3",
     "@zenstackhq/orm": "^3.3.3",
+    "abseil": "^0.3.0",
     "await-to-js": "^3.0.0",
     "better-auth": "^1.4.18",
     "cacheable": "^2.3.2",

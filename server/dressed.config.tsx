@@ -4,7 +4,7 @@ import { link, subtext } from 'discord-fmt'
 import { BotProviders } from './bot/providers'
 
 export default {
-  build: { root: 'bot/dressed', extensions: ['tsx', 'ts'] },
+  build: { root: 'bot/dressed', include: ['**/*.{ts,tsx}'] },
   port: 3000,
   middleware: {
     commands: (i) => [
