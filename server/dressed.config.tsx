@@ -5,16 +5,15 @@ import { BotProviders } from './bot/providers'
 
 export default {
   build: { root: 'bot/dressed', include: ['**/*.{ts,tsx}'] },
-  port: 3000,
-  middleware: {
-    commands: (i) => [
+  hooks: {
+    onBeforeCommand: (i) => [
       patchInteraction(i, ({ children }) => (
         <BotProviders userId={i.user.id} interaction={i}>
           {children}
         </BotProviders>
       )),
     ],
-    async components(i, ...p) {
+    async onBeforeComponent(i, ...p) {
       if (i.message?.interaction_metadata && i.message.interaction_metadata.user.id !== i.user.id) {
         await i.reply({ content: "You didn't initiate this interaction!", ephemeral: true })
         throw new Error('Not the triggering user')
@@ -50,4 +49,5 @@ export default {
       ]
     },
   },
+  server: { port: 3000 },
 } satisfies DressedConfig
