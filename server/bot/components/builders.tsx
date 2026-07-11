@@ -1,4 +1,4 @@
-import type { MessageComponentInteraction } from '@dressed/react'
+import type { ComponentInteraction } from '@dressed/react'
 import { ActionRow, Button, Section, Thumbnail } from '@dressed/react'
 import { format } from 'date-fns'
 import { bold, h3, subtext } from 'discord-fmt'
@@ -69,7 +69,7 @@ export function ListingPreview({
     releaseDate?: string
     thumbnail?: string
     adult: boolean
-  } & ({ linkId: string } | { onClick: (interaction: MessageComponentInteraction<'Button'>) => void })
+  } & ({ linkId: string } | { onClick: (interaction: ComponentInteraction<'Button'>) => void })
 >) {
   return (
     <>

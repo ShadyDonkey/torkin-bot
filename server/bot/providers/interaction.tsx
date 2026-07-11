@@ -1,7 +1,7 @@
-import type { CommandInteraction, MessageComponentInteraction, ModalSubmitInteraction } from 'dressed'
+import type { CommandInteraction, ComponentInteraction, ModalInteraction } from 'dressed'
 import { createContext, type PropsWithChildren, useContext } from 'react'
 
-export type InteractionContextType = MessageComponentInteraction | ModalSubmitInteraction | CommandInteraction | null
+export type InteractionContextType = ComponentInteraction | ModalInteraction | CommandInteraction | null
 
 const InteractionContext = createContext<InteractionContextType>(null)
 

@@ -1,7 +1,27 @@
 import type { DressedConfig } from '@dressed/framework'
-import { type MessageComponentInteraction, patchInteraction, TextDisplay } from '@dressed/react'
-import { link, subtext } from 'discord-fmt'
+import { type Params, patternToRegex } from '@dressed/matcher'
+import { type ComponentInteraction, patchInteraction, reconstructElementTree } from '@dressed/react'
+import { createCallbackHandler, pattern } from '@dressed/react/callbacks'
+import abseil from 'abseil'
 import { BotProviders } from './bot/providers'
+
+const callbackHandler = createCallbackHandler({
+  async default(interaction: Omit<ComponentInteraction, 'updateResponse'>) {
+    const components = interaction.message.components ?? []
+    abseil(components)
+      .find(interaction.data.custom_id, [
+        'Button',
+        'ChannelSelect',
+        'MentionableSelect',
+        'RoleSelect',
+        'StringSelect',
+        'UserSelect',
+      ])
+      ?.update({ disabled: true })
+    await interaction.update(reconstructElementTree(components))
+    await interaction.followUp('That handler has expired', { ephemeral: true })
+  },
+})
 
 export default {
   build: { root: 'bot/dressed', include: ['**/*.{ts,tsx}'] },
@@ -23,30 +43,14 @@ export default {
           {children}
         </BotProviders>
       ))
-      return [
-        {
-          ...patched,
-          updateResponse(data, ...p) {
-            if (typeof data !== 'string' && Math.random() < 0.7) {
-              data = (
-                <>
-                  {data}
-                  <TextDisplay>
-                    {subtext(
-                      `Enjoying Torkin? Consider ${link('donating on Ko-Fi', '<https://ko-fi.com/matthatcher>')} to keep the project alive and remain free.`,
-                    )}
-                  </TextDisplay>
-                </>
-              )
-            }
-            if (patched.history.some((h) => ['reply', 'deferReply', 'update', 'deferUpdate'].includes(h))) {
-              return this.editReply(data, ...p)
-            }
-            return this.update(data, ...p)
-          },
-        } as MessageComponentInteraction,
-        ...p,
-      ]
+      return [patched, ...p]
+    },
+    onUnknownInteraction(i) {
+      if (i.type !== 3 && i.type !== 5) {
+        return console.error('Unknown interaction', i)
+      }
+      const args = patternToRegex(pattern).exec(i.data.custom_id)?.groups as Params<typeof pattern>
+      return callbackHandler(i as Parameters<typeof callbackHandler>[0], args)
     },
   },
   server: { port: 3000 },
