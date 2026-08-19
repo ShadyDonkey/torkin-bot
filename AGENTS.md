@@ -73,7 +73,7 @@ biome check --write --files-ignored=no
 - Use `useQuery` for all data fetching - no manual fetch/async-await in components
 - Three-level rendering: `query.isLoading` → `query.isError` → data display
 - Stateless components - user interactions trigger Discord interactions, not state updates
-- Use `deferUpdate()` in component handlers before `updateResponse()` to prevent timeouts
+- Use `deferUpdate()` in component handlers before `editReply()` to prevent timeouts
 - Use `deferReply()` for slash commands, then `editReply()`
 - Always validate interaction metadata: `if (!interaction.message.interaction_metadata) { return await interaction.reply('...', { ephemeral: true }) }`
 - Always use `onClick` handlers over custom ID patterns
