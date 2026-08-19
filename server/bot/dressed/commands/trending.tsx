@@ -41,14 +41,14 @@ export const config = {
 } satisfies CommandConfig
 
 export default async function (interaction: CommandInteraction<typeof config>) {
-  const subcommand = (interaction.getOption('movie') || interaction.getOption('tv'))?.subcommand()
+  const subcommand = interaction.options.movie || interaction.options.tv
 
   if (!subcommand) {
     return await interaction.reply('Unknown subcommand')
   }
 
-  const window = (subcommand?.getOption('period')?.string() || 'day') as 'day' | 'week'
-  const type = subcommand?.name
+  const window = (subcommand.options.period || 'day') as 'day' | 'week'
+  const type = subcommand.name
 
   try {
     await interaction.reply(

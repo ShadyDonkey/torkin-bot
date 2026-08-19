@@ -1,5 +1,5 @@
 import { join } from 'node:path'
-import { createApplicationEmoji, listApplicationEmojis } from 'dressed'
+import { createAppEmoji, listAppEmojis } from 'dressed'
 
 const logos = {
   IMDb: 'IMDb.png',
@@ -8,7 +8,7 @@ const logos = {
   TMDB: 'TMDB.png',
 }
 
-const existingEmojis = await listApplicationEmojis()
+const existingEmojis = await listAppEmojis()
 
 for (const [name, logo] of Object.entries(logos)) {
   const emoji = existingEmojis.items.find((emoji) => emoji.name === `${name}`)
@@ -22,7 +22,7 @@ for (const [name, logo] of Object.entries(logos)) {
   const base64Image = Buffer.from(arrayBuffer).toString('base64')
   const discordFormatted = `data:image/png;base64,${base64Image}`
 
-  await createApplicationEmoji({
+  await createAppEmoji({
     name,
     image: discordFormatted,
   })

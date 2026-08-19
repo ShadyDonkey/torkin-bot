@@ -48,13 +48,16 @@ export const config = {
 } satisfies CommandConfig
 
 export default async function (interaction: CommandInteraction<typeof config>) {
-  const subcommand = (interaction.getOption('movie') || interaction.getOption('tv'))?.subcommand()
+  const subcommand = interaction.options.movie || interaction.options.tv
+
   if (!subcommand) {
     return await interaction.reply('Unknown subcommand')
   }
 
-  const searchType = subcommand.name
-  const query = subcommand.getOption('query', true).string()
+  const {
+    name: searchType,
+    options: { query },
+  } = subcommand
 
   if (!query) {
     return await interaction.reply('You must provide a title')
