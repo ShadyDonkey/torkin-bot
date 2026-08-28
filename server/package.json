@@ -31,7 +31,7 @@
     "better-auth": "^1.4.18",
     "cacheable": "^2.3.2",
     "camelcase-keys": "^10.0.2",
-    "croner": "^9.1.0",
+    "croner": "^10.0.0",
     "date-fns": "^4.1.0",
     "discord-api-types": "^0.38.40",
     "discord-fmt": "^1.0.1",
